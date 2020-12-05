@@ -16,7 +16,7 @@ public class CarServiceImpl implements ICarService {
     CarMapper carMapper;
 
     @Override
-    public Car addNew(Car car) {
+    public Car addNew(Car car) throws InsertException{
         Integer rows = -1;
         try {
             rows = carMapper.addNew(car);
@@ -31,7 +31,7 @@ public class CarServiceImpl implements ICarService {
     }
 
     @Override
-    public void delById(Integer id) {
+    public void delById(Integer id) throws DeleteException, CarNotFoundException{
         Car data = findById(id);
         if(data == null){
             throw new CarNotFoundException("删除车辆失败!尝试删除的车辆信息不存在");
