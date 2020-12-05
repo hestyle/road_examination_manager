@@ -16,4 +16,11 @@
 		WHERE
 			`username`=#{username}
 	</select>
+	<!--插入manager数据-->
+	<!--Integer addNew(Manager manager)-->
+	<insert id="addNew" parameterType="cn.hestyle.road_examination_manager.entity.Manager">
+		INSERT INTO `t_manager` VALUES (
+			#{username}, #{password}, #{name}, #{age}, #{gender}, #{phoneNumber}, #{isDel}
+		)
+	</insert>
 </mapper>
