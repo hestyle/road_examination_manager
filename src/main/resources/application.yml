@@ -1,6 +1,6 @@
 # server
 server:
-  port: 9090
+  port: 9091
   servlet:
     context-path: /road_examination_manager
 
@@ -24,4 +24,4 @@ spring:
   datasource:
     url: jdbc:mysql://localhost:3306/road_examination?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
     username: root
-    password: 123456
+    password: 9494itsyou
