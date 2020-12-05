@@ -36,11 +36,15 @@ public class CarServiceImpl implements ICarService {
         if(data == null){
             throw new CarNotFoundException("删除车辆失败!尝试删除的车辆信息不存在");
         }
-
-        Integer rows = carMapper.deleteById(id);
-        if(rows != 1){
-            throw new DeleteException("删除车辆数据时发生未知错误!");
+        try {
+            Integer rows = carMapper.deleteById(id);
+            if(rows != 1){
+                throw new DeleteException("删除车辆数据时发生未知错误!");
+            }
+        }catch (Exception e){
+            throw new DeleteException("删除车辆信息失败！数据库异常！");
         }
+
 
     }
 
