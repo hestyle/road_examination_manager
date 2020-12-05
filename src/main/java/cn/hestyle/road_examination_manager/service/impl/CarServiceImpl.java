@@ -17,9 +17,15 @@ public class CarServiceImpl implements ICarService {
 
     @Override
     public Car addNew(Car car) {
-        Integer rows = carMapper.addNew(car);
+        Integer rows = -1;
+        try {
+            rows = carMapper.addNew(car);
+        }catch (Exception e){
+            throw new InsertException("新增车辆信息失败！数据库异常！");
+        }
+
         if(rows != 1){
-            throw new InsertException("新增车辆信息失败");
+            throw new InsertException("新增车辆信息失败！");
         }
         return car;
     }
