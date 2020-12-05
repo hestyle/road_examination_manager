@@ -1,8 +1,12 @@
 package cn.hestyle.road_examination_manager.controller;
 
+import cn.hestyle.road_examination_manager.controller.exception.AddManagerDataErrorException;
+import cn.hestyle.road_examination_manager.controller.exception.ManagerNotLoginException;
 import cn.hestyle.road_examination_manager.entity.Manager;
 import cn.hestyle.road_examination_manager.service.IManagerService;
 import cn.hestyle.road_examination_manager.util.ResponseResult;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,5 +32,28 @@ public class ManagerController extends BaseController{
         // 将用户名发到session中，保存到服务端
         session.setAttribute("username", manager.getUsername());
         return new ResponseResult<>(SUCCESS, "登录成功！", manager);
+    }
+
+    @PostMapping("/add.do")
+    public ResponseResult<Void> handleAdd(@RequestParam("newManageJsonData") String newManageJsonData, HttpSession session) {
+        // 判断是否已经登录过
+        if (null == session.getAttribute("username")) {
+            throw new ManagerNotLoginException("操作失败！请先进行管理员登录！");
+        }
+        // 将newManagerData转成json，取出新manager账号的各个属性
+        ObjectMapper objectMapper = new ObjectMapper();
+        Manager newManager = null;
+        try {
+            newManager = objectMapper.readValue(newManageJsonData, Manager.class);
+            if (managerService.add(newManager)) {
+                return new ResponseResult<>(SUCCESS, newManager.getUsername() + "账号已保存成功！");
+            } else {
+                return new ResponseResult<>(FAILURE, newManager.getUsername() + "账号保存失败，原因未知！");
+            }
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            return new ResponseResult<>(FAILURE, new AddManagerDataErrorException("新管理员账号格式不正确！"));
+        }
+
     }
 }

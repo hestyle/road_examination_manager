@@ -1,6 +1,7 @@
 package cn.hestyle.road_examination_manager.service;
 
 import cn.hestyle.road_examination_manager.entity.Manager;
+import cn.hestyle.road_examination_manager.service.exception.ManagerAddFailedException;
 import cn.hestyle.road_examination_manager.service.exception.ManagerNotFoundException;
 import cn.hestyle.road_examination_manager.service.exception.PasswordNotMatchException;
 
@@ -16,4 +17,12 @@ public interface IManagerService {
      * @return          manager账号
      */
     Manager login(String username, String password) throws ManagerNotFoundException, PasswordNotMatchException;
+
+    /**
+     * 增加新manager
+     * @param manager   新manger账号
+     * @return          是否保存成功
+     * @throws ManagerAddFailedException  插入发生时数据库异常
+     */
+    Boolean add(Manager manager) throws ManagerAddFailedException;
 }

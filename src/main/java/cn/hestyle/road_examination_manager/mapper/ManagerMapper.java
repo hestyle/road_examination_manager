@@ -15,4 +15,11 @@ public interface ManagerMapper {
      * @return          manager
      */
     Manager findByUsername(String username);
+
+    /**
+     * 增加新manager
+     * @param manager   新manger账号
+     * @return          是否插入成功
+     */
+    Integer addNew(Manager manager);
 }
