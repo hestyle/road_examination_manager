@@ -15,12 +15,6 @@ public class CarServiceImpl implements ICarService {
     @Resource
     CarMapper carMapper;
 
-    /**
-     * 新增车辆信息
-     *
-     * @param car 车辆信息
-     * @return
-     */
     @Override
     public Car addNew(Car car) {
         Integer rows = carMapper.addNew(car);
@@ -29,7 +23,6 @@ public class CarServiceImpl implements ICarService {
         }
         return car;
     }
-
 
     @Override
     public void delById(Integer id) {
