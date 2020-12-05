@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="cn.hestyle.road_examination_manager.mapper.CarMapper">
+    <select id="findById" resultType="cn.hestyle.road_examination_manager.entity.Car">
+		SELECT
+			`ip_address` as `ipAddress`,
+			`mac_address` as `macAddress`,
+			`type` as `type`,
+			`description` as `description`,
+			`is_del` as `isDel`
+		FROM
+			`t_car`
+		WHERE
+			`id`=#{id}
+	</select>
+
+	<insert id="addNew" keyProperty="id" useGeneratedKeys="true" parameterType="cn.hestyle.road_examination_manager.entity.Car">
+		INSERT INTO t_car(
+			ip_address, mac_address,
+			type,
+			description,
+			is_del
+		) VALUES (
+			#{ipAddress}, #{macAddress},
+			#{type},
+			#{description},
+			#{isDel}
+		)
+	</insert>
+
+	<update id="deleteById">
+		UPDATE t_car
+		SET is_del = 1
+		WHERE id=#{id}
+	</update>
+</mapper>

@@ -1,4 +1,4 @@
-package edu.cn.green_farm_user.service.exception;
+package cn.hestyle.road_examination_manager.service.exception;
 
 /**
  * 插入数据异常
