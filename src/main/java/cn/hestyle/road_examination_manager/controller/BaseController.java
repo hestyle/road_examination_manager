@@ -1,6 +1,8 @@
 package cn.hestyle.road_examination_manager.controller;
 
+import cn.hestyle.road_examination_manager.controller.exception.ManagerNotLoginException;
 import cn.hestyle.road_examination_manager.controller.exception.RequestException;
+import cn.hestyle.road_examination_manager.service.exception.ManagerAddFailedException;
 import cn.hestyle.road_examination_manager.service.exception.ManagerNotFoundException;
 import cn.hestyle.road_examination_manager.service.exception.PasswordNotMatchException;
 import cn.hestyle.road_examination_manager.service.exception.ServiceException;
@@ -19,6 +21,10 @@ public abstract class BaseController {
      */
     public static final Integer SUCCESS = 200;
     public static final Integer SUCCESSFUL = 0;
+    /**
+     * 未知原因的错误响应代号
+     */
+    public static final Integer FAILURE = -1;
 
     @ExceptionHandler({ServiceException.class, RequestException.class})// 异常的范围
     @ResponseBody
@@ -31,6 +37,12 @@ public abstract class BaseController {
         } else if (e instanceof PasswordNotMatchException) {
             // 401-密码错误
             code = 401;
+        } else if (e instanceof ManagerNotLoginException) {
+            // 402-未登录
+            code = 402;
+        } else if (e instanceof ManagerAddFailedException) {
+            // 403-增加新manager保存错误
+            code = 403;
         }
         return new ResponseResult<>(code, e);
     }
