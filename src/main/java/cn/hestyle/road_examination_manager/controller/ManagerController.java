@@ -8,10 +8,7 @@ import cn.hestyle.road_examination_manager.util.ResponseResult;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
 import java.util.List;
@@ -103,5 +100,16 @@ public class ManagerController extends BaseController{
             e.printStackTrace();
             return new ResponseResult<>(FAILURE, "修改失败，信息格式不正确！");
         }
+    }
+
+    @PostMapping("/findManagerByUsername/{username}")
+    public ResponseResult<Manager> handleFindManagerByUsername(@PathVariable("username") String username, HttpSession session) {
+        // 判断是否已经登录过
+        if (null == session.getAttribute("username")) {
+            throw new ManagerNotLoginException("操作失败！请先进行管理员登录！");
+        }
+        // 查找manager账号
+        Manager manager = managerService.findManagerByUsername(username);
+        return new ResponseResult<Manager>(SUCCESS, "查找成功！", manager);
     }
 }

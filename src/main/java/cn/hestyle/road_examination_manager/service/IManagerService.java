@@ -55,4 +55,11 @@ public interface IManagerService {
      * @return          是否成功保存
      */
     Boolean modifyBaseInfo(Manager manager) throws UpdateException;
+
+    /**
+     * 通过username查找manager
+     * @param username  username
+     * @return          查找到的manager
+     */
+    Manager findManagerByUsername(String username) throws ManagerNotFoundException;
 }

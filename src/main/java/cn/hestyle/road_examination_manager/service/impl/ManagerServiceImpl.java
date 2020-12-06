@@ -154,4 +154,16 @@ public class ManagerServiceImpl implements IManagerService {
             throw new UpdateException("信息修改失败，数据库发生未知异常！");
         }
     }
+
+    @Override
+    public Manager findManagerByUsername(String username) throws ManagerNotFoundException {
+        Manager manager = managerMapper.findByUsername(username);
+        // 判断用户名是否存在账号
+        if (null == manager) {
+            throw new ManagerNotFoundException("查找! 用户名 " + username + " 未注册!");
+        }
+        // 清除password
+        manager.setPassword(null);
+        return manager;
+    }
 }
