@@ -57,6 +57,11 @@ public class ResponseResult<E> implements Serializable{
 		setData(data);
 	}
 
+	public ResponseResult(Integer code, Integer count, E data, String message) {
+		this(code, count, data);
+		setMessage(message);
+	}
+
 	public Integer getCode() {
 		return code;
 	}

@@ -3,6 +3,8 @@ package cn.hestyle.road_examination_manager.mapper;
 import cn.hestyle.road_examination_manager.entity.Manager;
 import org.apache.ibatis.annotations.Mapper;
 
+import java.util.List;
+
 /**
  * 用户持久层
  * @author hestyle
@@ -22,4 +24,18 @@ public interface ManagerMapper {
      * @return          是否插入成功
      */
     Integer addNew(Manager manager);
+
+    /**
+     * 分页查询所有manager
+     * @param beginIndex    username降序排列
+     * @param pageSize      一页大小
+     * @return              manager list
+     */
+    List<Manager> findByPage(Integer beginIndex, Integer pageSize);
+
+    /**
+     * 获取manager的数量
+     * @return      manager的数量
+     */
+    Integer getManagerCount();
 }
