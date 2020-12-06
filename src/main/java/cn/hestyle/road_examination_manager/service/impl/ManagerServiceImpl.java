@@ -114,4 +114,44 @@ public class ManagerServiceImpl implements IManagerService {
             throw new UpdateException("密码修改失败，数据库发生未知异常！");
         }
     }
+
+    @Override
+    public Boolean modifyBaseInfo(Manager manager) throws UpdateException {
+        // 通过username查询manager
+        Manager managerData = managerMapper.findByUsername(manager.getUsername());
+        if (null == managerData) {
+            throw new UpdateException("修改失败，" + manager.getUsername() + " 用户未注册！");
+        }
+        // 提取出需要更新的字段，并且判断字段是否合法
+        if (manager.getName() != null) {
+            if (manager.getName().length() < 6 || manager.getName().length() > 20) {
+                throw new UpdateException("修改失败，name字段长度非法，请控制在6-20位！");
+            }
+            managerData.setName(manager.getName());
+        }
+        if (manager.getAge() != null) {
+            if (manager.getAge() < 1) {
+                throw new UpdateException("修改失败，age必须大于零！");
+            }
+            managerData.setAge(manager.getAge());
+        }
+        if (manager.getGender() != null) {
+            if (!"男".equals(manager.getGender()) && !"女".equals(manager.getGender())) {
+                throw new UpdateException("修改失败，gender只能为【男】或者【女】！");
+            }
+            managerData.setGender(manager.getGender());
+        }
+        if (manager.getPhoneNumber() != null) {
+            if (manager.getPhoneNumber().length() < 8 || manager.getName().length() > 11) {
+                throw new UpdateException("修改失败，phoneNumber字段长度非法，请控制在8-11位！");
+            }
+            managerData.setPhoneNumber(manager.getPhoneNumber());
+        }
+        try {
+            return 1 == managerMapper.update(managerData);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new UpdateException("信息修改失败，数据库发生未知异常！");
+        }
+    }
 }
