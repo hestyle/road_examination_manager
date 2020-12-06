@@ -1,5 +1,6 @@
 package cn.hestyle.road_examination_manager.controller;
 
+import cn.hestyle.road_examination_manager.controller.exception.ManagerNotLoginException;
 import cn.hestyle.road_examination_manager.entity.Car;
 import cn.hestyle.road_examination_manager.service.ICarService;
 import cn.hestyle.road_examination_manager.service.exception.InsertException;
@@ -19,14 +20,26 @@ public class CarController {
 
     @PostMapping("/add.do")
     public ResponseResult<Car> handleAdd(Car car, HttpSession session){
-        carService.addNew(car).toString();
+        // 判断是否已经登录过
+        if (null == session.getAttribute("username")) {
+            throw new ManagerNotLoginException("操作失败！请先进行管理员登录！");
+        }
 
-        return new ResponseResult<>(SUCCESS);
+        carService.addNew(car);
+        /**
+         * 失败不会返回成功代码，而是抛出异常
+         */
+        return new ResponseResult<>(SUCCESS, "车辆信息添加成功！");
     }
 
     @GetMapping("/del.do")
     public ResponseResult<Void> handleDelById(@RequestParam("id")Integer id, HttpSession session){
+        // 判断是否已经登录过
+        if (null == session.getAttribute("username")) {
+            throw new ManagerNotLoginException("操作失败！请先进行管理员登录！");
+        }
+
         carService.delById(id);
-        return new ResponseResult<>(SUCCESS);
+        return new ResponseResult<>(SUCCESS, "车辆信息删除成功！");
     }
 }

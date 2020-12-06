@@ -16,25 +16,35 @@ public class CarServiceImpl implements ICarService {
     CarMapper carMapper;
 
     @Override
-    public Car addNew(Car car) {
-        Integer rows = carMapper.addNew(car);
+    public Car addNew(Car car) throws InsertException{
+        Integer rows = -1;
+        try {
+            rows = carMapper.addNew(car);
+        }catch (Exception e){
+            throw new InsertException("新增车辆信息失败！数据库异常！");
+        }
+
         if(rows != 1){
-            throw new InsertException("新增车辆信息失败");
+            throw new InsertException("新增车辆信息失败！");
         }
         return car;
     }
 
     @Override
-    public void delById(Integer id) {
+    public void delById(Integer id) throws DeleteException, CarNotFoundException{
         Car data = findById(id);
         if(data == null){
             throw new CarNotFoundException("删除车辆失败!尝试删除的车辆信息不存在");
         }
-
-        Integer rows = carMapper.deleteById(id);
-        if(rows != 1){
-            throw new DeleteException("删除车辆数据时发生未知错误!");
+        try {
+            Integer rows = carMapper.deleteById(id);
+            if(rows != 1){
+                throw new DeleteException("删除车辆数据时发生未知错误!");
+            }
+        }catch (Exception e){
+            throw new DeleteException("删除车辆信息失败！数据库异常！");
         }
+
 
     }
 

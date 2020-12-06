@@ -3,6 +3,7 @@ package cn.hestyle.road_examination_manager.service;
 import cn.hestyle.road_examination_manager.entity.Car;
 import cn.hestyle.road_examination_manager.entity.Manager;
 import cn.hestyle.road_examination_manager.service.exception.CarNotFoundException;
+import cn.hestyle.road_examination_manager.service.exception.DeleteException;
 import cn.hestyle.road_examination_manager.service.exception.InsertException;
 
 /**
@@ -16,5 +17,5 @@ public interface ICarService {
      */
     Car addNew(Car car) throws InsertException;
 
-    void delById(Integer id) throws CarNotFoundException;
+    void delById(Integer id) throws CarNotFoundException, DeleteException;
 }
