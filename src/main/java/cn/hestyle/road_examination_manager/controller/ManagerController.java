@@ -69,7 +69,7 @@ public class ManagerController extends BaseController{
     }
 
     @PostMapping("/modifySelfPassword.do")
-    public ResponseResult<Void> handleAdd(@RequestParam("newPassword") String newPassword, @RequestParam("reNewPassword") String reNewPassword, HttpSession session) {
+    public ResponseResult<Void> handleModifySelfPassword(@RequestParam("newPassword") String newPassword, @RequestParam("reNewPassword") String reNewPassword, HttpSession session) {
         // 判断是否已经登录过
         if (null == session.getAttribute("username")) {
             throw new ManagerNotLoginException("操作失败！请先进行管理员登录！");
@@ -78,6 +78,30 @@ public class ManagerController extends BaseController{
             return new ResponseResult<>(SUCCESS, "密码修改成功！");
         } else {
             return new ResponseResult<>(FAILURE, "密码修改失败！");
+        }
+    }
+
+    @PostMapping("/modifySelfBaseInfo.do")
+    public ResponseResult<Void> handleModifySelfBaseInfo(@RequestParam("newBaseInfoJsonData") String newBaseInfoJsonData, HttpSession session) {
+        // 判断是否已经登录过
+        if (null == session.getAttribute("username")) {
+            throw new ManagerNotLoginException("操作失败！请先进行管理员登录！");
+        }
+        // 将newBaseInfoJsonData转成json，取出新baseInfo的各个属性
+        ObjectMapper objectMapper = new ObjectMapper();
+        Manager newManager = null;
+        try {
+            newManager = objectMapper.readValue(newBaseInfoJsonData, Manager.class);
+            // 从session中取出username
+            newManager.setUsername((String) session.getAttribute("username"));
+            if (managerService.modifyBaseInfo(newManager)) {
+                return new ResponseResult<>(SUCCESS, "基本信息修改保存成功！");
+            } else {
+                return new ResponseResult<>(FAILURE, "修改保存失败，原因未知！");
+            }
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            return new ResponseResult<>(FAILURE, "修改失败，信息格式不正确！");
         }
     }
 }

@@ -48,4 +48,11 @@ public interface IManagerService {
      * @return              是否修改成功
      */
     Boolean modifyPassword(String username, String newPassword, String reNewPassword) throws UpdateException;
+
+    /**
+     * 修改manager基本信息
+     * @param manager   账号
+     * @return          是否成功保存
+     */
+    Boolean modifyBaseInfo(Manager manager) throws UpdateException;
 }
