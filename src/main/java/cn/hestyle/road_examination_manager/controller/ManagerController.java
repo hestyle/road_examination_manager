@@ -67,4 +67,17 @@ public class ManagerController extends BaseController{
         Integer pageCount = (managerService.getManagerCount() + pageSize - 1) / pageSize;
         return new ResponseResult<List<Manager>>(SUCCESS, pageCount, managerList, "查询成功！");
     }
+
+    @PostMapping("/modifySelfPassword.do")
+    public ResponseResult<Void> handleAdd(@RequestParam("newPassword") String newPassword, @RequestParam("reNewPassword") String reNewPassword, HttpSession session) {
+        // 判断是否已经登录过
+        if (null == session.getAttribute("username")) {
+            throw new ManagerNotLoginException("操作失败！请先进行管理员登录！");
+        }
+        if (managerService.modifyPassword((String) session.getAttribute("username"), newPassword, reNewPassword)) {
+            return new ResponseResult<>(SUCCESS, "密码修改成功！");
+        } else {
+            return new ResponseResult<>(FAILURE, "密码修改失败！");
+        }
+    }
 }
