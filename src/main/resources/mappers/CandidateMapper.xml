@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="cn.hestyle.road_examination_manager.mapper.CandidateMapper">
+    <select id="findAll" resultType="cn.hestyle.road_examination_manager.entity.Candidate">
+		SELECT
+		    `id` as `id`,
+			`name` as `name`,
+			`age` as `age`,
+			`gender` as `gender`,
+			`photo_path` as `photoPath`,
+			`phone_number` as `phoneNumber`,
+			`driver_school` as `driverSchool`,
+			`is_del` as `isDel`
+		FROM
+			`t_candidate`
+	</select>
+
+    <insert id="addCandidate" parameterType="cn.hestyle.road_examination_manager.entity.Candidate">
+        INSERT INTO t_candidate(
+			id,
+			name,
+			age,
+			gender,
+			photo_path,
+			phone_number,
+			driver_school,
+			is_del
+		) VALUES (
+			#{id},
+			#{name},
+			#{age},
+			#{gender},
+			#{photoPath},
+			#{phoneNumber},
+			#{driverSchool},
+			#{isDel}
+		)
+    </insert>
+</mapper>
