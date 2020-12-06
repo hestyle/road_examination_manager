@@ -4,6 +4,7 @@
 <mapper namespace="cn.hestyle.road_examination_manager.mapper.CarMapper">
     <select id="findById" resultType="cn.hestyle.road_examination_manager.entity.Car">
 		SELECT
+			`id` as `id`
 			`ip_address` as `ipAddress`,
 			`mac_address` as `macAddress`,
 			`type` as `type`,
@@ -35,7 +36,7 @@
 		WHERE id=#{id}
 	</update>
 
-	<select id="getCount">
+	<select id="getCarCount"  resultType="java.lang.Integer">
 			SELECT COUNT(id)
 			FROM t_car
 			WHERE is_del=0
@@ -49,4 +50,20 @@
 		is_del=#{isDel}
 		WHERE id=#{id}
 	</update>
+
+	<select id="findByPage" resultType="cn.hestyle.road_examination_manager.entity.Car">
+		SELECT
+			`id` as `id`,
+			`ip_address` as `ipAddress`,
+			`mac_address` as `macAddress`,
+			`type` as `type`,
+			`description` as `description`,
+			`is_del` as `isDel`
+		FROM
+			`t_car`
+		ORDER BY
+			`id` desc
+		LIMIT
+			#{beginIndex}, #{pageSize}
+	</select>
 </mapper>

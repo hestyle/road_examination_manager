@@ -1,7 +1,10 @@
 package cn.hestyle.road_examination_manager.mapper;
 
 import cn.hestyle.road_examination_manager.entity.Car;
+import cn.hestyle.road_examination_manager.entity.Manager;
 import org.apache.ibatis.annotations.Mapper;
+
+import java.util.List;
 
 /**
  * 车辆 持久层
@@ -51,7 +54,8 @@ public interface CarMapper {
      *
      * @return 当前可使用车辆的数量
      */
-    Integer getCount();
+    Integer getCarCount();
 
 
+    List<Manager> findByPage(Integer beginIndex, Integer pageSize);
 }

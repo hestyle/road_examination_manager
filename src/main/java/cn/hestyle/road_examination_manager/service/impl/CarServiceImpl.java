@@ -1,12 +1,14 @@
 package cn.hestyle.road_examination_manager.service.impl;
 
 import cn.hestyle.road_examination_manager.entity.Car;
+import cn.hestyle.road_examination_manager.entity.Manager;
 import cn.hestyle.road_examination_manager.mapper.CarMapper;
 import cn.hestyle.road_examination_manager.service.ICarService;
 import cn.hestyle.road_examination_manager.service.exception.*;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 @Service
 public class CarServiceImpl implements ICarService {
@@ -81,6 +83,35 @@ public class CarServiceImpl implements ICarService {
         }catch (Exception e){
             throw new AccessDefinedException("数据库更新失败,发生未知错误！");
         }
+    }
 
+    @Override
+    public List<Manager> findByPage(Integer pageIndex, Integer pageSize) throws PageFindErrorException {
+        // 检查页码是否合法
+        if (pageIndex < 1) {
+            throw new PageFindErrorException("页码 " + pageIndex + " 非法，必须大于0！");
+        }
+        // 检查页大小是否合法
+        if (pageSize < 1) {
+            throw new PageFindErrorException("页大小 " + pageSize + " 非法，必须大于0！");
+        }
+        // 调用持久层mapper
+        try {
+            return carMapper.findByPage((pageIndex - 1) * pageSize, pageSize);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new PageFindErrorException("分页查询失败，数据库发生未知异常！");
+        }
+    }
+
+    @Override
+    public Integer getCarCount() throws PageFindErrorException {
+        // 调用持久层mapper
+        try {
+            return carMapper.getCarCount();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new PageFindErrorException("分页查询失败，数据库发生未知异常！");
+        }
     }
 }
