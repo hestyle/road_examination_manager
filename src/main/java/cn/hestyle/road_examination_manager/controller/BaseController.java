@@ -2,10 +2,7 @@ package cn.hestyle.road_examination_manager.controller;
 
 import cn.hestyle.road_examination_manager.controller.exception.ManagerNotLoginException;
 import cn.hestyle.road_examination_manager.controller.exception.RequestException;
-import cn.hestyle.road_examination_manager.service.exception.ManagerAddFailedException;
-import cn.hestyle.road_examination_manager.service.exception.ManagerNotFoundException;
-import cn.hestyle.road_examination_manager.service.exception.PasswordNotMatchException;
-import cn.hestyle.road_examination_manager.service.exception.ServiceException;
+import cn.hestyle.road_examination_manager.service.exception.*;
 import cn.hestyle.road_examination_manager.util.ResponseResult;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -43,6 +40,9 @@ public abstract class BaseController {
         } else if (e instanceof ManagerAddFailedException) {
             // 403-增加新manager保存错误
             code = 403;
+        } else if (e instanceof PageFindErrorException) {
+            // 404-分页查询参数错误
+            code = 404;
         }
         return new ResponseResult<>(code, e);
     }
