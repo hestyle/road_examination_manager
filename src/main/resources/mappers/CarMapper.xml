@@ -4,7 +4,7 @@
 <mapper namespace="cn.hestyle.road_examination_manager.mapper.CarMapper">
     <select id="findById" resultType="cn.hestyle.road_examination_manager.entity.Car">
 		SELECT
-			`id` as `id`
+			`id` as `id`,
 			`ip_address` as `ipAddress`,
 			`mac_address` as `macAddress`,
 			`type` as `type`,

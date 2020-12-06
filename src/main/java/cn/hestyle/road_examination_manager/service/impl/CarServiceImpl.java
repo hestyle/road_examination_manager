@@ -54,8 +54,13 @@ public class CarServiceImpl implements ICarService {
      * @param id 车辆id
      * @return 匹配的车辆信息，如果没有返回null
      */
-    private Car findById(Integer id) {
-        return carMapper.findById(id);
+    private Car findById(Integer id) throws AccessDefinedException {
+        try {
+            return carMapper.findById(id);
+        }catch (Exception e){
+            e.printStackTrace();
+            throw new AccessDefinedException("根据车辆id查询车辆信息时访问数据库失败！");
+        }
     }
 
     /**
@@ -113,5 +118,16 @@ public class CarServiceImpl implements ICarService {
             e.printStackTrace();
             throw new PageFindErrorException("分页查询失败，数据库发生未知异常！");
         }
+    }
+
+    @Override
+    public Car getById(Integer id) throws AccessDefinedException{
+        Car data = null;
+        try {
+            data = findById(id);
+        }catch (AccessDefinedException e){
+            throw e;
+        }
+        return data;
     }
 }
