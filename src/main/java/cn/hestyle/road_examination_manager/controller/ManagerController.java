@@ -6,12 +6,14 @@ import cn.hestyle.road_examination_manager.entity.Manager;
 import cn.hestyle.road_examination_manager.service.IManagerService;
 import cn.hestyle.road_examination_manager.util.ResponseResult;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
 import java.util.List;
+import java.util.Map;
 
 /**
  * manager controller
@@ -111,5 +113,26 @@ public class ManagerController extends BaseController{
         // 查找manager账号
         Manager manager = managerService.findManagerByUsername(username);
         return new ResponseResult<Manager>(SUCCESS, "查找成功！", manager);
+    }
+
+    @PostMapping("/resetOtherPassword.do")
+    public ResponseResult<Void> handleResetOtherPassword(@RequestParam("newPasswordJsonData") String newPasswordJsonData, HttpSession session) {
+        // 判断是否已经登录过
+        if (null == session.getAttribute("username")) {
+            throw new ManagerNotLoginException("操作失败！请先进行管理员登录！");
+        }
+        // 将newManagerData转成json，取出username、newPassword、reNewPassword三个属性
+        ObjectMapper objectMapper = new ObjectMapper();
+        Map<String, Object> newPasswordDataMap = null;
+        try {
+            newPasswordDataMap = objectMapper.readValue(newPasswordJsonData, new TypeReference<Map<String, Object>>() {});
+        }catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseResult<>(FAILURE, "数据格式不正确！");
+        }
+        if (managerService.modifyPassword((String) newPasswordDataMap.get("username"), (String) newPasswordDataMap.get("newPassword"), (String) newPasswordDataMap.get("reNewPassword"))) {
+            return new ResponseResult<>(SUCCESS, "密码重置成功！");
+        }
+        return new ResponseResult<>(FAILURE, "数据格式不正确！");
     }
 }
