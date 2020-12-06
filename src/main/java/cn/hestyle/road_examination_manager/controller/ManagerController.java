@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpSession;
+import java.util.List;
 
 /**
  * manager controller
@@ -54,6 +55,16 @@ public class ManagerController extends BaseController{
             e.printStackTrace();
             return new ResponseResult<>(FAILURE, new AddManagerDataErrorException("新管理员账号格式不正确！"));
         }
+    }
 
+    @PostMapping("/findByPage.do")
+    public ResponseResult<List<Manager>> handleFindByPage(@RequestParam("pageIndex") Integer pageIndex, @RequestParam("pageSize") Integer pageSize, HttpSession session) {
+        // 判断是否已经登录过
+        if (null == session.getAttribute("username")) {
+            throw new ManagerNotLoginException("操作失败！请先进行管理员登录！");
+        }
+        List<Manager> managerList = managerService.findByPage(pageIndex, pageSize);
+        Integer pageCount = (managerService.getManagerCount() + pageSize - 1) / pageSize;
+        return new ResponseResult<List<Manager>>(SUCCESS, pageCount, managerList, "查询成功！");
     }
 }

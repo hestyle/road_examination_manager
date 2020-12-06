@@ -23,4 +23,29 @@
 			#{username}, #{password}, #{name}, #{age}, #{gender}, #{phoneNumber}, #{isDel}
 		)
 	</insert>
+	<!--分页查询所有管理员-->
+	<!--List<Manager> findByPage(Integer beginIndex, Integer pageSize)-->
+	<select id="findByPage" resultType="cn.hestyle.road_examination_manager.entity.Manager">
+		SELECT
+			`username` as `username`,
+			`name` as `name`,
+			`age` as `age`,
+			`gender` as `gender`,
+			`phone_number` as `phoneNumber`,
+			`is_del` as `isDel`
+		FROM
+			`t_manager`
+		ORDER BY
+			`username` desc
+		LIMIT
+			#{beginIndex}, #{pageSize}
+	</select>
+	<!--获取manager的数量-->
+	<!--Integer getManagerCount()-->
+	<select id="getManagerCount" resultType="java.lang.Integer">
+		SELECT
+            COUNT(`username`)
+        FROM
+            `t_manager`
+	</select>
 </mapper>

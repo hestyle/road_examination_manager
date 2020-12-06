@@ -5,10 +5,12 @@ import cn.hestyle.road_examination_manager.mapper.ManagerMapper;
 import cn.hestyle.road_examination_manager.service.IManagerService;
 import cn.hestyle.road_examination_manager.service.exception.ManagerAddFailedException;
 import cn.hestyle.road_examination_manager.service.exception.ManagerNotFoundException;
+import cn.hestyle.road_examination_manager.service.exception.PageFindErrorException;
 import cn.hestyle.road_examination_manager.service.exception.PasswordNotMatchException;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * manager service层实现类
@@ -59,6 +61,36 @@ public class ManagerServiceImpl implements IManagerService {
         } catch (Exception e) {
             e.printStackTrace();
             throw new ManagerAddFailedException("账号保存失败，数据库发生未知异常！");
+        }
+    }
+
+    @Override
+    public List<Manager> findByPage(Integer pageIndex, Integer pageSize) throws PageFindErrorException {
+        // 检查页码是否合法
+        if (pageIndex < 1) {
+            throw new PageFindErrorException("页码 " + pageIndex + " 非法，必须大于0！");
+        }
+        // 检查页大小是否合法
+        if (pageSize < 1) {
+            throw new PageFindErrorException("页大小 " + pageSize + " 非法，必须大于0！");
+        }
+        // 调用持久层mapper
+        try {
+            return managerMapper.findByPage((pageIndex - 1) * pageSize, pageSize);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new PageFindErrorException("分页查询失败，数据库发生未知异常！");
+        }
+    }
+
+    @Override
+    public Integer getManagerCount() {
+        // 调用持久层mapper
+        try {
+            return managerMapper.getManagerCount();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new PageFindErrorException("分页查询失败，数据库发生未知异常！");
         }
     }
 }
