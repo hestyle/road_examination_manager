@@ -1,6 +1,7 @@
 package cn.hestyle.road_examination_manager.controller;
 
 import cn.hestyle.road_examination_manager.controller.exception.ManagerNotLoginException;
+import cn.hestyle.road_examination_manager.controller.exception.RequestException;
 import cn.hestyle.road_examination_manager.entity.Car;
 import cn.hestyle.road_examination_manager.entity.Manager;
 import cn.hestyle.road_examination_manager.service.ICarService;
@@ -62,6 +63,7 @@ public class CarController {
     }
 
     /**
+     * 分页查询考试车辆信息 只查询未被删除的
      *
      * @param pageIndex 页码（起始为1，数据库起始为0）
      * @param pageSize 每页数量
@@ -80,5 +82,24 @@ public class CarController {
         List<Manager> carList = carService.findByPage(pageIndex, pageSize);
         Integer pageCount = (carService.getCarCount() + pageSize - 1) / pageSize;
         return new ResponseResult<List<Manager>>(SUCCESS, pageCount, carList, "查询成功！");
+    }
+
+
+    @GetMapping("/findByCarId.do")
+    public ResponseResult<Car> handleFindByCarId(@RequestParam(name = "carId") Integer id,
+                                                 HttpSession session){
+        // 判断是否已经登录过
+        if (null == session.getAttribute("username")) {
+            throw new ManagerNotLoginException("操作失败！请先进行管理员登录！");
+        }
+
+        Car data= carService.getById(id);
+        if(data == null){
+            throw new RequestException("符合要求的车辆不存在！");
+        }
+        if(data.getIsDel() == 1){
+            throw new RequestException("车辆已经被删除！");
+        }
+        return new ResponseResult<Car>(SUCCESS, "查询成功！",data);
     }
 }

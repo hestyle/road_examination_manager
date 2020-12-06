@@ -50,4 +50,11 @@ public interface ICarService {
      * @return      car的数量
      */
     Integer getCarCount() throws PageFindErrorException ;
+
+    /**
+     * 根据车辆id查询车辆信息 条件 is_del!=1
+     * @param id 车辆id
+     * @return
+     */
+    Car getById(Integer id)  throws AccessDefinedException;
 }
