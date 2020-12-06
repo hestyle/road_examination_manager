@@ -48,4 +48,17 @@
         FROM
             `t_manager`
 	</select>
+	<!--更新manager账号信息-->
+	<!--Integer update(Manager manager)-->
+	<update id="update" parameterType="cn.hestyle.road_examination_manager.entity.Manager">
+		UPDATE `t_manager` SET
+			`password` = #{password},
+			`name` = #{name},
+		 	`age` = #{age},
+			`gender` = #{gender},
+			`phone_number` = #{phoneNumber},
+			`is_del` = #{isDel}
+		WHERE
+			`username` = #{username}
+	</update>
 </mapper>

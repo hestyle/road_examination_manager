@@ -43,6 +43,9 @@ public abstract class BaseController {
         } else if (e instanceof PageFindErrorException) {
             // 404-分页查询参数错误
             code = 404;
+        } else if (e instanceof  UpdateException) {
+            // 405-数据更新异常
+            code = 405;
         }
         return new ResponseResult<>(code, e);
     }

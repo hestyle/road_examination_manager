@@ -1,10 +1,7 @@
 package cn.hestyle.road_examination_manager.service;
 
 import cn.hestyle.road_examination_manager.entity.Manager;
-import cn.hestyle.road_examination_manager.service.exception.ManagerAddFailedException;
-import cn.hestyle.road_examination_manager.service.exception.ManagerNotFoundException;
-import cn.hestyle.road_examination_manager.service.exception.PageFindErrorException;
-import cn.hestyle.road_examination_manager.service.exception.PasswordNotMatchException;
+import cn.hestyle.road_examination_manager.service.exception.*;
 
 import java.util.List;
 
@@ -42,4 +39,20 @@ public interface IManagerService {
      * @return      manager的数量
      */
     Integer getManagerCount();
+
+    /**
+     * 修改manager账号密码
+     * @param username      待修改账号的username
+     * @param newPassword   新密码
+     * @param reNewPassword re新密码
+     * @return              是否修改成功
+     */
+    Boolean modifyPassword(String username, String newPassword, String reNewPassword) throws UpdateException;
+
+    /**
+     * 修改manager基本信息
+     * @param manager   账号
+     * @return          是否成功保存
+     */
+    Boolean modifyBaseInfo(Manager manager) throws UpdateException;
 }
