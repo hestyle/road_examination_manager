@@ -1,7 +1,10 @@
 package cn.hestyle.road_examination_manager.mapper;
 
 import cn.hestyle.road_examination_manager.entity.Car;
+import cn.hestyle.road_examination_manager.entity.Manager;
 import org.apache.ibatis.annotations.Mapper;
+
+import java.util.List;
 
 /**
  * 车辆 持久层
@@ -11,6 +14,8 @@ import org.apache.ibatis.annotations.Mapper;
 public interface CarMapper {
     /**
      * 通过车辆id查询mcar
+     * 不管是否被删除(is_del=0|1)
+     *
      * @param id  车辆id
      * @return          Car
      */
@@ -35,6 +40,7 @@ public interface CarMapper {
     Integer deleteById(Integer id);
 
     /**
+     *更新车辆信息
      *
      * @param car 车辆信息
      * @return 受影响的行数
@@ -42,4 +48,14 @@ public interface CarMapper {
     Integer updateInfo(Car car);
 
 
+    /**
+     * 查询车辆的数量
+     * 只查询未删除的（is_del!=1）
+     *
+     * @return 当前可使用车辆的数量
+     */
+    Integer getCarCount();
+
+
+    List<Manager> findByPage(Integer beginIndex, Integer pageSize);
 }
