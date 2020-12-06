@@ -1,13 +1,9 @@
 package cn.hestyle.road_examination_manager.controller;
 
 import cn.hestyle.road_examination_manager.entity.Candidate;
-import cn.hestyle.road_examination_manager.entity.Examiner;
-import cn.hestyle.road_examination_manager.entity.Manager;
 import cn.hestyle.road_examination_manager.service.ICandidateService;
-import cn.hestyle.road_examination_manager.service.IExaminerService;
 import cn.hestyle.road_examination_manager.util.ResponseResult;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
