@@ -45,14 +45,14 @@ public class ManagerController extends BaseController{
         Manager newManager = null;
         try {
             newManager = objectMapper.readValue(newManageJsonData, Manager.class);
-            if (managerService.add(newManager)) {
-                return new ResponseResult<>(SUCCESS, newManager.getUsername() + "账号已保存成功！");
-            } else {
-                return new ResponseResult<>(FAILURE, newManager.getUsername() + "账号保存失败，原因未知！");
-            }
         } catch (JsonProcessingException e) {
             e.printStackTrace();
             return new ResponseResult<>(FAILURE, new AddManagerDataErrorException("新管理员账号格式不正确！"));
+        }
+        if (managerService.add(newManager)) {
+            return new ResponseResult<>(SUCCESS, newManager.getUsername() + "账号已保存成功！");
+        } else {
+            return new ResponseResult<>(FAILURE, newManager.getUsername() + "账号保存失败，原因未知！");
         }
     }
 
