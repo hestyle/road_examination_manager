@@ -3,9 +3,7 @@ package cn.hestyle.road_examination_manager.service.impl;
 import cn.hestyle.road_examination_manager.entity.Car;
 import cn.hestyle.road_examination_manager.mapper.CarMapper;
 import cn.hestyle.road_examination_manager.service.ICarService;
-import cn.hestyle.road_examination_manager.service.exception.CarNotFoundException;
-import cn.hestyle.road_examination_manager.service.exception.DeleteException;
-import cn.hestyle.road_examination_manager.service.exception.InsertException;
+import cn.hestyle.road_examination_manager.service.exception.*;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -56,5 +54,33 @@ public class CarServiceImpl implements ICarService {
      */
     private Car findById(Integer id) {
         return carMapper.findById(id);
+    }
+
+    /**
+     *根据车辆id修改车辆信息
+     *
+     * @param car
+     * @return
+     * @throws CarNotFoundException
+     */
+    @Override
+    public Boolean changeInfo(Car car) throws CarNotFoundException, AccessDefinedException {
+        Car data = null;
+        try {
+            data = findById(car.getId());
+        }catch (Exception e){
+            throw new AccessDefinedException("更改车辆信息时查询失败！");
+        }
+
+        if(data == null){
+            throw new CarNotFoundException("要更改的车辆不存在！");
+        }
+
+        try {
+            return 1 == carMapper.updateInfo(car);
+        }catch (Exception e){
+            throw new AccessDefinedException("数据库更新失败,发生未知错误！");
+        }
+
     }
 }

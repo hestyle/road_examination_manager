@@ -34,4 +34,19 @@
 		SET is_del = 1
 		WHERE id=#{id}
 	</update>
+
+	<select id="getCount">
+			SELECT COUNT(id)
+			FROM t_car
+			WHERE is_del=0
+	</select>
+
+	<update id="updateInfo" parameterType="cn.hestyle.road_examination_manager.entity.Car">
+		UPDATE t_car
+		SET ip_address=#{ipAddress}, mac_address=#{macAddress},
+		type=#{type},
+		description=#{description},
+		is_del=#{isDel}
+		WHERE id=#{id}
+	</update>
 </mapper>
