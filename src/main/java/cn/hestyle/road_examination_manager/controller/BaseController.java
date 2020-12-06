@@ -46,6 +46,9 @@ public abstract class BaseController {
         } else if (e instanceof  UpdateException) {
             // 405-数据更新异常
             code = 405;
+        } else if (e instanceof DeleteException) {
+            // 406-删除删除异常
+            code = 406;
         }
         return new ResponseResult<>(code, e);
     }
