@@ -2,10 +2,9 @@ package cn.hestyle.road_examination_manager.service;
 
 import cn.hestyle.road_examination_manager.entity.Car;
 import cn.hestyle.road_examination_manager.entity.Manager;
-import cn.hestyle.road_examination_manager.service.exception.AccessDefinedException;
-import cn.hestyle.road_examination_manager.service.exception.CarNotFoundException;
-import cn.hestyle.road_examination_manager.service.exception.DeleteException;
-import cn.hestyle.road_examination_manager.service.exception.InsertException;
+import cn.hestyle.road_examination_manager.service.exception.*;
+
+import java.util.List;
 
 /**
  * Car Service层接口
@@ -36,4 +35,19 @@ public interface ICarService {
      * @throws AccessDefinedException 访问数据库异常
      */
     Boolean changeInfo(Car car) throws CarNotFoundException, AccessDefinedException;
+
+    /**
+     * 分页查询car
+     * @param pageIndex 页码（从1开始）
+     * @param pageSize 一页大小
+     * @return car list
+     * @throws PageFindErrorException
+     */
+    List<Manager> findByPage(Integer pageIndex, Integer pageSize) throws PageFindErrorException;
+
+    /**
+     * 获取car的数量
+     * @return      car的数量
+     */
+    Integer getCarCount() throws PageFindErrorException ;
 }

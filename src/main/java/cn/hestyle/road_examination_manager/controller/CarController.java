@@ -2,6 +2,7 @@ package cn.hestyle.road_examination_manager.controller;
 
 import cn.hestyle.road_examination_manager.controller.exception.ManagerNotLoginException;
 import cn.hestyle.road_examination_manager.entity.Car;
+import cn.hestyle.road_examination_manager.entity.Manager;
 import cn.hestyle.road_examination_manager.service.ICarService;
 import cn.hestyle.road_examination_manager.service.exception.InsertException;
 import cn.hestyle.road_examination_manager.util.ResponseResult;
@@ -9,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
+
+import java.util.List;
 
 import static cn.hestyle.road_examination_manager.controller.BaseController.FAILURE;
 import static cn.hestyle.road_examination_manager.controller.BaseController.SUCCESS;
@@ -56,5 +59,26 @@ public class CarController {
         }else {
             return new ResponseResult<>(FAILURE, "修改车辆信息失败！");
         }
+    }
+
+    /**
+     *
+     * @param pageIndex 页码（起始为1，数据库起始为0）
+     * @param pageSize 每页数量
+     * @param session
+     * @return
+     */
+    @PostMapping("/findByPage.do")
+    public ResponseResult<List<Manager>> handleFindByPage(@RequestParam(name="pageIndex", required = false, defaultValue = "1") Integer pageIndex,
+                                                          @RequestParam(name="pageSize", required = false, defaultValue = "10") Integer pageSize,
+                                                          HttpSession session) {
+        // 判断是否已经登录过
+        if (null == session.getAttribute("username")) {
+            throw new ManagerNotLoginException("操作失败！请先进行管理员登录！");
+        }
+
+        List<Manager> carList = carService.findByPage(pageIndex, pageSize);
+        Integer pageCount = (carService.getCarCount() + pageSize - 1) / pageSize;
+        return new ResponseResult<List<Manager>>(SUCCESS, pageCount, carList, "查询成功！");
     }
 }
