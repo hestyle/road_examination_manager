@@ -3,10 +3,7 @@ package cn.hestyle.road_examination_manager.service.impl;
 import cn.hestyle.road_examination_manager.entity.Manager;
 import cn.hestyle.road_examination_manager.mapper.ManagerMapper;
 import cn.hestyle.road_examination_manager.service.IManagerService;
-import cn.hestyle.road_examination_manager.service.exception.ManagerAddFailedException;
-import cn.hestyle.road_examination_manager.service.exception.ManagerNotFoundException;
-import cn.hestyle.road_examination_manager.service.exception.PageFindErrorException;
-import cn.hestyle.road_examination_manager.service.exception.PasswordNotMatchException;
+import cn.hestyle.road_examination_manager.service.exception.*;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -91,6 +88,30 @@ public class ManagerServiceImpl implements IManagerService {
         } catch (Exception e) {
             e.printStackTrace();
             throw new PageFindErrorException("分页查询失败，数据库发生未知异常！");
+        }
+    }
+
+    @Override
+    public Boolean modifyPassword(String username, String newPassword, String reNewPassword)  throws UpdateException {
+        // 通过username查询manager
+        Manager manager = managerMapper.findByUsername(username);
+        if (null == manager) {
+            throw new UpdateException("密码修改失败，" + username + " 用户未注册！");
+        }
+        // 判断两次密码是否一致
+        if (null == newPassword || !newPassword.equals(reNewPassword)) {
+            throw new UpdateException("密码修改失败！两次密码不一致，请重新输入！");
+        }
+        // 判断密码长度是否合法
+        if (newPassword.length() < 6 || newPassword.length() > 20) {
+            throw new UpdateException("密码长度非法，请控制在6-20位！");
+        }
+        manager.setPassword(newPassword);
+        try {
+            return 1 == managerMapper.update(manager);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new UpdateException("密码修改失败，数据库发生未知异常！");
         }
     }
 }

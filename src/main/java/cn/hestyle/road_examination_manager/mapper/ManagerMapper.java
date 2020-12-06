@@ -38,4 +38,11 @@ public interface ManagerMapper {
      * @return      manager的数量
      */
     Integer getManagerCount();
+
+    /**
+     * 更新manager账号信息
+     * @param manager   待更新的manager账号
+     * @return          是否更新成功
+     */
+    Integer update(Manager manager);
 }
