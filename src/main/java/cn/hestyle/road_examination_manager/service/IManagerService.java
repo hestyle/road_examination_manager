@@ -62,4 +62,11 @@ public interface IManagerService {
      * @return          查找到的manager
      */
     Manager findManagerByUsername(String username) throws ManagerNotFoundException;
+
+    /**
+     * 通过username删除manager
+     * @param username  username
+     * @return          是否删除成功
+     */
+    Boolean deleteManagerByUsername(String username) throws DeleteException;
 }

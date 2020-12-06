@@ -135,4 +135,17 @@ public class ManagerController extends BaseController{
         }
         return new ResponseResult<>(FAILURE, "数据格式不正确！");
     }
+
+    @PostMapping("/deleteManagerByUsername/{username}")
+    public ResponseResult<Void> handleDeleteManagerByUsername(@PathVariable("username") String username, HttpSession session) {
+        // 判断是否已经登录过
+        if (null == session.getAttribute("username")) {
+            throw new ManagerNotLoginException("操作失败！请先进行管理员登录！");
+        }
+        if (managerService.deleteManagerByUsername(username)) {
+            return new ResponseResult<Void>(SUCCESS, "删除成功！");
+        } else {
+            return new ResponseResult<Void>(FAILURE, "删除失败，原因未知！");
+        }
+    }
 }

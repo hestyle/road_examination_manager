@@ -166,4 +166,25 @@ public class ManagerServiceImpl implements IManagerService {
         manager.setPassword(null);
         return manager;
     }
+
+    @Override
+    public Boolean deleteManagerByUsername(String username) throws DeleteException {
+        Manager manager = managerMapper.findByUsername(username);
+        // 判断用户名是否存在账号
+        if (null == manager) {
+            throw new ManagerNotFoundException("删除失败! 用户名 " + username + " 未注册!");
+        }
+        // 判断账号是否已经删除
+        if (0 != manager.getIsDel()) {
+            throw new DeleteException("该账号已删除，无需再次删除！");
+        }
+        try {
+            // 删除并不是真的删除，只是将is_des置1
+            manager.setIsDel(1);
+            return 1 == managerMapper.update(manager);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new DeleteException("删除失败，数据库发生未知异常");
+        }
+    }
 }
