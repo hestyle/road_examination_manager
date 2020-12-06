@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
 
+import static cn.hestyle.road_examination_manager.controller.BaseController.FAILURE;
 import static cn.hestyle.road_examination_manager.controller.BaseController.SUCCESS;
 
 @RestController
@@ -41,5 +42,19 @@ public class CarController {
 
         carService.delById(id);
         return new ResponseResult<>(SUCCESS, "车辆信息删除成功！");
+    }
+
+    @PostMapping("/changeinfo.do")
+    public ResponseResult<Void> handleChangeInfo(Car car, HttpSession session){
+        // 判断是否已经登录过
+        if (null == session.getAttribute("username")) {
+            throw new ManagerNotLoginException("操作失败！请先进行管理员登录！");
+        }
+
+        if(carService.changeInfo(car)){
+            return new ResponseResult<>(SUCCESS, "修改车辆信息成功！");
+        }else {
+            return new ResponseResult<>(FAILURE, "修改车辆信息失败！");
+        }
     }
 }
