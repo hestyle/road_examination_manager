@@ -14,4 +14,14 @@ public interface ExaminerMapper{
     void delExaminer(String id);
 
     Examiner findById(String id);
+
+    /**
+     * 分页查询所有manager
+     * @param beginIndex    username降序排列
+     * @param pageSize      一页大小
+     * @return              manager list
+     */
+    List<Examiner> findByPage(Integer beginIndex, Integer pageSize);
+
+    Integer getExaminerCount();
 }
