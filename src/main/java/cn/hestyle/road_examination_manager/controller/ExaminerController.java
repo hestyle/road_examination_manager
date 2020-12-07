@@ -1,5 +1,6 @@
 package cn.hestyle.road_examination_manager.controller;
 
+import cn.hestyle.road_examination_manager.controller.exception.ManagerNotLoginException;
 import cn.hestyle.road_examination_manager.entity.Examiner;
 import cn.hestyle.road_examination_manager.service.IExaminerService;
 import cn.hestyle.road_examination_manager.service.exception.ExaminerNotFoundException;
@@ -62,6 +63,17 @@ public class ExaminerController extends BaseController{
         iExaminerService.delExaminer(id);
         return "redirect:/examiner";
 
+    }
+
+    @PostMapping("/findByPage.do")
+    public ResponseResult<List<Examiner>> handleFindByPage(@RequestParam("pageIndex") Integer pageIndex, @RequestParam("pageSize") Integer pageSize, HttpSession session) {
+        // 判断是否已经登录过
+        if (null == session.getAttribute("username")) {
+            throw new ManagerNotLoginException("操作失败！请先进行管理员登录！");
+        }
+        List<Examiner> examinerList = iExaminerService.findByPage(pageIndex, pageSize);
+        Integer pageCount = (iExaminerService.getExaminerCount() + pageSize - 1) / pageSize;
+        return new ResponseResult<List<Examiner>>(SUCCESS, pageCount, examinerList, "查询成功！");
     }
 
 }

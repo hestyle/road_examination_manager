@@ -2,6 +2,8 @@
 <!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
         "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
 <mapper namespace="cn.hestyle.road_examination_manager.mapper.CandidateMapper">
+    <!--查询所有考生-->
+    <!--List<Candidate> findAll()-->
     <select id="findAll" resultType="cn.hestyle.road_examination_manager.entity.Candidate">
 		SELECT
 		    `id` as `id`,
@@ -15,7 +17,8 @@
 		FROM
 			`t_candidate`
 	</select>
-
+    <!--增加考生-->
+    <!--void addCandidate(Candidate candidate)-->
     <insert id="addCandidate" parameterType="cn.hestyle.road_examination_manager.entity.Candidate">
         INSERT INTO t_candidate(
 			id,
@@ -37,7 +40,8 @@
 			#{isDel}
 		)
     </insert>
-
+    <!--根据id查找考生-->
+    <!--Candidate findById(String id)-->
     <select id="findById" resultType="cn.hestyle.road_examination_manager.entity.Candidate">
         SELECT
 		    `id` as `id`,
@@ -53,10 +57,39 @@
 		WHERE
 		    `id`=#{id}
     </select>
-
+    <!--根据id删除考生-->
+    <!--void delCandidate(String id)-->
     <update id="delCandidate">
 		UPDATE t_candidate
 		SET is_del = 1
 		WHERE id=#{id}
 	</update>
+
+    <!--分页查询所有管理员-->
+    <!--List<Candidate> findByPage(Integer beginIndex, Integer pageSize)-->
+    <select id="findByPage" resultType="cn.hestyle.road_examination_manager.entity.Candidate">
+		SELECT
+			`id` as `id`,
+			`name` as `name`,
+			`age` as `age`,
+			`gender` as `gender`,
+			`photo_path` as `photoPath`,
+			`driver_school` as `driverSchool`,
+			`phone_number` as `phoneNumber`,
+			`is_del` as `isDel`
+		FROM
+			`t_candidate`
+		ORDER BY
+			`name` desc
+		LIMIT
+			#{beginIndex}, #{pageSize}
+	</select>
+    <!--获取Candidate的数量-->
+    <!--Integer getCandidateCount()-->
+    <select id="getCandidateCount" resultType="java.lang.Integer">
+		SELECT
+            COUNT(`name`)
+        FROM
+            `t_candidate`
+	</select>
 </mapper>
