@@ -63,8 +63,8 @@ public class ManagerController extends BaseController{
             throw new ManagerNotLoginException("操作失败！请先进行管理员登录！");
         }
         List<Manager> managerList = managerService.findByPage(pageIndex, pageSize);
-        Integer pageCount = (managerService.getManagerCount() + pageSize - 1) / pageSize;
-        return new ResponseResult<List<Manager>>(SUCCESS, pageCount, managerList, "查询成功！");
+        Integer count = managerService.getManagerCount();
+        return new ResponseResult<List<Manager>>(SUCCESS, count, managerList, "查询成功！");
     }
 
     @PostMapping("/modifySelfPassword.do")
