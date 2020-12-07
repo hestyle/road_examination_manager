@@ -83,4 +83,10 @@
 			#{isDel}
 		)
     </insert>
+
+    <update id="deleteByAdmissionNo">
+        UPDATE t_exam
+		SET is_del = 1
+		WHERE admission_no=#{admissionNo}
+    </update>
 </mapper>

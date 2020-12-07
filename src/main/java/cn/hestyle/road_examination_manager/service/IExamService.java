@@ -20,4 +20,6 @@ public interface IExamService {
     List<Exam> findByPage(Integer pageIndex, Integer pageSize) throws PageFindErrorException;
 
     Boolean add(Exam newExam) throws AccessDefinedException;
+
+    Boolean deleteByAdmissionNo(String admissionNo);
 }

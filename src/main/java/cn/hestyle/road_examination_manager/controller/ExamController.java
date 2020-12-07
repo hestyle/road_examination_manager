@@ -76,4 +76,19 @@ public class ExamController {
         return new ResponseResult<>(FAILURE, "新增考试信息失败！");
 
     }
+
+
+    @PostMapping("/deleteByAdmissionNo.do")
+    public ResponseResult<Void> handleDeleteByAdmissionNo(@RequestParam("admissionNo") String admissionNo,
+                                                          HttpSession session){
+        // 判断是否已经登录过
+        if (null == session.getAttribute("username")) {
+            throw new ManagerNotLoginException("操作失败！请先进行管理员登录！");
+        }
+
+        if(examService.deleteByAdmissionNo(admissionNo)){
+            return new ResponseResult<>(SUCCESS, "删除成功！");
+        }
+        else return new ResponseResult<>(FAILURE, "删除失败，原因未知！");
+    }
 }

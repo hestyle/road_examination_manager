@@ -62,7 +62,17 @@ public class ExamService implements IExamService {
             return 1 == examMapper.addNew(newExam);
         } catch (Exception e){
             e.printStackTrace();
-            throw new AccessDefinedException("保存考试信息时访问数据库失败");
+            throw new AccessDefinedException("保存考试信息时访问数据库失败！");
+        }
+    }
+
+    @Override
+    public Boolean deleteByAdmissionNo(String admissionNo) {
+        try {
+            return 1 == examMapper.deleteByAdmissionNo(admissionNo);
+        }catch (Exception e){
+            e.printStackTrace();
+            throw new AccessDefinedException("删除考试信息时访问数据库失败！");
         }
     }
 }
