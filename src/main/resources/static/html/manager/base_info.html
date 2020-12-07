@@ -50,6 +50,7 @@
     <script>
         layuiModules=['layer', 'form'];
         function mounted() {
+            form.render();
             var url ="../../manager/findManagerByUsername/" + $.cookie("username");
             $.ajax({
                 "url" : url,
