@@ -91,16 +91,16 @@ public class ManagerController extends BaseController{
         Manager newManager = null;
         try {
             newManager = objectMapper.readValue(newBaseInfoJsonData, Manager.class);
-            // 从session中取出username
-            newManager.setUsername((String) session.getAttribute("username"));
-            if (managerService.modifyBaseInfo(newManager)) {
-                return new ResponseResult<>(SUCCESS, "基本信息修改保存成功！");
-            } else {
-                return new ResponseResult<>(FAILURE, "修改保存失败，原因未知！");
-            }
         } catch (JsonProcessingException e) {
             e.printStackTrace();
             return new ResponseResult<>(FAILURE, "修改失败，信息格式不正确！");
+        }
+        // 从session中取出username
+        newManager.setUsername((String) session.getAttribute("username"));
+        if (managerService.modifyBaseInfo(newManager)) {
+            return new ResponseResult<>(SUCCESS, "基本信息修改保存成功！");
+        } else {
+            return new ResponseResult<>(FAILURE, "修改保存失败，原因未知！");
         }
     }
 
