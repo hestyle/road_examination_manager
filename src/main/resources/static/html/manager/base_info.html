@@ -18,13 +18,13 @@
         <div class="layui-form-item">
             <label class="layui-form-label">用户名</label>
             <div class="layui-input-block">
-                <input id="base_info_username" type="text" name="username" placeholder="请输入用户名" class="layui-input">
+                <input id="base_info_username" type="text" name="username" placeholder="请输入用户名" class="layui-input" disabled>
             </div>
         </div>
         <div class="layui-form-item">
             <label class="layui-form-label">密码</label>
             <div class="layui-input-block">
-                <input id="base_info_password" type="password" name="password" placeholder="请输入密码" class="layui-input">
+                <input id="base_info_password" type="password" name="password" placeholder="请输入密码" class="layui-input" disabled>
             </div>
         </div>
         <div class="layui-form-item">
@@ -47,6 +47,9 @@
             </div>
         </div>
     </form>
+    <div style="text-align: center">
+        <button id="saveModify" type="button" class="layui-btn" onclick="saveSelfBaseInfoModify()">保存修改</button>
+    </div>
     <script>
         layuiModules=['layer', 'form'];
         function mounted() {
@@ -60,62 +63,15 @@
                 "success" : function (json) {
                     if (json.code === 200) {
                         // 往dialogModifySelfBaseInfoForm填充服务器返回的账号信息
-                        console.log(json.data.username);
                         $("#base_info_username").val(json.data.username);
-                        console.log(json.data.password);
                         $("#base_info_password").val('*******');
-                        console.log(json.data.name);
                         $("#base_info_name").val(json.data.name);
-                        console.log(json.data.gender);
                         if ("男" === json.data.gender) {
                             $("#base_info_gender_man").checked = true;
                         } else {
                             $("#base_info_gender_female").checked = true;
                         }
-                        console.log(json.data.phoneNumber);
                         $("#base_info_tel").val(json.data.phoneNumber);
-                        // layer.open({
-                        //     type: 1,
-                        //     title: '账号信息',
-                        //     content: $('#dialogModifySelfBaseInfo').html(),
-                        //     btn: ['确定', '取消'],
-                        //     yes: function (index1, layero) {
-                        //         var url ="./manager/modifySelfPassword.do";
-                        //         var data = $("#dialogModifySelfPasswordForm").serialize();
-                        //         $.ajax({
-                        //             "url" : url,
-                        //             "data" : data,
-                        //             "type" : "POST",
-                        //             "dataType" : "json",
-                        //             "success" : function (json) {
-                        //                 // 弹出中间提示框
-                        //                 layer.open({
-                        //                     title: "提示信息",
-                        //                     content: json.message,
-                        //                     yes: function (index2, layero) {
-                        //                         if (json.code === 200) {
-                        //                             layer.close(index1);
-                        //                         } else if (json.code === 402) {
-                        //                             // code==402说明未登录(BaseController.java定义)
-                        //                             location.href = "./login.html"
-                        //                         }
-                        //                         layer.close(index2);
-                        //                     }
-                        //                 });
-                        //             },
-                        //             "error" : function () {
-                        //                 // 弹出中间提示框
-                        //                 layer.open({
-                        //                     title: "提示信息",
-                        //                     content: "出现异常！"
-                        //                 });
-                        //             }
-                        //         });
-                        //     },
-                        //     cancel: function (index2, layero) {
-                        //         layer.close(index2);
-                        //     }
-                        // });
                     } else {
                         // 弹出中间提示框
                         layer.open({
@@ -130,6 +86,43 @@
                             }
                         });
                     }
+                },
+                "error" : function () {
+                    // 弹出中间提示框
+                    layer.open({
+                        title: "提示信息",
+                        content: "出现异常！"
+                    });
+                }
+            });
+        }
+        // 保存修改baseInfo
+        function saveSelfBaseInfoModify() {
+            var url ="../../manager/modifySelfBaseInfo.do";
+            var newBaseInfoJsonData = '{"name":"' + $('#base_info_name').val() + '","phoneNumber":"' + $('#base_info_tel').val() + '",';
+            if ($('#base_info_gender_man').checked) {
+                newBaseInfoJsonData += '"gender":"男"}';
+            } else {
+                newBaseInfoJsonData += '"gender":"女"}';
+            }
+            $.ajax({
+                "url" : url,
+                "data" : {"newBaseInfoJsonData":newBaseInfoJsonData},
+                "type" : "POST",
+                "dataType" : "json",
+                "success" : function (json) {
+                    // 弹出中间提示框
+                    layer.open({
+                        title: "提示信息",
+                        content: json.message,
+                        yes: function (index2, layero) {
+                            if (json.code === 402) {
+                                // code==402说明未登录(BaseController.java定义)
+                                parent.location.href = "../../login.html";
+                            }
+                            layer.close(index2);
+                        }
+                    });
                 },
                 "error" : function () {
                     // 弹出中间提示框
