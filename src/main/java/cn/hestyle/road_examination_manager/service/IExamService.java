@@ -18,4 +18,6 @@ public interface IExamService {
     Integer getExamCount() throws PageFindErrorException;
 
     List<Exam> findByPage(Integer pageIndex, Integer pageSize) throws PageFindErrorException;
+
+    Boolean add(Exam newExam) throws AccessDefinedException;
 }

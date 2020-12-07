@@ -55,4 +55,14 @@ public class ExamService implements IExamService {
             throw new PageFindErrorException("分页查询考试信息失败，数据库发生未知异常！");
         }
     }
+
+    @Override
+    public Boolean add(Exam newExam) throws AccessDefinedException{
+        try {
+            return 1 == examMapper.addNew(newExam);
+        } catch (Exception e){
+            e.printStackTrace();
+            throw new AccessDefinedException("保存考试信息时访问数据库失败");
+        }
+    }
 }
