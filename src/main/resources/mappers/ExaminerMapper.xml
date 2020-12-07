@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="cn.hestyle.road_examination_manager.mapper.ExaminerMapper">
+    <select id="findAll" resultType="cn.hestyle.road_examination_manager.entity.Examiner">
+		SELECT
+		    `id` as `id`,
+			`password` as `password`,
+			`name` as `name`,
+			`age` as `age`,
+			`gender` as `gender`,
+			`photo_path` as `photoPath`,
+			`phone_number` as `phoneNumber`,
+			`is_del` as `isDel`
+		FROM
+			`t_examiner`
+	</select>
+
+    <select id="findById" resultType="cn.hestyle.road_examination_manager.entity.Examiner">
+        SELECT
+			`id` as `id`,
+			`password` as `password`,
+			`name` as `name`,
+			`age` as `age`,
+			`gender` as `gender`,
+			`photo_path` as `photoPath`,
+			`phone_number` as `phoneNumber`,
+			`is_del` as `isDel`
+		FROM
+			`t_examiner`
+		WHERE
+			`id`=#{id}
+    </select>
+
+    <insert id="addExaminer" parameterType="cn.hestyle.road_examination_manager.entity.Examiner">
+        INSERT INTO t_examiner(
+			id,
+			name,
+			password,
+			age,
+			gender,
+			photo_path,
+			phone_number,
+			is_del
+		) VALUES (
+			#{id},
+			#{name},
+			#{password},
+			#{age},
+			#{gender},
+			#{photoPath},
+			#{phoneNumber},
+			#{isDel}
+		)
+    </insert>
+
+    <update id="delExaminer">
+		UPDATE t_examiner
+		SET is_del = 1
+		WHERE id=#{id}
+	</update>
+</mapper>

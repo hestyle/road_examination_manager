@@ -6,5 +6,10 @@ import java.util.List;
 
 public interface ICandidateService {
     List<Candidate> candidate_list();
+
     void addCandidate(Candidate candidate);
+
+    Candidate findById(String id);
+
+    void delCandidate(String id);
 }
