@@ -32,4 +32,6 @@ public interface ExamMapper {
     Integer addNew(Exam exam);
 
     Integer deleteByAdmissionNo(String admissionNo);
+
+    Integer update(Exam newExam);
 }

@@ -6,6 +6,7 @@ import cn.hestyle.road_examination_manager.entity.Exam;
 import cn.hestyle.road_examination_manager.service.IExamService;
 import cn.hestyle.road_examination_manager.util.ResponseResult;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -90,5 +91,27 @@ public class ExamController {
             return new ResponseResult<>(SUCCESS, "删除成功！");
         }
         else return new ResponseResult<>(FAILURE, "删除失败，原因未知！");
+    }
+
+    @PostMapping("/modifyExamInfo.do")
+    public ResponseResult<Void> handlemMdifyExamInfo(@RequestParam("newExamInfoJsonData") String newExamInfoJsonData,
+                                                     HttpSession session){
+        // 判断是否已经登录过
+        if (null == session.getAttribute("username")) {
+            throw new ManagerNotLoginException("操作失败！请先进行管理员登录！");
+        }
+        ObjectMapper objectMapper = new ObjectMapper();
+        Exam newExam = null;
+        try {
+            newExam = objectMapper.readValue(newExamInfoJsonData, Exam.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseResult<>(FAILURE, "修改失败，信息格式不正确！");
+        }
+
+        if(examService.modifyExamInfo(newExam)){
+            return new ResponseResult<>(SUCCESS, "考试信息修改保存成功！");
+        }
+        return new ResponseResult<>(FAILURE, "修改保存失败，原因未知！");
     }
 }
