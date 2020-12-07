@@ -12,4 +12,8 @@ public interface IExaminerService {
     void delExaminer(String id);
 
     Examiner findById(String id);
+
+    List<Examiner> findByPage(Integer pageIndex, Integer pageSize);
+
+    Integer getExaminerCount();
 }
