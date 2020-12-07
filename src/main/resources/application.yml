@@ -15,11 +15,6 @@ spring:
       enabled: true
       additional-paths: src/main/java
       exclude: WEB-INF/**
-  # thymeleaf模板引擎设置
-  thymeleaf:
-    prefix: classpath:/static/web/manager/
-    suffix: .html
-    cache: false
   # 数据库配置
   datasource:
     url: jdbc:mysql://localhost:3306/road_examination?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
