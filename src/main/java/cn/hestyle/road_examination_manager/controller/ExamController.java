@@ -1,15 +1,14 @@
 package cn.hestyle.road_examination_manager.controller;
 
+import cn.hestyle.road_examination_manager.controller.exception.AddManagerDataErrorException;
 import cn.hestyle.road_examination_manager.controller.exception.ManagerNotLoginException;
 import cn.hestyle.road_examination_manager.entity.Exam;
-import cn.hestyle.road_examination_manager.entity.Manager;
 import cn.hestyle.road_examination_manager.service.IExamService;
 import cn.hestyle.road_examination_manager.util.ResponseResult;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
 
@@ -51,5 +50,30 @@ public class ExamController {
         List<Exam> examList = examService.findByPage(pageIndex, pageSize);
         Integer pageCount = (examService.getExamCount() + pageSize - 1) / pageSize;
         return new ResponseResult<List<Exam>>(SUCCESS, pageCount, examList, "查询成功！");
+    }
+
+    @PostMapping("add.do")
+    public ResponseResult<Exam> handleAdd(@RequestParam(name = "newExamJsonData") String newExamJsonData,
+                                          HttpSession session){
+        // 判断是否已经登录过
+        // 判断是否已经登录过
+        if (null == session.getAttribute("username")) {
+            throw new ManagerNotLoginException("操作失败！请先进行管理员登录！");
+        }
+
+        // 将newManagerData转成json，取出新manager账号的各个属性
+        ObjectMapper objectMapper = new ObjectMapper();
+        Exam newExam = null;
+        try {
+            newExam = objectMapper.readValue(newExamJsonData, Exam.class);
+        }catch (JsonProcessingException e) {
+            e.printStackTrace();
+            return new ResponseResult<>(FAILURE, new AddManagerDataErrorException("新考试信息格式不正确！"));
+        }
+        if(examService.add(newExam)){
+            return new ResponseResult<Exam>(SUCCESS, "新增考试信息成功！", newExam);
+        }
+        return new ResponseResult<>(FAILURE, "新增考试信息失败！");
+
     }
 }

@@ -51,4 +51,36 @@
 			FROM t_exam
 			WHERE is_del=0
 	</select>
+
+    <insert id="addNew" parameterType="cn.hestyle.road_examination_manager.entity.Exam">
+        INSERT INTO t_exam(
+			`admission_no`,
+            `car_id`,
+            `exam_template_id`,
+            `light_exam_template_id`,
+            `examiner_id`,
+            `candidate_id`,
+            `exam_time`,
+            `state`,
+            `completed_time`,
+            `is_pass`,
+            `scored`,
+            `score_loss_desc`,
+            `is_del`
+		) VALUES (
+			#{admissionNo},
+			#{carId},
+			#{examTemplateId},
+			#{lightExamTemplateId},
+			#{examinerId},
+			#{candidateId},
+			#{examTime},
+			#{state},
+			#{completedTime},
+			#{isPass},
+			#{scored},
+			#{scoreLossDesc},
+			#{isDel}
+		)
+    </insert>
 </mapper>

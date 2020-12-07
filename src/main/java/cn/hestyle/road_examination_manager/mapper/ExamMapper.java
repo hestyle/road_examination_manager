@@ -28,4 +28,6 @@ public interface ExamMapper {
      * @return
      */
     Integer getExamCount();
+
+    Integer addNew(Exam exam);
 }
