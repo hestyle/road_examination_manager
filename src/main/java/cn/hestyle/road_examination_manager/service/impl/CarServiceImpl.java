@@ -121,12 +121,18 @@ public class CarServiceImpl implements ICarService {
     }
 
     @Override
-    public Car getById(Integer id) throws AccessDefinedException{
+    public Car getById(Integer id) throws AccessDefinedException, CarNotFoundException{
         Car data = null;
         try {
             data = findById(id);
         }catch (AccessDefinedException e){
             throw e;
+        }
+        if(data == null){
+            throw new CarNotFoundException("符合要求的车辆不存在");
+        }
+        if(data.getIsDel() == 1){
+            throw new CarNotFoundException("车辆已经被删除");
         }
         return data;
     }

@@ -94,12 +94,6 @@ public class CarController {
         }
 
         Car data= carService.getById(id);
-        if(data == null){
-            throw new RequestException("符合要求的车辆不存在！");
-        }
-        if(data.getIsDel() == 1){
-            throw new RequestException("车辆已经被删除！");
-        }
         return new ResponseResult<Car>(SUCCESS, "查询成功！",data);
     }
 }
