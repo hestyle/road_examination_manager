@@ -1,6 +1,10 @@
 package cn.hestyle.road_examination_manager.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import java.util.Date;
+
+import static cn.hestyle.road_examination_manager.util.Constants.DATETIME_FORMAT;
 
 public class Exam {
     /** 准考证号（日期+流水号） 主键 */
@@ -16,10 +20,12 @@ public class Exam {
     /** 考生身份证 */
     private String candidateId;
     /** 开考时间 */
+    @JsonFormat(pattern = DATETIME_FORMAT, timezone = "GMT+8")
     private Date examTime;
     /** 未考0/考试中2/已完成2 */
     private Integer state;
     /** 考试完成时间 */
+    @JsonFormat(pattern = DATETIME_FORMAT, timezone = "GMT+8")
     private Date completedTime;
     /** 是否通过 */
     private Integer isPass;
