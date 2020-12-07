@@ -50,6 +50,7 @@
     <script>
         layuiModules=['layer', 'form'];
         function mounted() {
+            form.render();
             var url ="../../manager/findManagerByUsername/" + $.cookie("username");
             $.ajax({
                 "url" : url,
@@ -123,7 +124,7 @@
                             yes: function (index2, layero) {
                                 if (json.code === 402) {
                                     // code==402说明未登录(BaseController.java定义)
-                                    window.location.href = "../../login.html";
+                                    parent.location.href = "../../login.html";
                                 }
                                 layer.close(index2);
                             }
