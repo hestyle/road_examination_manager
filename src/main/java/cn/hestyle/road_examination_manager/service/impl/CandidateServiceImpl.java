@@ -23,4 +23,14 @@ public class CandidateServiceImpl implements ICandidateService{
     public void addCandidate(Candidate candidate){
         candidateMapper.addCandidate(candidate);
     }
+
+    @Override
+    public Candidate findById(String id) {
+        return candidateMapper.findById(id);
+    }
+
+    @Override
+    public void delCandidate(String id) {
+        candidateMapper.delCandidate(id);
+    }
 }

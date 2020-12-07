@@ -37,4 +37,26 @@
 			#{isDel}
 		)
     </insert>
+
+    <select id="findById" resultType="cn.hestyle.road_examination_manager.entity.Candidate">
+        SELECT
+		    `id` as `id`,
+			`name` as `name`,
+			`age` as `age`,
+			`gender` as `gender`,
+			`photo_path` as `photoPath`,
+			`phone_number` as `phoneNumber`,
+			`driver_school` as `driverSchool`,
+			`is_del` as `isDel`
+		FROM
+			`t_candidate`
+		WHERE
+		    `id`=#{id}
+    </select>
+
+    <update id="delCandidate">
+		UPDATE t_candidate
+		SET is_del = 1
+		WHERE id=#{id}
+	</update>
 </mapper>

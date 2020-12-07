@@ -10,4 +10,8 @@ public interface CandidateMapper {
     List<Candidate> findAll();
 
     void addCandidate(Candidate candidate);
+
+    Candidate findById(String id);
+
+    void delCandidate(String id);
 }
