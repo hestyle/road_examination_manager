@@ -83,4 +83,28 @@
 			#{isDel}
 		)
     </insert>
+
+    <update id="deleteByAdmissionNo">
+        UPDATE t_exam
+		SET is_del = 1
+		WHERE admission_no=#{admissionNo}
+    </update>
+
+    <update id="update" parameterType="cn.hestyle.road_examination_manager.entity.Exam">
+        UPDATE t_exam
+		SET
+		    `car_id`=#{carId},
+            `exam_template_id`=#{examTemplateId},
+            `light_exam_template_id`=#{lightExamTemplateId},
+            `examiner_id`=#{examinerId},
+            `candidate_id`=#{candidateId},
+            `exam_time`=#{examTime},
+            `state`=#{state},
+            `completed_time`=#{completedTime},
+            `is_pass`=#{isPass},
+            `scored`=#{scored},
+            `score_loss_desc`=#{scoreLossDesc},
+            `is_del`=#{isDel}
+		WHERE admission_no=#{admissionNo}
+    </update>
 </mapper>

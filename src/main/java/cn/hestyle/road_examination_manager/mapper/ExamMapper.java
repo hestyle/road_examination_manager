@@ -30,4 +30,8 @@ public interface ExamMapper {
     Integer getExamCount();
 
     Integer addNew(Exam exam);
+
+    Integer deleteByAdmissionNo(String admissionNo);
+
+    Integer update(Exam newExam);
 }

@@ -52,9 +52,9 @@ public interface ICarService {
     Integer getCarCount() throws PageFindErrorException ;
 
     /**
-     * 根据车辆id查询车辆信息 条件 is_del!=1
+     * 根据车辆id查询车辆信息 只查询未删除的
      * @param id 车辆id
      * @return
      */
-    Car getById(Integer id)  throws AccessDefinedException;
+    Car getById(Integer id)  throws AccessDefinedException, CarNotFoundException;
 }
