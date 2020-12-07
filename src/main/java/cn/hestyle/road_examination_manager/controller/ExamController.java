@@ -2,6 +2,7 @@ package cn.hestyle.road_examination_manager.controller;
 
 import cn.hestyle.road_examination_manager.controller.exception.ManagerNotLoginException;
 import cn.hestyle.road_examination_manager.entity.Exam;
+import cn.hestyle.road_examination_manager.entity.Manager;
 import cn.hestyle.road_examination_manager.service.IExamService;
 import cn.hestyle.road_examination_manager.util.ResponseResult;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpSession;
+
+import java.util.List;
 
 import static cn.hestyle.road_examination_manager.controller.BaseController.FAILURE;
 import static cn.hestyle.road_examination_manager.controller.BaseController.SUCCESS;
@@ -33,5 +36,20 @@ public class ExamController {
             return new ResponseResult<>(FAILURE, "查询失败，未找到该准考证号对应的考试信息！");
         }
         return new ResponseResult<>(SUCCESS, "查询成功！", exam);
+    }
+
+    @GetMapping("/findByPage.do")
+    public ResponseResult<List<Exam>> handleFindByPage(@RequestParam("pageIndex") Integer pageIndex,
+                                                       @RequestParam("pageSize") Integer pageSize,
+                                                       HttpSession session) {
+        // 判断是否已经登录过
+        // 判断是否已经登录过
+        if (null == session.getAttribute("username")) {
+            throw new ManagerNotLoginException("操作失败！请先进行管理员登录！");
+        }
+
+        List<Exam> examList = examService.findByPage(pageIndex, pageSize);
+        Integer pageCount = (examService.getExamCount() + pageSize - 1) / pageSize;
+        return new ResponseResult<List<Exam>>(SUCCESS, pageCount, examList, "查询成功！");
     }
 }
