@@ -8,6 +8,7 @@ import cn.hestyle.road_examination_manager.service.exception.InsertException;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * examOperation service层实现类
@@ -51,5 +52,24 @@ public class ExamOperationServiceImpl implements IExamOperationService {
             throw new FindException("查找失败，id=" + id + "未注册操作项！");
         }
         return examOperation;
+    }
+
+    @Override
+    public List<ExamOperation> findByName(String name) throws FindException {
+        // 判断name长度
+        if (name == null || name.length() == 0) {
+            throw new FindException("查找失败，name不能为空！");
+        }
+        List<ExamOperation> examOperationList = null;
+        try {
+            examOperationList = examOperationMapper.findByName(name);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new FindException("查找失败，数据库发生未知异常！");
+        }
+        if (examOperationList == null || examOperationList.size() == 0) {
+            throw new FindException("查找失败，未查找到操作项！");
+        }
+        return examOperationList;
     }
 }

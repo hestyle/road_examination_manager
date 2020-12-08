@@ -16,7 +16,7 @@
 			`id`=#{id}
 	</select>
 	<!--通过name查询操作项-->
-	<!--ExamOperation findByName(String name)-->
+	<!--List<ExamOperation> findByName(String name)-->
 	<select id="findByName" resultType="cn.hestyle.road_examination_manager.entity.ExamOperation">
 		SELECT
 			`id` as `id`,
@@ -26,7 +26,7 @@
 		FROM
 			`t_exam_operation`
 		WHERE
-			`name`=#{name}
+			`name` LIKE CONCAT('%', #{name}, '%')
 	</select>
 	<!--增加新examOperation-->
 	<!--Integer addNew(ExamOperation examOperation)-->

@@ -21,9 +21,9 @@ public interface ExamOperationMapper {
     /**
      * 通过name查询操作项
      * @param name      操作项name
-     * @return          exam operation
+     * @return          examOperation list
      */
-    ExamOperation findByName(String name);
+    List<ExamOperation> findByName(String name);
 
     /**
      * 增加新examOperation

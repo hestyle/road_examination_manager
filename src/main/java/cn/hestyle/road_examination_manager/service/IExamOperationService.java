@@ -4,6 +4,8 @@ import cn.hestyle.road_examination_manager.entity.ExamOperation;
 import cn.hestyle.road_examination_manager.service.exception.FindException;
 import cn.hestyle.road_examination_manager.service.exception.InsertException;
 
+import java.util.List;
+
 /**
  * examOperation service层接口
  */
@@ -21,4 +23,11 @@ public interface IExamOperationService {
      * @return                  examOperation
      */
     ExamOperation findById(Integer id) throws FindException;
+
+    /**
+     * 通过name查找examOperation
+     * @param name              name
+     * @return                  examOperation list
+     */
+    List<ExamOperation> findByName(String name) throws FindException;
 }
