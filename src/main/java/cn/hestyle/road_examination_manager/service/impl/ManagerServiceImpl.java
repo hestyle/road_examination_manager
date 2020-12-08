@@ -147,6 +147,12 @@ public class ManagerServiceImpl implements IManagerService {
             }
             managerData.setPhoneNumber(manager.getPhoneNumber());
         }
+        if (manager.getIsDel() != null) {
+            if (manager.getIsDel() != 0 && manager.getIsDel() != 1) {
+                throw new UpdateException("修改失败，isDel字段必须为0或1！");
+            }
+            managerData.setPhoneNumber(manager.getPhoneNumber());
+        }
         try {
             return 1 == managerMapper.update(managerData);
         } catch (Exception e) {

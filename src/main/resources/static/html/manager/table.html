@@ -41,12 +41,7 @@
     <script type="text/html" id="barDemo">
         <a class="layui-btn layui-btn-xs" lay-event="detail">查看</a>
         <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
-        <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
-
-        <!-- 这里同样支持 laytpl 语法，如： -->
-        {{#  if(d.auth > 2){ }}
-        <a class="layui-btn layui-btn-xs" lay-event="check">审核</a>
-        {{#  } }}
+        <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="resetPassword">重置密码</a>
     </script>
     <!--每条数据的编辑操作-->
     <script type="text/html" id="editDialog">
@@ -55,12 +50,6 @@
                 <label class="layui-form-label">用户名</label>
                 <div class="layui-input-inline">
                     <input id="username" type="text" name="username" placeholder="请输入用户名" autocomplete="off" class="layui-input" disabled>
-                </div>
-            </div>
-            <div class="layui-form-item">
-                <label class="layui-form-label">密码</label>
-                <div class="layui-input-inline">
-                    <input type="password" name="password" placeholder="请输入密码" autocomplete="off" class="layui-input" value="123456" disabled>
                 </div>
             </div>
             <div class="layui-form-item">
@@ -141,7 +130,6 @@
                                 ,dataName: 'data' //规定数据列表的字段名称，默认：data
                             }
                             , parseData: function(res){ //res 即为原始返回的数据
-                                console.log(res);
                                 return {
                                     "code": res.code, //解析接口状态
                                     "message": res.message, //解析提示文本
@@ -213,7 +201,7 @@
                 var tr = obj.tr; //获得当前行 tr 的DOM对象
 
                 if (layEvent === 'detail') { //查看
-                    //do somehing
+                    
                 } else if (layEvent === 'del') { //删除
                     layer.confirm('真的删除行么', function (index) {
                         obj.del(); //删除对应行（tr）的DOM结构，并更新缓存
@@ -221,8 +209,57 @@
                         //向服务端发送删除指令
                     });
                 } else if (layEvent === 'edit') { //编辑
-                    //do something
-
+                    layer.open({
+                        type: 1,
+                        title: '编辑',
+                        area:['50%','70%'],
+                        content: $('#editDialog').html(),
+                        btn: ['确定', '取消'],
+                        success: function (index, layero) {
+                            form.render();
+                            form.val("editDialogForm", data);
+                        },
+                        yes: function (index, layero) {
+                            // 更新缓存，同步到服务器
+                            var url ="../../manager/modifyOtherBaseInfo.do";
+                            var postData = '{"username":"'+ $('#username').val() + '","name":"' + $('#name').val() + '","age":'+ $('#age').val() + ',' +
+                                '"gender":"' + $('input:radio[name="gender"]:checked').val() + '","phoneNumber":"' + $('#phoneNumber').val() + '",' +
+                                '"isDel":' + $('input:radio[name="isDel"]:checked').val() + '}';
+                            $.ajax({
+                                "url" : url,
+                                "data" : {"newBaseInfoJsonData":postData},
+                                "type" : "POST",
+                                "dataType" : "json",
+                                "success" : function (json) {
+                                    if (json.code === 200) {
+                                        obj.update({
+                                            name: $('#name').val()
+                                            ,age: $('#age').val()
+                                            ,gender: $('input:radio[name="gender"]:checked').val()
+                                            ,phoneNumber: $('#phoneNumber').val()
+                                            ,isDel: $('input:radio[name="isDel"]:checked').val()
+                                        });
+                                        layer.close(index);
+                                    } else {
+                                        layer.open({
+                                            title: "提示信息",
+                                            content: json.message
+                                        });
+                                    }
+                                },
+                                "error" : function () {
+                                    // 弹出中间提示框
+                                    layer.open({
+                                        title: "提示信息",
+                                        content: "保存失败，出现未知异常！"
+                                    });
+                                }
+                            });
+                        },
+                        btn2: function (index, layero) {
+                            //return false 开启该代码可禁止点击该按钮关闭
+                        }
+                    });
                 }
             });
 
