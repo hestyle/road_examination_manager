@@ -20,7 +20,7 @@ import static cn.hestyle.road_examination_manager.controller.BaseController.SUCC
 
 @RestController
 @RequestMapping("/exam")
-public class ExamController {
+public class ExamController extends BaseController {
     @Autowired
     IExamService examService;
 
