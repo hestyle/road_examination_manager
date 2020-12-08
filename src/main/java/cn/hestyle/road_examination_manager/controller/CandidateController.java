@@ -50,7 +50,6 @@ public class CandidateController extends BaseController{
             } catch (JsonProcessingException e) {
                 e.printStackTrace();
             }
-            candidate.setIsDel(0);
             //添加到数据库
             iCandidateService.addCandidate(candidate);
             //返回消息
@@ -75,14 +74,37 @@ public class CandidateController extends BaseController{
             return "redirect:/examiner";
         }
 
-    @PostMapping("/findByPage.do")
-    public ResponseResult<List<Candidate>> handleFindByPage(@RequestParam("pageIndex") Integer pageIndex, @RequestParam("pageSize") Integer pageSize, HttpSession session) {
-        // 判断是否已经登录过
-        if (null == session.getAttribute("username")) {
-            throw new ManagerNotLoginException("操作失败！请先进行管理员登录！");
+        @PostMapping("/modifyOtherBaseInfo.do")
+        public ResponseResult<Void> handleModifyOtherBaseInfo(@RequestParam("newBaseInfoJsonData") String newBaseInfoJsonData, HttpSession session) {
+            // 判断是否已经登录过
+            if (null == session.getAttribute("username")) {
+                throw new ManagerNotLoginException("操作失败！请先进行管理员登录！");
+            }
+            // 将newBaseInfoJsonData转成json，取出新baseInfo的各个属性
+            ObjectMapper objectMapper = new ObjectMapper();
+            Candidate newCandidate = null;
+            try {
+                newCandidate = objectMapper.readValue(newBaseInfoJsonData, Candidate.class);
+            } catch (JsonProcessingException e) {
+                e.printStackTrace();
+                return new ResponseResult<>(FAILURE, "修改失败，信息格式不正确！");
+            }
+            if (iCandidateService.modifyBaseInfo(newCandidate)) {
+                return new ResponseResult<>(SUCCESS, "基本信息修改保存成功！");
+            } else {
+                return new ResponseResult<>(FAILURE, "修改保存失败，原因未知！");
+            }
         }
-        List<Candidate> candidateList = iCandidateService.findByPage(pageIndex, pageSize);
-        Integer pageCount = (iCandidateService.getCandidateCount() + pageSize - 1) / pageSize;
-        return new ResponseResult<List<Candidate>>(SUCCESS, pageCount, candidateList, "查询成功！");
-    }
+
+        @PostMapping("/findByPage.do")
+        public ResponseResult<List<Candidate>> handleFindByPage(@RequestParam("pageIndex") Integer pageIndex, @RequestParam("pageSize") Integer pageSize, HttpSession session) {
+            // 判断是否已经登录过
+            if (null == session.getAttribute("username")) {
+                throw new ManagerNotLoginException("操作失败！请先进行管理员登录！");
+            }
+            List<Candidate> candidateList = iCandidateService.findByPage(pageIndex, pageSize);
+            Integer pageCount = (iCandidateService.getCandidateCount() + pageSize - 1) / pageSize;
+            return new ResponseResult<List<Candidate>>(SUCCESS, pageCount, candidateList, "查询成功！");
+        }
+
 }

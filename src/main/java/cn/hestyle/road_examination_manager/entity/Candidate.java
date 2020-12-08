@@ -78,7 +78,7 @@ public class Candidate {
         this.id = id;
     }
 
-    public String getDriveSchool() {
+    public String getDriverSchool() {
         return driverSchool;
     }
 

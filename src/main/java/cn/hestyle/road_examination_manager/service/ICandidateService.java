@@ -16,4 +16,6 @@ public interface ICandidateService {
     List<Candidate> findByPage(Integer pageIndex, Integer pageSize);
 
     Integer getCandidateCount();
+
+    Boolean modifyBaseInfo(Candidate candidate);
 }

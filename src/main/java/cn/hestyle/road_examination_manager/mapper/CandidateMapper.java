@@ -23,4 +23,6 @@ public interface CandidateMapper {
     List<Candidate> findByPage(Integer beginIndex, Integer pageSize);
 
     Integer getCandidateCount();
+
+    Integer update(Candidate candidate);
 }
