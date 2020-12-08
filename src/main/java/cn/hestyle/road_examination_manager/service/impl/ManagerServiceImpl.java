@@ -50,8 +50,21 @@ public class ManagerServiceImpl implements IManagerService {
         if (null != managerMapper.findByUsername(manager.getUsername())) {
             throw new ManagerAddFailedException("账号保存失败，用户名" + manager.getUsername() + " 已经被注册！");
         }
-        // 默认设置新账号未删除
-        manager.setIsDel(0);
+        if (manager.getName() == null || manager.getName().length() < 6 || manager.getName().length() > 20) {
+            throw new InsertException("增加失败，name字段长度非法，请控制在6-20位！");
+        }
+        if (manager.getAge() != null && (manager.getAge() < 1 || manager.getAge() > 120)) {
+            throw new InsertException("增加失败，age必须大于零，且小于120！");
+        }
+        if (manager.getGender() != null && !"男".equals(manager.getGender()) && !"女".equals(manager.getGender())) {
+            throw new InsertException("增加失败，gender只能为【男】或者【女】！");
+        }
+        if (manager.getPhoneNumber() != null && (manager.getPhoneNumber().length() < 8 || manager.getName().length() > 11)) {
+            throw new InsertException("增加失败，phoneNumber字段长度非法，请控制在8-11位！");
+        }
+        if (manager.getIsDel() != null && manager.getIsDel() != 0 && manager.getIsDel() != 1) {
+            throw new InsertException("增加失败，isDel字段必须为0或1！");
+        }
         // 受影响的行数==1，说明插入成功
         try {
             return 1 == managerMapper.addNew(manager);
