@@ -77,12 +77,34 @@
                     <input id="phoneNumber" type="text" name="phoneNumber" placeholder="请输入电话" autocomplete="off" class="layui-input">
                 </div>
             </div>
-
             <div class="layui-form-item">
                 <label class="layui-form-label">是否删除</label>
                 <div class="layui-input-inline">
                     <input type="radio" name="isDel" value="0" title="未删除" checked>
                     <input id="is_del_true" type="radio" name="isDel" value="1" title="已删除">
+                </div>
+            </div>
+        </form>
+    </script>
+    <!--每条数据的重置密码操作-->
+    <script type="text/html" id="resetPasswordDialog">
+        <form class="layui-form" action="" style="padding: 20px;" lay-filter="editDialogForm">
+            <div class="layui-form-item">
+                <label class="layui-form-label">用户名</label>
+                <div class="layui-input-inline">
+                    <input id="reset_username" type="text" name="username" autocomplete="off" class="layui-input" disabled>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">新密码</label>
+                <div class="layui-input-inline">
+                    <input id="reset_newPassword" type="password" name="password" placeholder="请输入新密码" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">确认密码</label>
+                <div class="layui-input-inline">
+                    <input id="reset_reNewPassword" type="password" name="reNewPassword" placeholder="请重复输入新密码" autocomplete="off" class="layui-input">
                 </div>
             </div>
         </form>
@@ -200,7 +222,7 @@
                 var layEvent = obj.event; //获得 lay-event 对应的值（也可以是表头的 event 参数对应的值）
                 var tr = obj.tr; //获得当前行 tr 的DOM对象
 
-                if (layEvent === 'detail') { //查看
+                if (layEvent === 'detail') {
                     layer.open({
                         type: 1,
                         title: '查看',
@@ -212,13 +234,50 @@
                             form.val("editDialogForm", data);
                         }
                     });
-                } else if (layEvent === 'del') { //删除
-                    layer.confirm('真的删除行么', function (index) {
-                        obj.del(); //删除对应行（tr）的DOM结构，并更新缓存
-                        layer.close(index);
-                        //向服务端发送删除指令
+                } else if (layEvent === 'resetPassword') {
+                    layer.open({
+                        type: 1,
+                        title: '重置密码',
+                        area:['50%','70%'],
+                        content: $('#resetPasswordDialog').html(),
+                        btn: ['确定', '取消'],
+                        success: function (index, layero) {
+                            form.render();
+                            form.val("editDialogForm", data);
+                        },
+                        yes: function (index, layero) {
+                            // 更新缓存，同步到服务器
+                            var url ="../../manager/resetOtherPassword.do";
+                            var postData = '{"username":"'+ $('#reset_username').val() + '","newPassword":"' + $('#reset_newPassword').val() + '","reNewPassword":"'+ $('#reset_reNewPassword').val() + '"}';
+                            $.ajax({
+                                "url" : url,
+                                "data" : {"newPasswordJsonData":postData},
+                                "type" : "POST",
+                                "dataType" : "json",
+                                "success" : function (json) {
+                                    layer.open({
+                                        title: "提示信息",
+                                        content: json.message
+                                    });
+                                    if (json.code === 200) {
+                                        // 更新成功，则关闭重置窗口
+                                        layer.close(index);
+                                    }
+                                },
+                                "error" : function () {
+                                    // 弹出中间提示框
+                                    layer.open({
+                                        title: "提示信息",
+                                        content: "保存失败，出现未知异常！"
+                                    });
+                                }
+                            });
+                        },
+                        btn2: function (index, layero) {
+                            //return false 开启该代码可禁止点击该按钮关闭
+                        }
                     });
-                } else if (layEvent === 'edit') { //编辑
+                } else if (layEvent === 'edit') {
                     layer.open({
                         type: 1,
                         title: '编辑',
