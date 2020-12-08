@@ -75,6 +75,9 @@ public class CarServiceImpl implements ICarService {
      */
     @Override
     public Boolean changeInfo(Car car) throws CarNotFoundException, AccessDefinedException {
+        car.setType(car.getType().toUpperCase());
+        car.setMacAddress(car.getMacAddress().toLowerCase());
+
         Car data = null;
         try {
             data = findById(car.getId());
