@@ -88,7 +88,7 @@
     </script>
     <!--每条数据的重置密码操作-->
     <script type="text/html" id="resetPasswordDialog">
-        <form class="layui-form" action="" style="padding: 20px;" lay-filter="editDialogForm">
+        <form class="layui-form" action="" style="padding: 20px;" lay-filter="resetPasswordForm">
             <div class="layui-form-item">
                 <label class="layui-form-label">用户名</label>
                 <div class="layui-input-inline">
@@ -109,7 +109,7 @@
             </div>
         </form>
     </script>
-    <!--每条数据的编辑操作-->
+    <!--单条数据的插入操作-->
     <script type="text/html" id="addDialog">
         <form id="add_form" class="layui-form" action="" style="padding: 20px;" lay-filter="addDialogForm">
             <div class="layui-form-item">
@@ -352,6 +352,8 @@
                         btn: ['关闭'],
                         success: function (index, layero) {
                             form.render();
+                            // 对于radio单选框，int型数据转成string才能正确check
+                            data.isDel = data.isDel + '';
                             form.val("editDialogForm", data);
                         }
                     });
@@ -364,7 +366,7 @@
                         btn: ['确定', '取消'],
                         success: function (index, layero) {
                             form.render();
-                            form.val("editDialogForm", data);
+                            form.val("resetPasswordForm", data);
                         },
                         yes: function (index, layero) {
                             // 更新缓存，同步到服务器
@@ -407,6 +409,9 @@
                         btn: ['确定', '取消'],
                         success: function (index, layero) {
                             form.render();
+                            // 对于radio单选框，int型数据转成string才能正确check
+                            data.isDel = data.isDel + '';
+                            console.log(data);
                             form.val("editDialogForm", data);
                         },
                         yes: function (index, layero) {
