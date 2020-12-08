@@ -17,6 +17,9 @@ public class CarServiceImpl implements ICarService {
 
     @Override
     public Car addNew(Car car) throws InsertException{
+        car.setType(car.getType().toUpperCase());
+        car.setMacAddress(car.getMacAddress().toLowerCase());
+
         Integer rows = -1;
         try {
             rows = carMapper.addNew(car);

@@ -80,8 +80,9 @@ public class CarController {
         }
 
         List<Manager> carList = carService.findByPage(pageIndex, pageSize);
-        Integer pageCount = (carService.getCarCount() + pageSize - 1) / pageSize;
-        return new ResponseResult<List<Manager>>(SUCCESS, pageCount, carList, "查询成功！");
+//        Integer pageCount = (carService.getCarCount() + pageSize - 1) / pageSize;
+        Integer count = carService.getCarCount();
+        return new ResponseResult<List<Manager>>(SUCCESS, count, carList, "查询成功！");
     }
 
 
