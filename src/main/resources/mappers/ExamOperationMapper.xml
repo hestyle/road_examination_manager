@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+		"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="cn.hestyle.road_examination_manager.mapper.ExamOperationMapper">
+	<!--通过id查询操作项-->
+	<!--ExamOperation findById(Integer id)-->
+	<select id="findById" resultType="cn.hestyle.road_examination_manager.entity.ExamOperation">
+		SELECT
+			`id` as `id`,
+			`name` as `name`,
+			`description` as `description`,
+			`is_del` as `isDel`
+		FROM
+			`t_exam_operation`
+		WHERE
+			`id`=#{id}
+	</select>
+	<!--通过name查询操作项-->
+	<!--ExamOperation findByName(String name)-->
+	<select id="findByName" resultType="cn.hestyle.road_examination_manager.entity.ExamOperation">
+		SELECT
+			`id` as `id`,
+			`name` as `name`,
+			`description` as `description`,
+			`is_del` as `isDel`
+		FROM
+			`t_exam_operation`
+		WHERE
+			`name`=#{name}
+	</select>
+	<!--增加新examOperation-->
+	<!--Integer addNew(ExamOperation examOperation)-->
+	<insert id="addNew" keyProperty="id" useGeneratedKeys="true" parameterType="cn.hestyle.road_examination_manager.entity.ExamOperation">
+		INSERT INTO `t_exam_operation`(`name`, `description`, `is_del`) VALUES (
+			#{name}, #{description}, #{isDel}
+		)
+	</insert>
+	<!--分页查询所有examOperation-->
+	<!--List<ExamOperation> findByPage(Integer beginIndex, Integer pageSize)-->
+	<select id="findByPage" resultType="cn.hestyle.road_examination_manager.entity.Manager">
+		SELECT
+			`id` as `id`,
+			`name` as `name`,
+			`description` as `description`,
+			`is_del` as `isDel`
+		FROM
+			`t_exam_operation`
+		ORDER BY
+			`id` desc
+		LIMIT
+			#{beginIndex}, #{pageSize}
+	</select>
+	<!--获取manager的数量-->
+	<!--Integer getExamOperationCount()-->
+	<select id="getExamOperationCount" resultType="java.lang.Integer">
+		SELECT
+            COUNT(`id`)
+        FROM
+            `t_exam_operation`
+	</select>
+	<!--更新examOperation信息-->
+	<!--Integer update(ExamOperation examOperation)-->
+	<update id="update" parameterType="cn.hestyle.road_examination_manager.entity.ExamOperation">
+		UPDATE `t_exam_operation` SET
+			`name` = #{name},
+		 	`description` = #{description},
+			`is_del` = #{isDel}
+		WHERE
+			`id` = #{id}
+	</update>
+</mapper>

@@ -1,0 +1,48 @@
+package cn.hestyle.road_examination_manager.controller;
+
+import cn.hestyle.road_examination_manager.controller.exception.ManagerNotLoginException;
+import cn.hestyle.road_examination_manager.entity.ExamOperation;
+import cn.hestyle.road_examination_manager.service.IExamOperationService;
+import cn.hestyle.road_examination_manager.util.ResponseResult;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import javax.servlet.http.HttpSession;
+
+/**
+ * examOperation controller
+ * @author hestyle
+ */
+@RestController
+@RequestMapping("/examOperation")
+public class ExamOperationController extends BaseController {
+    @Autowired
+    private IExamOperationService examOperationService;
+
+    @PostMapping("/add.do")
+    public ResponseResult<ExamOperation> handleAdd(@RequestParam("newExamOperationJsonData") String newExamOperationJsonData, HttpSession session) {
+        // 判断是否已经登录过
+        if (null == session.getAttribute("username")) {
+            throw new ManagerNotLoginException("操作失败！请先进行管理员登录！");
+        }
+        // 将newManagerData转成json，取出新manager账号的各个属性
+        ObjectMapper objectMapper = new ObjectMapper();
+        ExamOperation examOperation = null;
+        try {
+            examOperation = objectMapper.readValue(newExamOperationJsonData, ExamOperation.class);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            return new ResponseResult<>(FAILURE, "新ExamOperation数据格式不正确！");
+        }
+        if (examOperationService.add(examOperation)) {
+            return new ResponseResult<ExamOperation>(SUCCESS, "保存成功！", examOperation);
+        } else {
+            return new ResponseResult<>(FAILURE, examOperation.getName() + "操作项保存失败，原因未知！");
+        }
+    }
+}

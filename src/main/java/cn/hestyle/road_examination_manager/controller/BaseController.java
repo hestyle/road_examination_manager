@@ -43,12 +43,15 @@ public abstract class BaseController {
         } else if (e instanceof PageFindErrorException) {
             // 404-分页查询参数错误
             code = 404;
-        } else if (e instanceof  UpdateException) {
+        } else if (e instanceof UpdateException) {
             // 405-数据更新异常
             code = 405;
         } else if (e instanceof DeleteException) {
-            // 406-删除删除异常
+            // 406-删除异常
             code = 406;
+        } else if (e instanceof InsertException) {
+            // 407-插入异常
+            code = 407;
         }
         return new ResponseResult<>(code, e);
     }
