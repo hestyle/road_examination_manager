@@ -38,7 +38,7 @@ public class ExamController extends BaseController {
         return new ResponseResult<>(SUCCESS, "查询成功！", exam);
     }
 
-    @GetMapping("/findByPage.do")
+    @PostMapping("/findByPage.do")
     public ResponseResult<List<Exam>> handleFindByPage(@RequestParam("pageIndex") Integer pageIndex,
                                                        @RequestParam("pageSize") Integer pageSize,
                                                        HttpSession session) {
