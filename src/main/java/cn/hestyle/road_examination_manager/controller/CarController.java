@@ -19,7 +19,7 @@ import static cn.hestyle.road_examination_manager.controller.BaseController.SUCC
 
 @RestController
 @RequestMapping("/car")
-public class CarController {
+public class CarController extends BaseController{
     @Autowired
     private ICarService carService;
 
