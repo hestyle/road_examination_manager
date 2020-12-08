@@ -1,6 +1,7 @@
 package cn.hestyle.road_examination_manager.service;
 
 import cn.hestyle.road_examination_manager.entity.ExamOperation;
+import cn.hestyle.road_examination_manager.service.exception.FindException;
 import cn.hestyle.road_examination_manager.service.exception.InsertException;
 
 /**
@@ -13,4 +14,11 @@ public interface IExamOperationService {
      * @return                  是否保存成功
      */
     Boolean add(ExamOperation examOperation) throws InsertException;
+
+    /**
+     * 通过id查找examOperation
+     * @param id                id
+     * @return                  examOperation
+     */
+    ExamOperation findById(Integer id) throws FindException;
 }

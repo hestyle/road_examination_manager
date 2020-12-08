@@ -3,6 +3,7 @@ package cn.hestyle.road_examination_manager.service.impl;
 import cn.hestyle.road_examination_manager.entity.ExamOperation;
 import cn.hestyle.road_examination_manager.mapper.ExamOperationMapper;
 import cn.hestyle.road_examination_manager.service.IExamOperationService;
+import cn.hestyle.road_examination_manager.service.exception.FindException;
 import cn.hestyle.road_examination_manager.service.exception.InsertException;
 import org.springframework.stereotype.Service;
 
@@ -35,5 +36,20 @@ public class ExamOperationServiceImpl implements IExamOperationService {
             e.printStackTrace();
             throw new InsertException("保存失败，数据库发生未知异常！");
         }
+    }
+
+    @Override
+    public ExamOperation findById(Integer id) throws FindException {
+        ExamOperation examOperation = null;
+        try {
+            examOperation = examOperationMapper.findById(id);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new FindException("查找失败，数据库发生未知异常！");
+        }
+        if (examOperation == null) {
+            throw new FindException("查找失败，id=" + id + "未注册操作项！");
+        }
+        return examOperation;
     }
 }

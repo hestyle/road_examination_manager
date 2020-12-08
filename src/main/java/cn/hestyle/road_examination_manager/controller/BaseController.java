@@ -52,6 +52,9 @@ public abstract class BaseController {
         } else if (e instanceof InsertException) {
             // 407-插入异常
             code = 407;
+        } else if (e instanceof FindException) {
+            // 408-查询异常
+            code = 408;
         }
         return new ResponseResult<>(code, e);
     }
