@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+		"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="cn.hestyle.road_examination_manager.mapper.ExamItemMapper">
+	<!--通过id查询考试项-->
+	<!--ExamItem findById(Integer id)-->
+	<select id="findById" resultType="cn.hestyle.road_examination_manager.entity.ExamItem">
+		SELECT
+			`id` as `id`,
+			`name` as `name`,
+			`score` as `score`,
+			`voice_path` as `voicePath`,
+			`operation_ids` as `operationIds`,
+			`description` as `description`,
+			`is_del` as `isDel`
+		FROM
+			`t_exam_item`
+		WHERE
+			`id`=#{id}
+	</select>
+	<!--通过name查询考试项-->
+	<!--ExamItem findByName(String name)-->
+	<select id="findByName" resultType="cn.hestyle.road_examination_manager.entity.ExamItem">
+		SELECT
+			`id` as `id`,
+			`name` as `name`,
+			`score` as `score`,
+			`voice_path` as `voicePath`,
+			`operation_ids` as `operationIds`,
+			`description` as `description`,
+			`is_del` as `isDel`
+		FROM
+			`t_exam_item`
+		WHERE
+			`name` = #{name}
+	</select>
+	<!--增加新examItem-->
+	<!--Integer addNew(ExamItem examItem)-->
+	<insert id="addNew" keyProperty="id" useGeneratedKeys="true" parameterType="cn.hestyle.road_examination_manager.entity.ExamItem">
+		INSERT INTO `t_exam_item`(`name`, `score`, `voice_path`, `operation_ids`, `description`, `is_del`) VALUES (
+			#{name}, #{score}, #{voicePath}, #{operationIds}, #{description}, #{isDel}
+		)
+	</insert>
+	<!--分页查询所有examItem-->
+	<!--List<ExamItem> findByPage(Integer beginIndex, Integer pageSize)-->
+	<select id="findByPage" resultType="cn.hestyle.road_examination_manager.entity.ExamItem">
+		SELECT
+			`id` as `id`,
+			`name` as `name`,
+			`score` as `score`,
+			`voice_path` as `voicePath`,
+			`operation_ids` as `operationIds`,
+			`description` as `description`,
+			`is_del` as `isDel`
+		FROM
+			`t_exam_item`
+		ORDER BY
+			`id` asc
+		LIMIT
+			#{beginIndex}, #{pageSize}
+	</select>
+	<!--获取examItem的数量-->
+	<!--Integer getExamItemCount()-->
+	<select id="getExamItemCount" resultType="java.lang.Integer">
+		SELECT
+            COUNT(`id`)
+        FROM
+            `t_exam_item`
+	</select>
+	<!--更新examItem信息-->
+	<!--Integer update(ExamItem examItem)-->
+	<update id="update" parameterType="cn.hestyle.road_examination_manager.entity.ExamItem">
+		UPDATE `t_exam_item` SET
+			`name` = #{name},
+			`score` = #{score},
+			`voice_path` = #{voicePath},
+			`operation_ids` = #{operationIds},
+			`description` = #{description},
+			`is_del` = #{isDel}
+		WHERE
+			`id` = #{id}
+	</update>
+</mapper>
