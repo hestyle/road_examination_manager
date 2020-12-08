@@ -3,6 +3,7 @@ package cn.hestyle.road_examination_manager.service;
 import cn.hestyle.road_examination_manager.entity.ExamOperation;
 import cn.hestyle.road_examination_manager.service.exception.FindException;
 import cn.hestyle.road_examination_manager.service.exception.InsertException;
+import cn.hestyle.road_examination_manager.service.exception.PageFindErrorException;
 
 import java.util.List;
 
@@ -30,4 +31,18 @@ public interface IExamOperationService {
      * @return                  examOperation list
      */
     List<ExamOperation> findByName(String name) throws FindException;
+
+    /**
+     * 分页查询所有examOperation
+     * @param pageIndex     页码
+     * @param pageSize      一页大小
+     * @return              examOperation list
+     */
+    List<ExamOperation> findByPage(Integer pageIndex, Integer pageSize) throws PageFindErrorException;
+
+    /**
+     * 查询examOperation的数量
+     * @return              examOperation的数量
+     */
+    Integer getExamOperationCount();
 }
