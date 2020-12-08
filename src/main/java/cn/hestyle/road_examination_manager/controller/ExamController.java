@@ -38,7 +38,7 @@ public class ExamController extends BaseController {
         return new ResponseResult<>(SUCCESS, "查询成功！", exam);
     }
 
-    @GetMapping("/findByPage.do")
+    @PostMapping("/findByPage.do")
     public ResponseResult<List<Exam>> handleFindByPage(@RequestParam("pageIndex") Integer pageIndex,
                                                        @RequestParam("pageSize") Integer pageSize,
                                                        HttpSession session) {
@@ -49,8 +49,8 @@ public class ExamController extends BaseController {
         }
 
         List<Exam> examList = examService.findByPage(pageIndex, pageSize);
-        Integer pageCount = (examService.getExamCount() + pageSize - 1) / pageSize;
-        return new ResponseResult<List<Exam>>(SUCCESS, pageCount, examList, "查询成功！");
+//        Integer pageCount = (examService.getExamCount() + pageSize - 1) / pageSize;
+        return new ResponseResult<List<Exam>>(SUCCESS, examService.getExamCount(), examList, "查询成功！");
     }
 
     @PostMapping("add.do")
@@ -79,7 +79,7 @@ public class ExamController extends BaseController {
     }
 
 
-    @PostMapping("/deleteByAdmissionNo.do")
+    @GetMapping("/deleteByAdmissionNo.do")
     public ResponseResult<Void> handleDeleteByAdmissionNo(@RequestParam("admissionNo") String admissionNo,
                                                           HttpSession session){
         // 判断是否已经登录过
