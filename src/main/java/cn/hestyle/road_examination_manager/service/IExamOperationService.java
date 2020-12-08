@@ -42,6 +42,20 @@ public interface IExamOperationService {
     List<ExamOperation> findByPage(Integer pageIndex, Integer pageSize) throws PageFindErrorException;
 
     /**
+     * 通过idsString批量查询
+     * @param idsString     格式"id1,id2,id3,...,idn"字符串
+     * @return              ExamOperation list
+     */
+    List<ExamOperation> findByIdsString(String idsString) throws FindException;
+
+    /**
+     * 通过idList批量查询
+     * @param idList        格式{id1,id2,id3,...,idn}
+     * @return              ExamOperation list
+     */
+    List<ExamOperation> findByIdList(List<Integer> idList) throws FindException;
+
+    /**
      * 查询examOperation的数量
      * @return              examOperation的数量
      */

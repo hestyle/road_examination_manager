@@ -5,6 +5,7 @@ import cn.hestyle.road_examination_manager.entity.ExamOperation;
 import cn.hestyle.road_examination_manager.service.IExamOperationService;
 import cn.hestyle.road_examination_manager.util.ResponseResult;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -31,7 +32,7 @@ public class ExamOperationController extends BaseController {
         if (null == session.getAttribute("username")) {
             throw new ManagerNotLoginException("操作失败！请先进行管理员登录！");
         }
-        // 将newManagerData转成json，取出新manager账号的各个属性
+        // 将newExamOperationJsonData转成json，然后转成ExamOperation对象
         ObjectMapper objectMapper = new ObjectMapper();
         ExamOperation examOperation = null;
         try {
@@ -77,13 +78,40 @@ public class ExamOperationController extends BaseController {
         return new ResponseResult<List<ExamOperation>>(SUCCESS, count, examOperationList, "查询成功！");
     }
 
+    @PostMapping("/findByIdsString.do")
+    public ResponseResult<List<ExamOperation>> handleFindByIdsString(@RequestParam(value = "idsString", defaultValue = "") String idsString, HttpSession session) {
+        // 判断是否已经登录过(有两种可能管理员、考官)
+        if (null == session.getAttribute("username") && null == session.getAttribute("id")) {
+            throw new ManagerNotLoginException("操作失败！请先进行管理员或考官登录！");
+        }
+        return new ResponseResult<List<ExamOperation>>(SUCCESS, "查询成功！", examOperationService.findByIdsString(idsString));
+    }
+
+    @PostMapping("/findByIdList.do")
+    public ResponseResult<List<ExamOperation>> handleFindByIdList(@RequestParam(value = "idListJsonString", defaultValue = "") String idListJsonString, HttpSession session) {
+        // 判断是否已经登录过(有两种可能管理员、考官)
+        if (null == session.getAttribute("username") && null == session.getAttribute("id")) {
+            throw new ManagerNotLoginException("操作失败！请先进行管理员或考官登录！");
+        }
+        // 将idListJsonString转成json，然后转成List<Integer>
+        ObjectMapper objectMapper = new ObjectMapper();
+        List<Integer> idList = null;
+        try {
+            idList = objectMapper.readValue(idListJsonString, new TypeReference<List<Integer>>() {});
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            return new ResponseResult<>(FAILURE, "idList数据格式不正确！");
+        }
+        return new ResponseResult<List<ExamOperation>>(SUCCESS, "查询成功！", examOperationService.findByIdList(idList));
+    }
+
     @PostMapping("/modify.do")
     public ResponseResult<Void> handleModify(@RequestParam("newExamOperationJsonData") String newExamOperationJsonData, HttpSession session) {
         // 判断是否已经登录过
         if (null == session.getAttribute("username")) {
             throw new ManagerNotLoginException("操作失败！请先进行管理员登录！");
         }
-        // 将newManagerData转成json，取出新manager账号的各个属性
+        // 将newExamOperationJsonData转成json，然后转成ExamOperation对象
         ObjectMapper objectMapper = new ObjectMapper();
         ExamOperation examOperation = null;
         try {

@@ -10,6 +10,7 @@ import cn.hestyle.road_examination_manager.service.exception.UpdateException;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -91,6 +92,51 @@ public class ExamOperationServiceImpl implements IExamOperationService {
         } catch (Exception e) {
             e.printStackTrace();
             throw new PageFindErrorException("分页查询失败，数据库发生未知异常！");
+        }
+    }
+
+    @Override
+    public List<ExamOperation> findByIdsString(String idsString) throws FindException {
+        // 检查iDList长度
+        if (idsString == null || idsString.length() == 0) {
+            throw new FindException("查找失败，未指定需要查找的操作项id！");
+        }
+        List<Integer> idList = new ArrayList<>();
+        // 将idsString转idList
+        String[] ids = idsString.split(",");
+        for (String idString : ids) {
+            if (idString == null || idString.length() == 0) {
+                continue;
+            }
+            try {
+                Integer id = Integer.parseInt(idString);
+                idList.add(id);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return findByIdList(idList);
+    }
+
+    @Override
+    public List<ExamOperation> findByIdList(List<Integer> idList) throws FindException {
+        // 检查iDList长度
+        if (idList == null || idList.size() == 0) {
+            throw new FindException("查找失败，未指定需要查找的操作项id！");
+        }
+        // 查找所有指定的id
+        List<ExamOperation> examOperationList = new ArrayList<>();
+        try {
+            for (Integer id : idList) {
+                ExamOperation examOperation = examOperationMapper.findById(id);
+                if (examOperation != null) {
+                    examOperationList.add(examOperation);
+                }
+            }
+            return examOperationList;
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new FindException("查找失败，数据库发生未知异常");
         }
     }
 
