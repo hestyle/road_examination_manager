@@ -7,6 +7,7 @@ import cn.hestyle.road_examination_manager.service.exception.*;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -204,6 +205,31 @@ public class ManagerServiceImpl implements IManagerService {
         } catch (Exception e) {
             e.printStackTrace();
             throw new DeleteException("删除失败，数据库发生未知异常");
+        }
+    }
+
+    @Override
+    public Boolean deleteManagersByUsernameList(List<String> usernameList) throws DeleteException {
+        // 首先验证所有username是否都注册
+        List<Manager> managerList = new ArrayList<>();
+        for (String username : usernameList) {
+            Manager manager = managerMapper.findByUsername(username);
+            if (manager == null) {
+                throw new DeleteException("批量删除失败，" + username + " 未注册！");
+            } else {
+                managerList.add(manager);
+            }
+        }
+        // 批量删除
+        try {
+            for (Manager manager : managerList) {
+                manager.setIsDel(1);
+                managerMapper.update(manager);
+            }
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new DeleteException("批量删除失败，数据库发生未知异常！");
         }
     }
 }

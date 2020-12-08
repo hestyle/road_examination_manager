@@ -69,4 +69,11 @@ public interface IManagerService {
      * @return          是否删除成功
      */
     Boolean deleteManagerByUsername(String username) throws DeleteException;
+
+    /**
+     * 批量删除manager
+     * @param usernameList  username list
+     * @return              是否删除成功
+     */
+    Boolean deleteManagersByUsernameList(List<String> usernameList) throws DeleteException;
 }

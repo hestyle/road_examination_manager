@@ -170,4 +170,26 @@ public class ManagerController extends BaseController{
             return new ResponseResult<>(FAILURE, "修改保存失败，原因未知！");
         }
     }
+
+    @PostMapping("/deleteMangersByUsername.do")
+    public ResponseResult<Void> handleDeleteMangersByUsername(@RequestParam("usernameListJsonData") String usernameListJsonData, HttpSession session) {
+        // 判断是否已经登录过
+        if (null == session.getAttribute("username")) {
+            throw new ManagerNotLoginException("操作失败！请先进行管理员登录！");
+        }
+        // 将usernameListJsonData转成String list
+        ObjectMapper objectMapper = new ObjectMapper();
+        List<String> usernameList = null;
+        try {
+            usernameList = objectMapper.readValue(usernameListJsonData, new TypeReference<List<String>>() {});
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            return new ResponseResult<>(FAILURE, "批量删除失败，信息格式不正确！");
+        }
+        if (managerService.deleteManagersByUsernameList(usernameList)) {
+            return new ResponseResult<>(SUCCESS, "修改保存成功！");
+        } else {
+            return new ResponseResult<>(FAILURE, "批量删除失败，原因未知！");
+        }
+    }
 }
