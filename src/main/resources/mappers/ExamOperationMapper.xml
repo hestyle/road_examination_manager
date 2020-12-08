@@ -62,7 +62,6 @@
 	<!--Integer update(ExamOperation examOperation)-->
 	<update id="update" parameterType="cn.hestyle.road_examination_manager.entity.ExamOperation">
 		UPDATE `t_exam_operation` SET
-			`name` = #{name},
 		 	`description` = #{description},
 			`is_del` = #{isDel}
 		WHERE

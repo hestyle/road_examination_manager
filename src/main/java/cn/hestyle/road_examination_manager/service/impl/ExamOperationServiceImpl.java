@@ -6,6 +6,7 @@ import cn.hestyle.road_examination_manager.service.IExamOperationService;
 import cn.hestyle.road_examination_manager.service.exception.FindException;
 import cn.hestyle.road_examination_manager.service.exception.InsertException;
 import cn.hestyle.road_examination_manager.service.exception.PageFindErrorException;
+import cn.hestyle.road_examination_manager.service.exception.UpdateException;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -99,6 +100,33 @@ public class ExamOperationServiceImpl implements IExamOperationService {
             return examOperationMapper.getExamOperationCount();
         } catch (Exception e) {
             throw new PageFindErrorException("分页查询失败，数据库发生未知异常！");
+        }
+    }
+
+    @Override
+    public Boolean modify(ExamOperation examOperation) throws UpdateException {
+        // 判断id是否指定
+        if (examOperation == null || examOperation.getId() == null) {
+            throw new UpdateException("修改失败，未指定需要修改考试项的id！");
+        }
+        // 判断id是否注册
+        ExamOperation examOperationData = examOperationMapper.findById(examOperation.getId());
+        if (examOperationData == null) {
+            throw new UpdateException("修改失败，id = " + examOperation.getId() + " 未注册！");
+        }
+        // 检测description长度是否合法
+        if (examOperation.getDescription() != null && examOperation.getDescription().length() > 255) {
+            throw new UpdateException("修改失败，考试项的描述过长，请控制在0~255个字符！");
+        }
+        // 检查isDel状态合法性
+        if (examOperation.getIsDel() == null || (examOperation.getIsDel() != 0 && examOperation.getIsDel() != 1)) {
+            throw new UpdateException("修改失败，考试项只有0未删除、1已删除两种状态！");
+        }
+        try {
+            return 1 == examOperationMapper.update(examOperation);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new UpdateException("保存失败，数据库发生未知错误！");
         }
     }
 }

@@ -4,6 +4,7 @@ import cn.hestyle.road_examination_manager.entity.ExamOperation;
 import cn.hestyle.road_examination_manager.service.exception.FindException;
 import cn.hestyle.road_examination_manager.service.exception.InsertException;
 import cn.hestyle.road_examination_manager.service.exception.PageFindErrorException;
+import cn.hestyle.road_examination_manager.service.exception.UpdateException;
 
 import java.util.List;
 
@@ -45,4 +46,11 @@ public interface IExamOperationService {
      * @return              examOperation的数量
      */
     Integer getExamOperationCount();
+
+    /**
+     * 修改examOperation
+     * @param examOperation     examOperation
+     * @return                  保存成功与否
+     */
+    Boolean modify(ExamOperation examOperation) throws UpdateException;
 }

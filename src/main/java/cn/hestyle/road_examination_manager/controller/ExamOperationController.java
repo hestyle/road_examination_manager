@@ -76,4 +76,26 @@ public class ExamOperationController extends BaseController {
         Integer count = examOperationService.getExamOperationCount();
         return new ResponseResult<List<ExamOperation>>(SUCCESS, count, examOperationList, "查询成功！");
     }
+
+    @PostMapping("/modify.do")
+    public ResponseResult<Void> handleModify(@RequestParam("newExamOperationJsonData") String newExamOperationJsonData, HttpSession session) {
+        // 判断是否已经登录过
+        if (null == session.getAttribute("username")) {
+            throw new ManagerNotLoginException("操作失败！请先进行管理员登录！");
+        }
+        // 将newManagerData转成json，取出新manager账号的各个属性
+        ObjectMapper objectMapper = new ObjectMapper();
+        ExamOperation examOperation = null;
+        try {
+            examOperation = objectMapper.readValue(newExamOperationJsonData, ExamOperation.class);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            return new ResponseResult<>(FAILURE, "ExamOperation数据格式不正确！");
+        }
+        if (examOperationService.modify(examOperation)) {
+            return new ResponseResult<Void>(SUCCESS, "保存成功！");
+        } else {
+            return new ResponseResult<>(FAILURE, examOperation.getName() + "操作项修改保存失败，原因未知！");
+        }
+    }
 }
