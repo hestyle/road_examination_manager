@@ -54,6 +54,9 @@ public class CarController extends BaseController{
         if (null == session.getAttribute("username")) {
             throw new ManagerNotLoginException("操作失败！请先进行管理员登录！");
         }
+        if(car.getId() == null){
+            throw new RequestException("修改失败，参数错误！");
+        }
 
         if(carService.changeInfo(car)){
             return new ResponseResult<>(SUCCESS, "修改车辆信息成功！");
