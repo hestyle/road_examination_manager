@@ -30,7 +30,7 @@
     layui.use(['table','form'], function() {
         var table = layui.table;
         var form = layui.form;
-        table.render({
+        var carListTableIns = table.render({
             elem: '#carlisttable' //指定原始表格元素选择器（推荐id选择器）
             ,toolbar: '#actionBar'
             ,defaultToolbar: ['print', 'exports']
@@ -110,8 +110,25 @@
         table.on('toolbar(carlisttable)', function (obj) {
             switch(obj.event){
                 case 'addcar':
-                    parent.location.href = '/road_examination_manager/index.html#/car/addcar.html';
-                    parent.window.location.reload();
+                    // parent.location.href = '/road_examination_manager/index.html#/car/addcar.html';
+                    // parent.window.location.reload();
+                    layer.open({
+                        type: 1,
+                        title: '添加考试车辆',
+                        area: ['50%', '70%'],
+                        content: $('#addDialog').html(),
+                        btn: ['确定', '取消'],
+                        success: function (index, layero) {
+                            form.render();
+                        },
+                        yes: function (index, layero) {
+                            formPageIndex = index;
+                            document.getElementById("add-submit").click();
+                        },
+                        btn2: function (index, layero) {
+                            //return false 开启该代码可禁止点击该按钮关闭
+                        }
+                    });
                     break;
             };
         });
@@ -173,6 +190,38 @@
                             ,description: $('#description').val()
                         });
                         layer.close(formPageIndex);
+                    } else {
+                        layer.open({
+                            title: "提示信息",
+                            content: res.message
+                        });
+                    }
+                },
+                "error": function (res) {
+                    layer.open({
+                        content: res.message,
+                        yes: function (index, layero) {//layero 当前层DOM对象
+                            layer.close(index); //如果设定了yes回调，需进行手工关闭
+                        }
+                    });
+                }
+            });
+
+            return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+        });
+
+        form.on('submit(addcar-submit)', function(data){
+            console.log(data.field); //当前容器的全部表单字段，名值对形式：{name: value}
+            $.ajax({
+                "url": "/road_examination_manager/car/add.do",
+                "type": "POST",
+                "data": data.field,
+                "dataType": "json",
+                "success": function (res) {
+                    if (res.code === 200) {
+                        layer.close(formPageIndex);
+                        parent.location.href = '/road_examination_manager/index.html#/car/table.html';
+                        parent.window.location.reload();
                     } else {
                         layer.open({
                             title: "提示信息",
@@ -264,6 +313,54 @@
                 <!--<div class="layui-inline">-->
                 <button id="save" type="submit" lay-submit="" class="layui-btn layui-hide"
                         lay-filter="save-submit">保存
+                </button>
+            </div>
+        </div>
+    </form>
+</script>
+
+<script type="text/html" id="addDialog">
+    <form class="layui-form" action="" id="form-add-cardata">
+        <div class="layui-form-item" style="margin-top: 5px">
+            <div class="layui-inline">
+                <label class="layui-form-label">IP地址</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="ipAddress" lay-verify="ip" autocomplete="off" placeholder="_._._._" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-inline">
+                <label class="layui-form-label">MAC地址</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="macAddress" lay-verify="mac" autocomplete="off" placeholder="xx:xx:xx:xx:xx:xx" class="layui-input">
+                </div>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <div class="layui-inline">
+                <label class="layui-form-label">车辆类型</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="type" lay-verify="cartype"  autocomplete="off" class="layui-input">
+                </div>
+            </div>
+        </div>
+
+        <div class="layui-form-item layui-form-text">
+            <nobr>
+                <lable class="layui-form-label">车辆描述</lable>
+            </nobr>
+            <div class="layui-input-block" style="margin-right: 10%">
+                        <textarea name="description" lay-verify="description" placeholder="对车辆的描述，可以为空"
+                                  class="layui-textarea"></textarea>
+            </div>
+        </div>
+
+        <div class="layui-form-item layui-hide">
+            <div class="layui-input-block">
+                <!--提交按钮-->
+                <!--<div class="layui-inline">-->
+                <button id="add-submit" type="submit" lay-submit="" class="layui-btn"
+                        lay-filter="addcar-submit">保存
                 </button>
             </div>
         </div>
