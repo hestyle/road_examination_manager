@@ -61,6 +61,8 @@
 			`is_del` as `isDel`
 		FROM
 			`t_car`
+		WHERE
+			is_del = 0
 		ORDER BY
 			`id` desc
 		LIMIT
