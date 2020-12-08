@@ -24,4 +24,6 @@ public interface ExaminerMapper{
     List<Examiner> findByPage(Integer beginIndex, Integer pageSize);
 
     Integer getExaminerCount();
+
+    Integer update(Examiner examiner);
 }

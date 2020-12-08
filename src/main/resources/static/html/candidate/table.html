@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>考生列表</title>
+    <script src="../../js/jquery.min.js"></script>
+    <script src="../../layui/layui.all.js"></script>
+    <script src="../../js/common.js"></script>
+    <link rel="stylesheet" href="../../layui/css/layui.css">
+    <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+<!--顶部搜索栏-->
+<form class="layui-form">
+    <label>城市</label>
+    <div class="layui-input-inline">
+        <select name="city">
+            <option value=""></option>
+            <option value="0">北京</option>
+            <option value="1">上海</option>
+            <option value="2">广州</option>
+            <option value="3">深圳</option>
+            <option value="4">杭州</option>
+        </select>
+    </div>
+    <div class="layui-input-inline">
+        <button class="layui-btn layui-btn-sm" lay-submit lay-filter="formSearch">搜索</button>
+    </div>
+</form>
+<!--中部表格-->
+<table id="demo" lay-filter="test"></table>
+</body>
+<!--顶部操作栏-->
+<script type="text/html" id="toolbarDemo">
+    <div class="layui-btn-container">
+        <button class="layui-btn layui-btn-sm" lay-event="add">添加</button>
+        <button class="layui-btn layui-btn-sm" lay-event="delete">删除</button>
+    </div>
+</script>
+<!--每条数据的操作栏-->
+<script type="text/html" id="barDemo">
+    <a class="layui-btn layui-btn-xs" lay-event="detail">查看</a>
+    <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+    <!--<a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="resetPassword">重置密码</a>-->
+</script>
+<!--每条数据的编辑操作-->
+<script type="text/html" id="editDialog">
+    <form class="layui-form" action="" style="padding: 20px;" lay-filter="editDialogForm">
+        <div class="layui-form-item">
+            <label class="layui-form-label">身份证号</label>
+            <div class="layui-input-inline">
+                <input id="id" type="text" name="id" placeholder="请输入身份证号" autocomplete="off" class="layui-input" disabled>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">姓名</label>
+            <div class="layui-input-inline">
+                <input id="name" type="text" name="name" placeholder="请输入姓名" autocomplete="off" class="layui-input" disabled>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">年龄</label>
+            <div class="layui-input-inline">
+                <input id="age" type="text" name="age" placeholder="请输入年龄" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">驾校</label>
+            <div class="layui-input-inline">
+                <input id="driverSchool" type="text" name="driverSchool" placeholder="请输入驾校" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">性别</label>
+            <div class="layui-input-inline">
+                <input type="radio" name="gender" value="男" title="男">
+                <input id="gender_female" type="radio" name="gender" value="女" title="女" checked>
+            </div>
+        </div>
+        <div class="layui-form-item layui-form-text">
+            <label class="layui-form-label">电话</label>
+            <div class="layui-input-block">
+                <input id="phoneNumber" type="text" name="phoneNumber" placeholder="请输入电话" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">是否删除</label>
+            <div class="layui-input-inline">
+                <input type="radio" name="isDel" value="0" title="未删除" checked>
+                <input id="is_del_true" type="radio" name="isDel" value="1" title="已删除">
+            </div>
+        </div>
+    </form>
+</script>
+<!--增加操作-->
+<script type="text/html" id="addDialog">
+    <form class="layui-form" action="" style="padding: 20px;" lay-filter="editDialogForm">
+        <div class="layui-form-item">
+            <label class="layui-form-label">身份证号</label>
+            <div class="layui-input-inline">
+                <input id="id1" type="text" name="id" placeholder="请输入身份证号" autocomplete="off" class="layui-input" >
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">姓名</label>
+            <div class="layui-input-inline">
+                <input id="name1" type="text" name="name" placeholder="请输入姓名" autocomplete="off" class="layui-input" >
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">年龄</label>
+            <div class="layui-input-inline">
+                <input id="age1" type="text" name="age" placeholder="请输入年龄" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">驾校</label>
+            <div class="layui-input-inline">
+                <input id="driverSchool1" type="text" name="driverSchool" placeholder="请输入驾校" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">性别</label>
+            <div class="layui-input-inline">
+                <input type="radio" name="gender" value="男" title="男">
+                <input id="gender_female1" type="radio" name="gender" value="女" title="女" checked>
+            </div>
+        </div>
+        <div class="layui-form-item layui-form-text">
+            <label class="layui-form-label">电话</label>
+            <div class="layui-input-block">
+                <input id="phoneNumber1" type="text" name="phoneNumber" placeholder="请输入电话" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">是否删除</label>
+            <div class="layui-input-inline">
+                <input type="radio" name="isDel" value="0" title="未删除" checked>
+                <input id="is_del_true1" type="radio" name="isDel" value="1" title="已删除">
+            </div>
+        </div>
+    </form>
+</script>
+<script>
+    layuiModules=['table', 'layer', 'form'];
+
+    function mounted() {
+        var url ="../../candidate/findByPage.do";
+        $.ajax({
+            "url" : url,
+            "data" : {"pageIndex":1, "pageSize":10},
+            "type" : "POST",
+            "dataType" : "json",
+            "success" : function (json) {
+                if (json.code === 200) {
+                    // 往table填充服务器返回的数据
+                    table.render({
+                        elem: '#demo'
+                        , toolbar: '#toolbarDemo'
+                        , height: 550
+                        , defaultToolbar: []
+                        , method: 'POST'
+                        , cols: [[ //表头
+                            {checkbox: true, LAY_CHECKED: false}
+                            , {field: 'id', title: '身份证号', width: 140, sort: true}
+                            , {field: 'name', title: '姓名', width: 140, sort: true}
+                            , {field: 'age', title: '年龄', width: 80, sort: true}
+                            , {field: 'gender', title: '性别', width: 80, sort: true}
+                            , {field: 'phoneNumber', title: '电话', width: 140, sort: true}
+                            , {field: 'driverSchool', title: '驾校', width: 140, sort: true}
+                            , {field: 'isDel', title: '是否删除', width: 120, sort: true}
+                            , {fixed: 'right', width: 200, align: 'center', toolbar: '#barDemo'} //这里的toolbar值是模板元素的选择器
+                        ]]
+                        , page: true
+                        , url: url
+                        , request: {
+                            pageName: 'pageIndex' //页码的参数名称，默认：page
+                            ,limitName: 'pageSize' //每页数据量的参数名，默认：limit
+                        }
+                        , response: {
+                            statusName: 'code' //规定数据状态的字段名称，默认：code
+                            ,statusCode: 200 //规定成功的状态码，默认：0
+                            ,msgName: 'message' //规定状态信息的字段名称，默认：msg
+                            ,countName: 'count' //规定数据总数的字段名称，默认：count
+                            ,dataName: 'data' //规定数据列表的字段名称，默认：data
+                        }
+                        , parseData: function(res){ //res 即为原始返回的数据
+                            return {
+                                "code": res.code, //解析接口状态
+                                "message": res.message, //解析提示文本
+                                "count": res.count, //解析数据长度
+                                "data": res.data //解析数据列表
+                            };
+                        }
+                    });
+                } else {
+                    // 弹出中间提示框
+                    layer.open({
+                        title: "提示信息",
+                        content: json.message,
+                        yes: function (index2, layero) {
+                            if (json.code === 402) {
+                                // code==402说明未登录(BaseController.java定义)
+                                parent.location.href = "../../login.html";
+                            }
+                            layer.close(index2);
+                        }
+                    });
+                }
+            },
+            "error" : function () {
+                // 弹出中间提示框
+                layer.open({
+                    title: "提示信息",
+                    content: "出现异常！"
+                });
+            }
+        });
+        //监听事件
+        table.on('toolbar(test)', function (obj) {
+            var checkStatus = table.checkStatus(obj.config.id);
+            switch (obj.event) {
+                case 'add':
+                    layer.msg('添加');
+                    layer.open({
+                        type: 1,
+                        title: '添加',
+                        area:['50%','70%'],
+                        content: $('#addDialog').html(), //这里content是一个普通的String
+                        btn: ['确定', '取消'],
+                        success: function (index, layero) {
+                            form.render();
+                        },
+                        yes: function (index, layero) {
+
+                        },
+                        btn2: function (index, layero) {
+                            //return false 开启该代码可禁止点击该按钮关闭
+                        }
+                    });
+                    break;
+                case 'delete':
+                    console.log(checkStatus);
+                    layer.confirm('真的删除选中行么', function (index) {
+                        layer.close(index);
+                        //向服务端发送删除指令
+                    });
+                    break;
+            }
+        });
+
+        //监听工具条
+        table.on('tool(test)', function (obj) { //注：tool是工具条事件名，test是table原始容器的属性 lay-filter="对应的值"
+            var data = obj.data; //获得当前行数据
+            var layEvent = obj.event; //获得 lay-event 对应的值（也可以是表头的 event 参数对应的值）
+            var tr = obj.tr; //获得当前行 tr 的DOM对象
+
+            if (layEvent === 'detail') {
+                layer.open({
+                    type: 1,
+                    title: '查看',
+                    area:['50%','70%'],
+                    content: $('#editDialog').html(),
+                    btn: ['关闭'],
+                    success: function (index, layero) {
+                        form.render();
+                        form.val("editDialogForm", data);
+                    }
+                });
+            } else if (layEvent === 'edit') {
+                layer.open({
+                    type: 1,
+                    title: '编辑',
+                    area:['50%','70%'],
+                    content: $('#editDialog').html(),
+                    btn: ['确定', '取消'],
+                    success: function (index, layero) {
+                        form.render();
+                        form.val("editDialogForm", data);
+                    },
+                    yes: function (index, layero) {
+                        // 更新缓存，同步到服务器
+                        var url ="../../candidate/modifyOtherBaseInfo.do";
+                        var postData = '{"id":"'+ $('#id').val() + '","name":"' + $('#name').val() + '","age":"'+ $('#age').val() + '",' +
+                            '"gender":"' + $('input:radio[name="gender"]:checked').val() + '","phoneNumber":"' + $('#phoneNumber').val() + '",' +
+                            '"driverSchool":"' + $('#driverSchool').val()+
+                            '","isDel":"' + $('input:radio[name="isDel"]:checked').val() + '"}';
+                        $.ajax({
+                            "url" : url,
+                            "data" : {"newBaseInfoJsonData":postData},
+                            "type" : "POST",
+                            "dataType" : "json",
+                            "success" : function (json) {
+                                if (json.code === 200) {
+                                    obj.update({
+                                        name: $('#name').val()
+                                        ,age: $('#age').val()
+                                        ,gender: $('input:radio[name="gender"]:checked').val()
+                                        ,driverSchool: $('#driverSchool').val()
+                                        ,phoneNumber: $('#phoneNumber').val()
+                                        ,isDel: $('input:radio[name="isDel"]:checked').val()
+                                    });
+                                    layer.close(index);
+                                } else {
+                                    layer.open({
+                                        title: "提示信息",
+                                        content: json.message
+                                    });
+                                }
+                            },
+                            "error" : function () {
+                                // 弹出中间提示框
+                                layer.open({
+                                    title: "提示信息",
+                                    content: "保存失败，出现未知异常！"
+                                });
+                            }
+                        });
+                    },
+                    btn2: function (index, layero) {
+                        //return false 开启该代码可禁止点击该按钮关闭
+                    }
+                });
+            }
+        });
+
+    }
+
+</script>
+</html>

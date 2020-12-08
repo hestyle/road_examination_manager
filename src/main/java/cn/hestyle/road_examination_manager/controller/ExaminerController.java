@@ -76,4 +76,26 @@ public class ExaminerController extends BaseController{
         return new ResponseResult<List<Examiner>>(SUCCESS, pageCount, examinerList, "查询成功！");
     }
 
+    @PostMapping("/modifyOtherBaseInfo.do")
+    public ResponseResult<Void> handleModifyOtherBaseInfo(@RequestParam("newBaseInfoJsonData") String newBaseInfoJsonData, HttpSession session) {
+        // 判断是否已经登录过
+        if (null == session.getAttribute("username")) {
+            throw new ManagerNotLoginException("操作失败！请先进行管理员登录！");
+        }
+        // 将newBaseInfoJsonData转成json，取出新baseInfo的各个属性
+        ObjectMapper objectMapper = new ObjectMapper();
+        Examiner newExaminer = null;
+        try {
+            newExaminer = objectMapper.readValue(newBaseInfoJsonData, Examiner.class);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            return new ResponseResult<>(FAILURE, "修改失败，信息格式不正确！");
+        }
+        if (iExaminerService.modifyBaseInfo(newExaminer)) {
+            return new ResponseResult<>(SUCCESS, "基本信息修改保存成功！");
+        } else {
+            return new ResponseResult<>(FAILURE, "修改保存失败，原因未知！");
+        }
+    }
+
 }
