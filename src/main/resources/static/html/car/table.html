@@ -17,8 +17,11 @@
 
 <script type="text/html" id="barCar">
     <a class="layui-btn layui-btn-xs" lay-event="modify">更改</a>
-    <a class="layui-btn layui-btn-xs" lay-event="save">保存</a>
     <a class="layui-btn layui-btn-xs" lay-event="delete">删除</a>
+</script>
+
+<script type="text/html" id="actionBar">
+    <a class="layui-btn layui-btn-xs" lay-event="addcar">添加考试用车</a>
 </script>
 
 <script src="../../js/jquery.min.js"></script>
@@ -28,12 +31,13 @@
         var table = layui.table;
         table.render({
             elem: '#carlisttable' //指定原始表格元素选择器（推荐id选择器）
+            ,toolbar: '#actionBar'
+            ,defaultToolbar: ['print', 'exports']
             // , height: 315 //容器高度
             , url: '/road_examination_manager/car/findByPage.do'
             , method: 'POST'
-            ,toolbar: true
             , cols: [[ //标题栏
-                {title: '考试用车列表',align: 'center', colspan: 8} //rowspan即纵向跨越的单元格数
+                {title: '考试用车列表',align: 'center', colspan: 7} //rowspan即纵向跨越的单元格数
             ], [
                 {field: 'id', title: '车辆ID', sort: true}
                 ,{field: 'ipAddress', title: 'IP地址'}
@@ -41,7 +45,7 @@
                 ,{field: 'type', title: '类型'}
                 ,{field: 'description', title: '描述'}
                 ,{field: 'isDel',hide: true}
-                ,{toolbar: '#barCar', title: '操作', colspan: 2}
+                ,{fixed:'right',width:'20%', unresize:true ,align:'center', toolbar: '#barCar', title: '操作'}
             ]]
             ,page:true
             ,request: {
@@ -49,7 +53,6 @@
                 ,limitName: 'pageSize' //每页数据量的参数名，默认：limit
             }
             ,parseData:function(res){
-                console.log(res);
                 return {
                     "status": res.code,
                     "data" : res.data, //解析数据列表
@@ -67,8 +70,79 @@
             ,done: function(res, curr, count){
                 //如果是异步请求数据方式，res即为你接口返回的信息。
                 //如果是直接赋值的方式，res即为：{data: [], count: 99} data为当前页数据、count为数据总长度
-                console.log(res);
             }
+        });
+
+        table.on('tool(carlisttable)', function (obj) {
+            var data = obj.data;
+            switch(obj.event){
+                case 'modify':
+                    //do something
+
+                    //同步更新缓存对应的值
+                    obj.update({
+                        ipAddress: '123'
+                        ,macAddress: 'xxx'
+                        ,type: '类型'
+                        ,description: '描述'
+                    });
+                    break;
+                case 'delete':
+                    deleteById(data.id);
+                    break;
+            };
+        });
+
+        table.on('toolbar(carlisttable)', function (obj) {
+            switch(obj.event){
+                case 'addcar':
+                    parent.location.href = '/road_examination_manager/index.html#/car/addcar.html';
+                    parent.window.location.reload();
+                    break;
+            };
+        });
+
+        function deleteById(id) {
+            layui.use('layer', function () {
+                layer.confirm('确定删除?', function (index) {
+                    var url = "/road_examination_manager/car/del.do";
+                    $.ajax({
+                        "url": url,
+                        "type": "GET",
+                        "dataType": "json",
+                        "data":{'id': id},
+                        "success": function (json) {
+                            if (json.state == 200) {
+                                // 成功
+                                layer.open({
+                                    content: "删除成功!",
+                                    yes: function (index, layero) {//layero 当前层DOM对象
+                                        layer.close(index); //如果设定了yes回调，需进行手工关闭
+                                        location.reload();
+                                    }
+                                });
+                            } else {
+                                // 失败
+                                layer.alert(json.message);
+                            }
+                        },
+                        "error": function () {
+                            layer.open({
+                                content: "您的登录信息已过期!请重新登录!",
+                                yes: function (index, layero) {//layero 当前层DOM对象
+                                    layer.close(index); //如果设定了yes回调，需进行手工关闭
+                                    parent.location.href = "../../login.html";
+                                }
+                            });
+                        }
+                    });
+                    layer.close(index);
+                }, function (index) {
+                    layer.close(index);
+                });
+            });
+        }
     });
-    });
+
+
 </script>

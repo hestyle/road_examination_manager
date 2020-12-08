@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>添加考试用车</title>
+    <link rel="stylesheet" href="../../layui/css/layui.css">
+    <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+<!--<a class="layui-btn layui-btn-xs" style="margin-left: 20px; margin-top: 20px" onclick="history.go(-1); location.reload();">返回</a>-->
+
+<fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+    <legend style="color: #393D49">添加考试用车</legend>
+</fieldset>
+
+<form class="layui-form" action="" id="form-cardata">
+    <div class="layui-form-item">
+        <div class="layui-inline">
+            <label class="layui-form-label">IP地址</label>
+            <div class="layui-input-inline">
+                <input type="text" name="ipAddress" lay-verify="ip" autocomplete="off" placeholder="_._._._" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-inline">
+            <label class="layui-form-label">MAC地址</label>
+            <div class="layui-input-inline">
+                <input type="text" name="macAddress" lay-verify="mac" autocomplete="off" placeholder="xx:xx:xx:xx:xx:xx" class="layui-input">
+            </div>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <div class="layui-inline">
+            <label class="layui-form-label">车辆类型</label>
+            <div class="layui-input-inline">
+                <input type="text" name="type" lay-verify="cartype"  autocomplete="off" class="layui-input">
+            </div>
+        </div>
+    </div>
+
+    <div class="layui-form-item layui-form-text">
+        <nobr>
+            <lable class="layui-form-label">车辆描述</lable>
+        </nobr>
+        <div class="layui-input-block" style="margin-right: 10%">
+                        <textarea name="description" lay-verify="description" placeholder="对车辆的描述，可以为空"
+                                  class="layui-textarea"></textarea>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <!--提交按钮-->
+            <!--<div class="layui-inline">-->
+            <button id="btn-submit" type="submit" lay-submit="" class="layui-btn"
+                    lay-filter="addcar-submit">保存
+            </button>
+        </div>
+    </div>
+</form>
+
+</body>
+</html>
+<script src="../../js/jquery.min.js"></script>
+<script src="../../layui/layui.all.js"></script>
+<script>
+    layui.use(['form','layer'], function() {
+        var form = layui.form;
+        form.verify({
+            ip: [
+                /^(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])$/
+                ,'请输入正确的IP地址'
+            ]
+            ,mac: [
+                /^[a-fA-F0-9]{2}([-:]?[a-fA-F0-9]{2})([-:.]?[a-fA-F0-9]{2})([-:]?[a-fA-F0-9]{2})([-:.]?[a-fA-F0-9]{2})([-:]?[a-fA-F0-9]{2})$/
+                ,'请输入正确的MAC地址'
+            ]
+            ,cartype: [
+                /^[a-fA-F0-9]{1,5}$/
+                ,'车辆类型不符合要求'
+            ]
+        });
+
+        form.on('submit(addcar-submit)', function(data){
+            console.log(data.field); //当前容器的全部表单字段，名值对形式：{name: value}
+            $.ajax({
+                "url": "/road_examination_manager/car/add.do",
+                "type": "POST",
+                "data": data.field,
+                "dataType": "json",
+                "success": function (res) {
+                    layer.confirm('保存成功,是否返回车辆列表界面?', {icon: 3, title:'提示'}, function(index){
+                        //do something
+                        layer.close(index);
+                        parent.location.href = '/road_examination_manager/index.html#/car/table.html';
+                        parent.window.location.reload();
+                    });
+                },
+                "error": function (res) {
+                    layer.open({
+                        content: res.message,
+                        yes: function (index, layero) {//layero 当前层DOM对象
+                            layer.close(index); //如果设定了yes回调，需进行手工关闭
+                        }
+                    });
+                }
+            });
+
+            return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+        });
+
+    });
+
+</script>
