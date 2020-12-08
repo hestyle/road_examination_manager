@@ -49,8 +49,8 @@ public class ExamController extends BaseController {
         }
 
         List<Exam> examList = examService.findByPage(pageIndex, pageSize);
-        Integer pageCount = (examService.getExamCount() + pageSize - 1) / pageSize;
-        return new ResponseResult<List<Exam>>(SUCCESS, pageCount, examList, "查询成功！");
+//        Integer pageCount = (examService.getExamCount() + pageSize - 1) / pageSize;
+        return new ResponseResult<List<Exam>>(SUCCESS, examService.getExamCount(), examList, "查询成功！");
     }
 
     @PostMapping("add.do")
