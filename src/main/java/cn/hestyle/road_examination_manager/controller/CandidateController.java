@@ -36,7 +36,7 @@ public class CandidateController extends BaseController{
         }
 
         @PostMapping("/candidate_add.do")
-        public String handleAdd(@RequestParam("newCandidateJsonData")String newCandidataJsonData,
+        public String handleAdd(@RequestParam("newCandidateJsonData")String newCandidateJsonData,
                                 RedirectAttributes attributes, HttpSession session) {
             // 判断是否已经登录过
             if (null == session.getAttribute("username")) {
@@ -46,7 +46,7 @@ public class CandidateController extends BaseController{
             ObjectMapper objectMapper = new ObjectMapper();
             Candidate candidate = null;
             try {
-                candidate = objectMapper.readValue(newCandidataJsonData,Candidate.class);
+                candidate = objectMapper.readValue(newCandidateJsonData, Candidate.class);
             } catch (JsonProcessingException e) {
                 e.printStackTrace();
             }
@@ -55,7 +55,7 @@ public class CandidateController extends BaseController{
             //返回消息
             attributes.addFlashAttribute("message","考生添加成功！");
             //返回考生列表界面
-            return "redirect:/examiner";
+            return "redirect:/candidate/table.html";
         }
 
         @PostMapping("/candidate_del.do")
