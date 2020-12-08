@@ -109,6 +109,55 @@
             </div>
         </form>
     </script>
+    <!--每条数据的编辑操作-->
+    <script type="text/html" id="addDialog">
+        <form id="add_form" class="layui-form" action="" style="padding: 20px;" lay-filter="addDialogForm">
+            <div class="layui-form-item">
+                <label class="layui-form-label">用户名</label>
+                <div class="layui-input-inline">
+                    <input id="add_username" type="text" name="username" placeholder="请输入用户名" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">密码</label>
+                <div class="layui-input-inline">
+                    <input id="add_password" type="password" name="password" placeholder="请输入密码" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">姓名</label>
+                <div class="layui-input-inline">
+                    <input id="add_name" type="text" name="name" placeholder="请输入姓名" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">年龄</label>
+                <div class="layui-input-inline">
+                    <input id="add_age" type="text" name="age" placeholder="请输入年龄" autocomplete="off" class="layui-input" value="0">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">性别</label>
+                <div class="layui-input-inline">
+                    <input type="radio" name="add_gender" value="男" title="男">
+                    <input type="radio" name="add_gender" value="女" title="女" checked>
+                </div>
+            </div>
+            <div class="layui-form-item layui-form-text">
+                <label class="layui-form-label">电话</label>
+                <div class="layui-input-block">
+                    <input id="add_phoneNumber" type="text" name="phoneNumber" placeholder="请输入电话" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">是否删除</label>
+                <div class="layui-input-inline">
+                    <input type="radio" name="add_isDel" value="0" title="未删除" checked>
+                    <input type="radio" name="add_isDel" value="1" title="已删除">
+                </div>
+            </div>
+        </form>
+    </script>
     <script>
         layuiModules=['table', 'layer', 'form'];
 
@@ -188,18 +237,48 @@
                 var checkStatus = table.checkStatus(obj.config.id);
                 switch (obj.event) {
                     case 'add':
-                        layer.msg('添加');
                         layer.open({
                             type: 1,
                             title: '添加',
                             area:['50%','70%'],
-                            content: $('#editDialog').html(), //这里content是一个普通的String
+                            content: $('#addDialog').html(),
                             btn: ['确定', '取消'],
                             success: function (index, layero) {
                                 form.render();
                             },
                             yes: function (index, layero) {
-
+                                if (checkAddForm() === false) {
+                                    return false;
+                                }
+                                var url ="../../manager/add.do";
+                                var postData = '{"username":"'+ $('#add_username').val() + '","password":"' + $('#add_password').val() + '",' +
+                                    '"name":"' + $('#add_name').val() + '","age":'+ $('#add_age').val() + ',"gender":"' + $('input:radio[name="add_gender"]:checked').val() + '",';
+                                if ($('#add_phoneNumber').val().length !== 0) {
+                                    postData += '"phoneNumber":"' + $('#add_phoneNumber').val() + '",';
+                                }
+                                postData += '"isDel":' + $('input:radio[name="add_isDel"]:checked').val() + '}';
+                                $.ajax({
+                                    "url" : url,
+                                    "data" : {"newManageJsonData":postData},
+                                    "type" : "POST",
+                                    "dataType" : "json",
+                                    "success" : function (json) {
+                                        layer.open({
+                                            title: "提示信息",
+                                            content: json.message
+                                        });
+                                        if (json.code === 200) {
+                                            layer.close(index);
+                                        }
+                                    },
+                                    "error" : function () {
+                                        // 弹出中间提示框
+                                        layer.open({
+                                            title: "提示信息",
+                                            content: "保存失败，出现未知异常！"
+                                        });
+                                    }
+                                });
                             },
                             btn2: function (index, layero) {
                                 //return false 开启该代码可禁止点击该按钮关闭
@@ -334,5 +413,29 @@
 
         }
 
+        function checkAddForm() {
+            if ($('#add_username').val().length === 0) {
+                layer.open({
+                    title: "提示信息",
+                    content: "用户名字段不能为空！"
+                });
+                return false;
+            }
+            if ($('#add_password').val().length === 0) {
+                layer.open({
+                    title: "提示信息",
+                    content: "密码字段不能为空！"
+                });
+                return false;
+            }
+            if ($('#add_name').val().length === 0) {
+                layer.open({
+                    title: "提示信息",
+                    content: "姓名字段不能为空！"
+                });
+                return false;
+            }
+            return true;
+        }
     </script>
 </html>
