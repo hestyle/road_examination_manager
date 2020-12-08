@@ -16,4 +16,6 @@ public interface IExaminerService {
     List<Examiner> findByPage(Integer pageIndex, Integer pageSize);
 
     Integer getExaminerCount();
+
+    Boolean modifyBaseInfo(Examiner examiner);
 }
