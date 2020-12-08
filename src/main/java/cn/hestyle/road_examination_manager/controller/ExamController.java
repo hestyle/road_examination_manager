@@ -79,7 +79,7 @@ public class ExamController extends BaseController {
     }
 
 
-    @PostMapping("/deleteByAdmissionNo.do")
+    @GetMapping("/deleteByAdmissionNo.do")
     public ResponseResult<Void> handleDeleteByAdmissionNo(@RequestParam("admissionNo") String admissionNo,
                                                           HttpSession session){
         // 判断是否已经登录过

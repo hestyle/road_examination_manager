@@ -13,7 +13,7 @@ import javax.annotation.Resource;
 import java.util.List;
 
 @Service
-public class ExamService implements IExamService {
+public class ExamServiceImpl implements IExamService {
     @Resource
     ExamMapper examMapper;
 
