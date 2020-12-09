@@ -84,4 +84,21 @@ public class ExamItemServiceImpl implements IExamItemService {
         return examItem;
     }
 
+    @Override
+    public ExamItem findByName(String name) throws FindException {
+        if (name == null || name.length() == 0) {
+            throw new FindException("查找失败，查找的name字段不能为空！");
+        }
+        ExamItem examItem = null;
+        try {
+            examItem = examItemMapper.findByName(name);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new FindException("查找失败，数据库发生未知异常！");
+        }
+        if (examItem == null) {
+            throw new FindException("查找失败，name = " + name + "的考试项未注册！");
+        }
+        return examItem;
+    }
 }

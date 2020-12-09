@@ -21,4 +21,11 @@ public interface IExamItemService {
      * @return      examItem
      */
     ExamItem findById(Integer id) throws FindException;
+
+    /**
+     * 通过name查找ExamItem
+     * @param name  examItem name
+     * @return      examItem
+     */
+    ExamItem findByName(String name) throws FindException;
 }
