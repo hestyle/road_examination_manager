@@ -7,9 +7,8 @@ import java.util.List;
 
 @Mapper
 public interface ExaminerMapper{
-    List<Examiner> findAll();
 
-    void addExaminer(Examiner examiner);
+    Integer addExaminer(Examiner examiner);
 
     void delExaminer(String id);
 

@@ -5,9 +5,8 @@ import cn.hestyle.road_examination_manager.entity.Examiner;
 import java.util.List;
 
 public interface IExaminerService {
-    List<Examiner> examiner_list();
 
-    void addExaminer(Examiner examiner);
+    Boolean addExaminer(Examiner examiner);
 
     void delExaminer(String id);
 
