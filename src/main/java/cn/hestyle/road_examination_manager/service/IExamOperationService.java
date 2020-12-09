@@ -29,9 +29,9 @@ public interface IExamOperationService {
     /**
      * 通过name查找examOperation
      * @param name              name
-     * @return                  examOperation list
+     * @return                  examOperation
      */
-    List<ExamOperation> findByName(String name) throws FindException;
+    ExamOperation findByName(String name) throws FindException;
 
     /**
      * 分页查询所有examOperation

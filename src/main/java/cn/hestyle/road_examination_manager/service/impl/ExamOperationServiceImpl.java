@@ -58,22 +58,22 @@ public class ExamOperationServiceImpl implements IExamOperationService {
     }
 
     @Override
-    public List<ExamOperation> findByName(String name) throws FindException {
+    public ExamOperation findByName(String name) throws FindException {
         // 判断name长度
         if (name == null || name.length() == 0) {
             throw new FindException("查找失败，name不能为空！");
         }
-        List<ExamOperation> examOperationList = null;
+        ExamOperation examOperation = null;
         try {
-            examOperationList = examOperationMapper.findByName(name);
+            examOperation = examOperationMapper.findByName(name);
         } catch (Exception e) {
             e.printStackTrace();
             throw new FindException("查找失败，数据库发生未知异常！");
         }
-        if (examOperationList == null || examOperationList.size() == 0) {
+        if (examOperation == null) {
             throw new FindException("查找失败，未查找到操作项！");
         }
-        return examOperationList;
+        return examOperation;
     }
 
     @Override

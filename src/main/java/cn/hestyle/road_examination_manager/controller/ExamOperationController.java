@@ -58,12 +58,12 @@ public class ExamOperationController extends BaseController {
     }
 
     @PostMapping("/findByName.do")
-    public ResponseResult<List<ExamOperation>> handleFindByName(@RequestParam(value = "name", defaultValue = "") String name, HttpSession session) {
+    public ResponseResult<ExamOperation> handleFindByName(@RequestParam(value = "name", defaultValue = "") String name, HttpSession session) {
         // 判断是否已经登录过(有两种可能管理员、考官)
         if (null == session.getAttribute("username") && null == session.getAttribute("id")) {
             throw new ManagerNotLoginException("操作失败！请先进行管理员或考官登录！");
         }
-        return new ResponseResult<List<ExamOperation>>(SUCCESS, "查询成功！", examOperationService.findByName(name));
+        return new ResponseResult<ExamOperation>(SUCCESS, "查询成功！", examOperationService.findByName(name));
     }
 
     @PostMapping("/findByPage.do")
