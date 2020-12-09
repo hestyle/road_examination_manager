@@ -17,6 +17,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpSession;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/examiner")
@@ -118,6 +119,27 @@ public class ExaminerController extends BaseController{
         } else {
             return new ResponseResult<>(FAILURE, "批量删除失败，原因未知！");
         }
+    }
+
+    @PostMapping("/resetOtherPassword.do")
+    public ResponseResult<Void> handleResetOtherPassword(@RequestParam("newPasswordJsonData") String newPasswordJsonData, HttpSession session) {
+        // 判断是否已经登录过
+        if (null == session.getAttribute("username")) {
+            throw new ManagerNotLoginException("操作失败！请先进行管理员登录！");
+        }
+        // 将newManagerData转成json，取出username、newPassword、reNewPassword三个属性
+        ObjectMapper objectMapper = new ObjectMapper();
+        Map<String, Object> newPasswordDataMap = null;
+        try {
+            newPasswordDataMap = objectMapper.readValue(newPasswordJsonData, new TypeReference<Map<String, Object>>() {});
+        }catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseResult<>(FAILURE, "数据格式不正确！");
+        }
+        if (iExaminerService.modifyPassword((String) newPasswordDataMap.get("id"), (String) newPasswordDataMap.get("newPassword"), (String) newPasswordDataMap.get("reNewPassword"))) {
+            return new ResponseResult<>(SUCCESS, "密码重置成功！");
+        }
+        return new ResponseResult<>(FAILURE, "数据格式不正确！");
     }
 
 }
