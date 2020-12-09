@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpSession;
 
 import java.util.List;
+import java.util.Map;
 
 import static cn.hestyle.road_examination_manager.controller.BaseController.FAILURE;
 import static cn.hestyle.road_examination_manager.controller.BaseController.SUCCESS;
@@ -113,5 +114,32 @@ public class ExamController extends BaseController {
             return new ResponseResult<>(SUCCESS, "考试信息修改保存成功！");
         }
         return new ResponseResult<>(FAILURE, "修改保存失败，原因未知！");
+    }
+
+    @PostMapping("/getDetailInfoByAdmissionNo/{admissionNo}")
+    public ResponseResult<Map<String, Object>> handleGetDetailInfoByAdmissionNo(@PathVariable("admissionNo") String admissionNo,
+                                                                   HttpSession session){
+
+        Map<String, Object> data= examService.findDetailInfoByAdmissionNo(admissionNo);
+
+        return new ResponseResult<Map<String, Object>>(SUCCESS, "查询成功", data);
+    }
+
+    @PostMapping("/getExamItemsByAdmissionNo/{admissionNo}")
+    public ResponseResult<Map<String, Object>> handleGetExamItemsInfoByAdmissionNo(@PathVariable("admissionNo") String admissionNo,
+                                                                                HttpSession session){
+
+        Map<String, Object> data= examService.findExamItemsInfoByAdmissionNo(admissionNo);
+
+        return new ResponseResult<Map<String, Object>>(SUCCESS, "查询成功", data);
+    }
+
+    @PostMapping("/getExamLightItemsInfoByAdmissionNo/{admissionNo}")
+    public ResponseResult<Map<String, Object>> handleGetExamLightTemplateInfoByAdmissionNo(@PathVariable("admissionNo") String admissionNo,
+                                                                                      HttpSession session){
+
+        Map<String, Object> data= examService.findExamLightItemsInfoByAdmissionNo(admissionNo);
+
+        return new ResponseResult<Map<String, Object>>(SUCCESS, "查询成功", data);
     }
 }

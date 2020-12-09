@@ -1,21 +1,29 @@
 package cn.hestyle.road_examination_manager.service.impl;
 
 import cn.hestyle.road_examination_manager.entity.Exam;
+import cn.hestyle.road_examination_manager.entity.ExamItem;
+import cn.hestyle.road_examination_manager.entity.ExamTemplate;
+import cn.hestyle.road_examination_manager.mapper.ExamItemMapper;
 import cn.hestyle.road_examination_manager.mapper.ExamMapper;
+import cn.hestyle.road_examination_manager.mapper.ExamTemplateMapper;
 import cn.hestyle.road_examination_manager.service.IExamService;
-import cn.hestyle.road_examination_manager.service.exception.AccessDefinedException;
-import cn.hestyle.road_examination_manager.service.exception.DeleteException;
-import cn.hestyle.road_examination_manager.service.exception.PageFindErrorException;
-import cn.hestyle.road_examination_manager.service.exception.UpdateException;
+import cn.hestyle.road_examination_manager.service.exception.*;
+import org.apache.ibatis.javassist.NotFoundException;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class ExamServiceImpl implements IExamService {
     @Resource
     ExamMapper examMapper;
+    @Resource
+    ExamItemMapper examItemMapper;
+    @Resource
+    ExamTemplateMapper examTemplateMapper;
 
     @Override
     public Exam findByAdmissionNo(String admissionNo) throws AccessDefinedException{
@@ -99,5 +107,135 @@ public class ExamServiceImpl implements IExamService {
             e.printStackTrace();
             throw new AccessDefinedException("修改考试信息时访问数据库失败！");
         }
+    }
+
+    @Override
+    public Map<String, Object> findDetailInfoByAdmissionNo(String admissionNo) {
+        Map<String, Object> res = new HashMap<String, Object>();
+        Exam exam = findByAdmissionNo(admissionNo);
+        if(exam == null){
+            throw new FindException("符合要求的考试信息不存在！");
+        }
+        res.put("exam", exam);
+
+        ExamTemplate examTemplate = null;
+        try {
+            examTemplate = examTemplateMapper.findById(exam.getExamTemplateId());
+        }catch (Exception e){
+            e.printStackTrace();
+            throw new AccessDefinedException("获取考试模板信息时访问数据库失败！");
+        }
+        if(examTemplate == null){
+            throw new FindException("符合要求的道路考试模板不存在！");
+        }
+        res.put("examTemplate", examTemplate);
+
+        ExamTemplate lightExamTemplate = null;
+        try {
+            lightExamTemplate = examTemplateMapper.findById(exam.getLightExamTemplateId());
+        }catch (Exception e){
+            e.printStackTrace();
+            throw new AccessDefinedException("获取考试模板信息时访问数据库失败！");
+        }
+        if(lightExamTemplate == null){
+            throw new FindException("符合要求的道路考试模板不存在！");
+        }
+        res.put("lightExamTemplate", lightExamTemplate);
+
+        List<ExamItem> examItemList = null;
+        try {
+            examItemList = examTemplateMapper.findExamItemListByExamTemplateId(examTemplate.getId());
+        }catch (Exception e){
+            e.printStackTrace();
+            throw new AccessDefinedException("获取考试模板的考试项目时访问数据库失败！");
+        }
+        res.put("examItemList", examItemList);
+
+        List<ExamItem> lightExamItemList = null;
+        try {
+            lightExamItemList = examTemplateMapper.findExamItemListByExamTemplateId(lightExamTemplate.getId());
+        }catch (Exception e){
+            e.printStackTrace();
+            throw new AccessDefinedException("获取考试模板的考试项目时访问数据库失败！");
+        }
+        res.put("lightExamItemList", lightExamItemList);
+
+        return res;
+    }
+
+    @Override
+    public Map<String, Object> findExamItemsInfoByAdmissionNo(String admissionNo) {
+        Map<String, Object> res = new HashMap<String, Object>();
+        Exam exam = findByAdmissionNo(admissionNo);
+        if(exam == null){
+            throw new FindException("符合要求的考试信息不存在！");
+        }
+
+        /**
+         * 获取道路考试模板
+         */
+        ExamTemplate examTemplate = null;
+        try {
+            examTemplate = examTemplateMapper.findById(exam.getExamTemplateId());
+        }catch (Exception e){
+            e.printStackTrace();
+            throw new AccessDefinedException("获取考试模板信息时访问数据库失败！");
+        }
+        if(examTemplate == null){
+            throw new FindException("符合要求的道路考试模板不存在！");
+        }
+        res.put("examTemplate", examTemplate);
+
+        /*
+        获取考试模板对应考试内容
+         */
+        List<ExamItem> examItemList = null;
+        try {
+            examItemList = examTemplateMapper.findExamItemListByExamTemplateId(examTemplate.getId());
+        }catch (Exception e){
+            e.printStackTrace();
+            throw new AccessDefinedException("获取考试模板的考试项目时访问数据库失败！");
+        }
+        res.put("examItemList", examItemList);
+
+        return res;
+    }
+
+    @Override
+    public Map<String, Object> findExamLightItemsInfoByAdmissionNo(String admissionNo) {
+        Map<String, Object> res = new HashMap<String, Object>();
+        Exam exam = findByAdmissionNo(admissionNo);
+        if(exam == null){
+            throw new FindException("符合要求的考试信息不存在！");
+        }
+
+        /**
+         * 获取夜考考试模板
+         */
+        ExamTemplate lightExamTemplate = null;
+        try {
+            lightExamTemplate = examTemplateMapper.findById(exam.getLightExamTemplateId());
+        }catch (Exception e){
+            e.printStackTrace();
+            throw new AccessDefinedException("获取考试模板信息时访问数据库失败！");
+        }
+        if(lightExamTemplate == null){
+            throw new FindException("符合要求的道路考试模板不存在！");
+        }
+        res.put("lightExamTemplate", lightExamTemplate);
+
+        /*
+        获取考试模板对应考试内容
+         */
+        List<ExamItem> lightExamItemList = null;
+        try {
+            lightExamItemList = examTemplateMapper.findExamItemListByExamTemplateId(lightExamTemplate.getId());
+        }catch (Exception e){
+            e.printStackTrace();
+            throw new AccessDefinedException("获取考试模板的考试项目时访问数据库失败！");
+        }
+        res.put("lightExamItemList", lightExamItemList);
+
+        return res;
     }
 }

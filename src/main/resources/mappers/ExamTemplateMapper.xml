@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="cn.hestyle.road_examination_manager.mapper.ExamTemplateMapper">
+    <select id="findById" parameterType="String" resultType="cn.hestyle.road_examination_manager.entity.ExamTemplate">
+         SELECT
+            `id` AS `id`,
+            `name` AS `name`,
+            `score` AS `score`,
+            `type` AS `type`,
+            `is_del` AS `isDel`
+        FROM
+            t_exam_template
+        WHERE
+            `id`=#{id}
+    </select>
+
+
+    <select id="findExamItemListByExamTemplateId" parameterType="String" resultType="cn.hestyle.road_examination_manager.entity.ExamItem">
+        SELECT
+            t_exam_item.id as `id`,
+			t_exam_item.name as `name`,
+			t_exam_item.score as `score`,
+			t_exam_item.voice_path as `voicePath`,
+			t_exam_item.operation_ids as `operationIds`,
+			t_exam_item.description as `description`,
+			t_exam_item.is_del as `isDel`
+		FROM
+		    t_exam_item
+		WHERE
+		    t_exam_item.id
+		in (
+		    SELECT exam_item_id
+		    FROM exam_template__item
+		    WHERE exam_template_id = #{id}
+		)
+    </select>
+</mapper>
