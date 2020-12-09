@@ -234,9 +234,9 @@
                         var postData = '[';
                         for (var value of checkStatus.data) {
                             if (postData.length > 1) {
-                                postData += ',"' + value.username + '"';
+                                postData += ',"' + value.id + '"';
                             } else {
-                                postData += '"' + value.username + '"';
+                                postData += '"' + value.id + '"';
                             }
                         }
                         postData += ']';
@@ -249,10 +249,10 @@
                             return;
                         }
                         layer.confirm('删除选中行？', function (index) {
-                            var url ="../../manager/deleteMangersByUsername.do";
+                            var url ="../../examOperation/deleteByIdList.do";
                             $.ajax({
                                 "url" : url,
-                                "data" : {"usernameListJsonData":postData},
+                                "data" : {"idListJsonString":postData},
                                 "type" : "POST",
                                 "dataType" : "json",
                                 "success" : function (json) {
