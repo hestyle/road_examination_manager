@@ -41,6 +41,13 @@ public interface IExamItemService {
     List<ExamItem> findByPage(Integer pageIndex, Integer pageSize) throws PageFindErrorException;
 
     /**
+     * 通过idsString批量查询
+     * @param idsString     格式"id1,id2,id3,...,idn"字符串
+     * @return              ExamItem list
+     */
+    List<ExamItem> findByIdsString(String idsString) throws FindException;
+
+    /**
      * 通过idList批量查询
      * @param idList        格式{id1,id2,id3,...,idn}
      * @return              ExamItem list

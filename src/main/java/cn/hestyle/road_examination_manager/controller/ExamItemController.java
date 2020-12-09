@@ -2,6 +2,7 @@ package cn.hestyle.road_examination_manager.controller;
 
 import cn.hestyle.road_examination_manager.controller.exception.ManagerNotLoginException;
 import cn.hestyle.road_examination_manager.entity.ExamItem;
+import cn.hestyle.road_examination_manager.entity.ExamOperation;
 import cn.hestyle.road_examination_manager.service.IExamItemService;
 import cn.hestyle.road_examination_manager.util.ResponseResult;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -76,6 +77,15 @@ public class ExamItemController extends BaseController {
         List<ExamItem> examItemList = examItemService.findByPage(pageIndex, pageSize);
         Integer count = examItemService.getExamItemCount();
         return new ResponseResult<List<ExamItem>>(SUCCESS, count, examItemList, "查询成功！");
+    }
+
+    @PostMapping("/findByIdsString.do")
+    public ResponseResult<List<ExamItem>> handleFindByIdsString(@RequestParam(value = "idsString", defaultValue = "") String idsString, HttpSession session) {
+        // 判断是否已经登录过(有两种可能管理员、考官)
+        if (null == session.getAttribute("username") && null == session.getAttribute("id")) {
+            throw new ManagerNotLoginException("操作失败！请先进行管理员或考官登录！");
+        }
+        return new ResponseResult<List<ExamItem>>(SUCCESS, "查询成功！", examItemService.findByIdsString(idsString));
     }
 
     @PostMapping("/findByIdList.do")

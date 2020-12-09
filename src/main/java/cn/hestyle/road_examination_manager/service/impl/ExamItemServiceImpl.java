@@ -125,6 +125,30 @@ public class ExamItemServiceImpl implements IExamItemService {
     }
 
     @Override
+    public List<ExamItem> findByIdsString(String idsString) throws FindException {
+        // 检查iDList长度
+        if (idsString == null || idsString.length() == 0) {
+            throw new FindException("查找失败，未指定需要查找的操作项id！");
+        }
+        List<Integer> idList = new ArrayList<>();
+        // 将idsString转idList
+        String[] ids = idsString.split(",");
+        for (String idString : ids) {
+            if (idString == null || idString.length() == 0) {
+                continue;
+            }
+            try {
+                Integer id = Integer.parseInt(idString);
+                idList.add(id);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        // 调用findByIdList方法
+        return findByIdList(idList);
+    }
+
+    @Override
     public List<ExamItem> findByIdList(List<Integer> idList) throws FindException {
         // 检查iDList长度
         if (idList == null || idList.size() == 0) {
