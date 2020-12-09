@@ -2,7 +2,9 @@ package cn.hestyle.road_examination_manager.controller;
 
 import cn.hestyle.road_examination_manager.controller.exception.AddManagerDataErrorException;
 import cn.hestyle.road_examination_manager.controller.exception.ManagerNotLoginException;
+import cn.hestyle.road_examination_manager.entity.Candidate;
 import cn.hestyle.road_examination_manager.entity.Exam;
+import cn.hestyle.road_examination_manager.service.ICandidateService;
 import cn.hestyle.road_examination_manager.service.IExamService;
 import cn.hestyle.road_examination_manager.util.ResponseResult;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -24,6 +26,8 @@ import static cn.hestyle.road_examination_manager.controller.BaseController.SUCC
 public class ExamController extends BaseController {
     @Autowired
     IExamService examService;
+    @Autowired
+    ICandidateService candidateService;
 
     @GetMapping("/findExamInfoByAdmissionNo.do")
     public ResponseResult<Exam> handleFindExamInfoByAdmissionNo(@RequestParam(name = "admissionNo") String admissionNo,
@@ -153,5 +157,21 @@ public class ExamController extends BaseController {
         Map<String, Object> data= examService.findExamLightItemsInfoByAdmissionNo(admissionNo);
 
         return new ResponseResult<Map<String, Object>>(SUCCESS, "查询成功", data);
+    }
+
+    @PostMapping("getCandidateInfoByCandidateId/{candidateId}")
+    public ResponseResult<Candidate> handleGetCandidateInfoByCandidateId(@PathVariable("candidateId") String id,
+                                                                         HttpSession session){
+        // 判断是否已经登录过
+        if (null == session.getAttribute("username")) {
+            throw new ManagerNotLoginException("操作失败！请先进行管理员登录！");
+        }
+
+        Candidate candidate = candidateService.findById(id);
+        if(candidate == null){
+            return new ResponseResult<>(FAILURE, "考生信息不存在！");
+        }
+
+        return new ResponseResult<Candidate>(SUCCESS, "查询成功！", candidate);
     }
 }
