@@ -7,6 +7,12 @@
     <link rel="stylesheet" href="../../css/style.css">
 </head>
 <body>
+<!--    <div class="div-search">-->
+<!--        <div class="layui-inline">-->
+<!--            <input class="layui-input" name="admissionNo" id="admissionNo" autocomplete="off" placeholder="准考证号">-->
+<!--        </div>-->
+<!--        <button class="layui-btn" data-type="reload">搜索</button>-->
+<!--    </div>-->
     <table id="examTable" lay-filter="examTable"></table>
 </body>
 </html>
@@ -17,6 +23,48 @@
 
 
 <script>
+    function showOperation(ids) {
+        $.ajax({
+            url: '/road_examination_manager/examOperation/findByIdsString.do?idsString='+ids
+            ,type: 'POST'
+            ,"success": function (res) {
+                var operationListData = res.data;
+                if(res.code == 200) {
+                    var content = '';
+                    for(var i in operationListData){
+                        var num = Number(i) + 1;
+                        if(i == 0){
+                            content = content + num + '、' + operationListData[i].description;
+                        }else{
+                            content = content + '<br>' + num + '、' + operationListData[i].description;
+                        }
+                    }
+                    console.log(content);
+                    layer.open({
+                        content: content,
+                        title: '所需操作',
+                        btn:[]
+                    });
+                }else{
+                    layer.open({
+                        content: res.message,
+                        yes: function (index, layero) {//layero 当前层DOM对象
+                            layer.closeAll(); //如果设定了yes回调，需进行手工关闭
+                        }
+                    });
+                }
+            },
+            "error": function (res) {
+                layer.open({
+                    content: res.message,
+                    yes: function (index, layero) {//layero 当前层DOM对象
+                        layer.close(index); //如果设定了yes回调，需进行手工关闭
+                    }
+                });
+            }
+        })
+    }
+
     layui.use(['table','form', 'layer'], function() {
         var table = layui.table;
         var form = layui.form;
@@ -29,15 +77,16 @@
             ,url: '/road_examination_manager/exam/findByPage.do'
             ,method: 'POST'
             ,cols:[[
-                {title: '考试信息列表',align: 'center', colspan: 7}
+                {title: '考试信息列表',align: 'center', colspan: 10}
             ],[
                 {title: '准考证号', field: 'admissionNo'}
-                ,{title: '成绩', field: 'scored'}
+                ,{title: '考生身份证', field: 'candidateId'}
+                ,{title: '成绩', field: 'scoredDesc'}
                 ,{title: '考试开始时间', field: 'examTime'}
                 ,{title: '考试结束时间', field: 'completedTime'}
-                ,{title: '考试状态', field: 'state'}
-                ,{title: '通过状态', field: 'isPass'}
-                ,{fixed:'right',width:'20%', unresize:true ,align:'center', toolbar: '#rowBar', title: '操作'}
+                ,{title: '考试状态', field: 'stateDesc'}
+                ,{title: '通过状态', field: 'isPassDesc'}
+                ,{fixed:'right', unresize:true ,align:'center', toolbar: '#rowBar', title: '操作'}
             ]]
             ,page: true
             ,request: {
@@ -45,24 +94,30 @@
                 ,limitName: 'pageSize' //每页数据量的参数名，默认：limit
             }
             ,parseData:function(res){
-                console.log(res.data);
                 for(i in res.data){
                     switch (res.data[i].state) {
                         case 0:
-                            res.data[i].state="<b style='color: #FF5722'>未考试</b>";
+                            res.data[i]['stateDesc']="<b style='color: #FF5722'>未考试</b>";
+
                             break;
                         case 1:
-                            res.data[i].state="<b style='color: #FFB800'>考试中</b>";
+                            res.data[i]['stateDesc']="<b style='color: #FFB800'>考试中</b>";
                             break;
                         case 2:
-                            res.data[i].state="<b style='color: #FFB800'>完成考试</b>";
+                            res.data[i]['stateDesc']="<b style='color: #FFB800'>完成考试</b>";
                             break;
                     }
                     if(res.data[i].scored == null || res.data[i].scored == '' || res.data[i].scored == undefined){
-                        res.data[i].scored = "<span style='color: #FF5722'>无成绩</span>"
+                        res.data[i]['scoredDesc'] = "<span style='color: #FF5722'>无成绩</span>"
+                    }else{
+                        res.data[i]['scoredDesc'] = "<span style='color: #FFB800'>res.data[i].scored</span>"
                     }
                     if(res.data[i].isPass == null || res.data[i].isPass == '' || res.data[i].isPass == undefined){
-                        res.data[i].isPass = "<span style='color: #FF5722'>异常</span>"
+                        res.data[i]['isPassDesc'] = "<span style='color: #FF5722'>异常</span>"
+                    }else if(res.data[i].isPass == 0){
+                        res.data[i]['isPassDesc'] = "<span style='color: #FFB800'>合格</span>"
+                    }else if(res.data[i].isPass == 1){
+                        res.data[i]['isPassDesc'] = "<span style='color: #FF5722'>不合格</span>"
                     }
                 }
                 return {
@@ -91,6 +146,9 @@
             switch(obj.event) {
                 case 'delete':
                     deleteByAdmissionNo(examData.admissionNo);
+                    break;
+                case 'detail':
+                    createDetailDialog(obj);
                     break;
             }
         });
@@ -133,6 +191,194 @@
                 layer.close(index);
             });
         }
+
+        function createDetailDialog(obj){
+            var examData = obj.data;
+            layer.open({
+                type: 1,
+                title: '考试详情',
+                area: ['70%', '90%'],
+                content: $('#dialog-detail').html(),
+                btn: [],
+            })
+
+            $('#candidateAdmissionNo').html(examData.admissionNo);
+            $('#candidateId').html(examData.candidateId);
+            // 获取考生信息
+            $.ajax({
+                url: '/road_examination_manager/exam/getCandidateInfoByCandidateId/' + examData.candidateId
+                ,type: 'POST'
+                ,"success": function (res) {
+                    if(res.code == 200) {
+                        var candidateData = res.data;
+                        $('#candidateName').html(candidateData.name);
+                        $('#candidateAge').html(candidateData.age);
+                        $('#candidateGender').html(candidateData.gender);
+                        $('#candidatePhoneNum').html(candidateData.phoneNumber);
+                        $('#candidateSchoolName').html(candidateData.driverSchool);
+                    }else{
+                        layer.open({
+                            content: res.message,
+                            yes: function (index, layero) {//layero 当前层DOM对象
+                                layer.closeAll(); //如果设定了yes回调，需进行手工关闭
+                            }
+                        });
+                    }
+                },
+                "error": function (res) {
+                    layer.open({
+                        content: res.message,
+                        yes: function (index, layero) {//layero 当前层DOM对象
+                            layer.close(index); //如果设定了yes回调，需进行手工关闭
+                        }
+                    });
+                }
+            })
+
+            // 获取道路考试信息
+            $.ajax({
+                url: '/road_examination_manager/exam/getExamItemsByAdmissionNo/' + examData.admissionNo
+                ,type: 'POST'
+                ,"success": function (res) {
+                    if(res.code == 200) {
+                        var examTemplate = res.data.examTemplate;
+                        var examIemplateItemList = res.data.examItemList;
+                        $('#examTemplateId').html(examTemplate.id);
+                        $('#examTemplateName').html(examTemplate.name);
+                        $('#examScore').html(examTemplate.score);
+                        $('#examType').html(examTemplate.type);
+                        for(var i in examIemplateItemList){
+                            examIemplateItemList[i]['operation'] = '<a class="layui-btn layui-btn-sm" onclick="showOperation(#{ids})" >查看操作</a>'.replace('#{ids}', "\'"+examIemplateItemList[i].operationIds+"\'");
+                        }
+
+                        table.render({
+                            elem: '#examItemTable'
+                            ,data: examIemplateItemList
+                            ,cols: [[
+                                {field: 'id', title: 'ID'}
+                                ,{field: 'name', title: '名称'}
+                                ,{field: 'description', title: '描述'}
+                                ,{field: 'score', title: '分值'}
+                                ,{field: 'operation', fixed: 'right', title: '', unresize:true}
+                            ]]
+                        })
+                    }else{
+                        layer.open({
+                            content: res.message,
+                            yes: function (index, layero) {//layero 当前层DOM对象
+                                layer.closeAll(); //如果设定了yes回调，需进行手工关闭
+                            }
+                        });
+                    }
+                },
+                "error": function (res) {
+                    layer.open({
+                        content: res.message,
+                        yes: function (index, layero) {//layero 当前层DOM对象
+                            layer.close(index); //如果设定了yes回调，需进行手工关闭
+                        }
+                    });
+                }
+            })
+
+            // 获取灯光考试信息
+            $.ajax({
+                url: '/road_examination_manager/exam/getExamLightItemsInfoByAdmissionNo/' + examData.admissionNo
+                ,type: 'POST'
+                ,"success": function (res) {
+                    if(res.code == 200) {
+                        var lightExamTemplate = res.data.lightExamTemplate;
+                        var lightExamIemplateItemList = res.data.lightExamItemList;
+                        $('#lightExamTemplateId').html(lightExamTemplate.id);
+                        $('#lightExamTemplateName').html(lightExamTemplate.name);
+                        $('#lightExamScore').html(lightExamTemplate.score);
+                        $('#lightExamType').html(lightExamTemplate.type);
+                        for(var i in lightExamIemplateItemList){
+                            lightExamIemplateItemList[i]['operation'] = '<a class="layui-btn layui-btn-sm" onclick="showOperation(#{ids})" >查看操作</a>'.replace('#{ids}', "\'"+lightExamIemplateItemList[i].operationIds+"\'");
+
+                        }
+
+                        table.render({
+                            elem: '#lightExamItemTable'
+                            ,data: lightExamIemplateItemList
+                            ,cols: [[
+                                {field: 'id', title: 'ID'}
+                                ,{field: 'name', title: '名称'}
+                                ,{field: 'description', title: '描述'}
+                                ,{field: 'score', title: '分值'}
+                                ,{field: 'operation', fixed: 'right', title: '', unresize:true}
+                            ]]
+                        })
+                    }else{
+                        layer.open({
+                            content: res.message,
+                            yes: function (index, layero) {//layero 当前层DOM对象
+                                layer.closeAll(); //如果设定了yes回调，需进行手工关闭
+                            }
+                        });
+                    }
+                },
+                "error": function (res) {
+                    layer.open({
+                        content: res.message,
+                        yes: function (index, layero) {//layero 当前层DOM对象
+                            layer.close(index); //如果设定了yes回调，需进行手工关闭
+                        }
+                    });
+                }
+            })
+
+            if(examData.state == 0){
+                var html = '<lable class="layui-form-label" style="width: 120px; color: #FF5722">考生还未参加考试</lable>';
+                $('#div-exam-result').html(html)
+            }else if(examData.state == 1){
+                var html = '<lable class="layui-form-label" style="width: 120px; color: #FF5722">考生正在考试</lable>';
+                $('#div-exam-result').html(html)
+            }else if(examData.state == 2){
+                console.log(examData);
+
+                var htmlScored = '<div class="layui-row">'
+                            +'<label class="layui-form-label" style="width: 120px">考试成绩:</label>'
+                            +'<label class="layui-form-label" style="width: 100px; text-align: left">'+examData.scored+'</label>'
+                            +'</div>'
+                $('#div-exam-result').append(htmlScored)
+
+                var htmlPass = '<div class="layui-row">'
+                    +'<label class="layui-form-label" style="width: 120px">是否合格:</label>'
+                    +'<label class="layui-form-label" style="width: 100px; text-align: left">#{pass}</label>'
+                    +'</div>';
+                if(examData.isPass == 0){
+                    htmlPass=htmlPass.replace('#{pass}', '考试成绩合格');
+
+                }else if(examData.isPass == 1){
+                    htmlPass=htmlPass.replace('#{pass}', '考试成绩不合格');
+                }else {
+                    htmlPass=htmlPass.replace('#{pass}', '异常');
+                }
+                $('#div-exam-result').append(htmlPass)
+            }else{ //考试状态异常
+                var html = '<lable class="layui-form-label" style="width: 120px; color: #FF5722">系统异常</lable>';
+                $('#div-exam-result').html(html)
+            }
+
+
+
+        }
+
+        $('.div-search .layui-btn').on('click', function () {
+            var search_val = $('.div-search .layui-inline .layui-input').val();
+            console.log(search_val);
+            examTableIns.reload({
+                page: {
+                    curr: 1
+                }
+                ,where: {
+                    key: {
+                        admissionNo: search_val
+                    }
+                }
+            })
+        })
     });
 
 </script>
@@ -144,4 +390,96 @@
 <script type="text/html" id="rowBar">
     <a class="layui-btn layui-btn-sm" lay-event="detail">详细</a>
     <a class="layui-btn layui-btn-sm layui-btn-danger" lay-event="delete">删除</a>
+</script>
+
+<script type="text/html" id="dialog-detail">
+    <fieldset class="layui-elem-field">
+        <legend>考生信息</legend>
+        <div class="layui-field-box">
+            <div class="layui-row">
+                <label class="layui-form-label" style="width: 120px">考生姓名:</label>
+                <label class="layui-form-label" id="candidateName" style="text-align: left"></label>
+            </div>
+            <div class="layui-row">
+                <label class="layui-form-label" style="width: 120px">身份证号:</label>
+                <label class="layui-form-label" id="candidateId" style="text-align: left"></label>
+            </div>
+            <div class="layui-row">
+                <label class="layui-form-label" style="width: 120px">准考证号:</label>
+                <label class="layui-form-label" id="candidateAdmissionNo" style="text-align: left"></label>
+            </div>
+            <div class="layui-row">
+                <label class="layui-form-label" style="width: 120px">考生年龄:</label>
+                <label class="layui-form-label" id="candidateAge" style="text-align: left"></label>
+            </div>
+            <div class="layui-row">
+                <label class="layui-form-label" style="width: 120px">考生性别:</label>
+                <label class="layui-form-label" id="candidateGender" style="text-align: left"></label>
+            </div>
+            <div class="layui-row">
+                <label class="layui-form-label" style="width: 120px">联系方式:</label>
+                <label class="layui-form-label" id="candidatePhoneNum" style="text-align: left"></label>
+            </div>
+            <div class="layui-row">
+                <label class="layui-form-label" style="width: 120px">驾校名称:</label>
+                <label class="layui-form-label" id="candidateSchoolName" style="text-align: left"></label>
+            </div>
+        </div>
+    </fieldset>
+
+    <fieldset class="layui-elem-field">
+        <legend>考试结果</legend>
+        <div class="layui-field-box" id="div-exam-result">
+
+        </div>
+    </fieldset>
+
+    <fieldset class="layui-elem-field">
+        <legend>道路考试</legend>
+        <div class="layui-field-box">
+            <div class="layui-row">
+                <label class="layui-form-label" style="width: 120px">道路考试模板ID:</label>
+                <label class="layui-form-label" id="examTemplateId" style="width: 100px; text-align: left"></label>
+            </div>
+            <div class="layui-row">
+                <label class="layui-form-label" style="width: 120px;">道路考试名称:</label>
+                <label class="layui-form-label" id="examTemplateName" style="width: auto; text-align: left"></label>
+            </div>
+            <div class="layui-row">
+                <label class="layui-form-label" style="width: 120px">道路考试分值:</label>
+                <label class="layui-form-label" id="examScore" style="width: 100px; text-align: left"></label>
+            </div>
+            <div class="layui-row">
+                <label class="layui-form-label" style="width: 120px">考试类型:</label>
+                <label class="layui-form-label" id="examType" style="width: 100px; text-align: left"></label>
+            </div>
+
+            <table id="examItemTable" lay-filter="examItemTable"></table>
+        </div>
+    </fieldset>
+
+    <fieldset class="layui-elem-field">
+        <legend>灯光考试</legend>
+        <div class="layui-field-box">
+            <div class="layui-row">
+                <label class="layui-form-label" style="width: 120px">灯光考试模板ID:</label>
+                <label class="layui-form-label" id="lightExamTemplateId" style="width: 100px; text-align: left"></label>
+            </div>
+            <div class="layui-row">
+                <label class="layui-form-label" style="width: 120px;">灯光考试名称:</label>
+                <label class="layui-form-label" id="lightExamTemplateName" style="width: auto; text-align: left"></label>
+            </div>
+            <div class="layui-row">
+                <label class="layui-form-label" style="width: 120px">灯光考试分值:</label>
+                <label class="layui-form-label" id="lightExamScore" style="width: 100px; text-align: left"></label>
+            </div>
+            <div class="layui-row">
+                <label class="layui-form-label" style="width: 120px">考试类型:</label>
+                <label class="layui-form-label" id="lightExamType" style="width: 100px; text-align: left"></label>
+            </div>
+
+            <table id="lightExamItemTable" lay-filter="lightExamItemTable"></table>
+        </div>
+    </fieldset>
+
 </script>
