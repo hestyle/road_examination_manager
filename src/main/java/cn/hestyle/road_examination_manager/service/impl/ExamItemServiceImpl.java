@@ -6,9 +6,11 @@ import cn.hestyle.road_examination_manager.mapper.ExamOperationMapper;
 import cn.hestyle.road_examination_manager.service.IExamItemService;
 import cn.hestyle.road_examination_manager.service.exception.FindException;
 import cn.hestyle.road_examination_manager.service.exception.InsertException;
+import cn.hestyle.road_examination_manager.service.exception.PageFindErrorException;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * ExamItem业务实现类
@@ -100,5 +102,33 @@ public class ExamItemServiceImpl implements IExamItemService {
             throw new FindException("查找失败，name = " + name + "的考试项未注册！");
         }
         return examItem;
+    }
+
+    @Override
+    public List<ExamItem> findByPage(Integer pageIndex, Integer pageSize) throws PageFindErrorException {
+        // 检查页码是否合法
+        if (pageIndex < 1) {
+            throw new PageFindErrorException("页码 " + pageIndex + " 非法，必须大于0！");
+        }
+        // 检查页大小是否合法
+        if (pageSize < 1) {
+            throw new PageFindErrorException("页大小 " + pageSize + " 非法，必须大于0！");
+        }
+        // 调用持久层mapper
+        try {
+            return examItemMapper.findByPage((pageIndex - 1) * pageSize, pageSize);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new PageFindErrorException("分页查询失败，数据库发生未知异常！");
+        }
+    }
+
+    @Override
+    public Integer getExamItemCount() {
+        try {
+            return examItemMapper.getExamItemCount();
+        } catch (Exception e) {
+            throw new PageFindErrorException("分页查询失败，数据库发生未知异常！");
+        }
     }
 }

@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpSession;
+import java.util.List;
 
 /**
  * examItem controller
@@ -62,5 +63,17 @@ public class ExamItemController extends BaseController {
             throw new ManagerNotLoginException("操作失败！请先进行管理员或考官登录！");
         }
         return new ResponseResult<ExamItem>(SUCCESS, "查询成功！", examItemService.findByName(name));
+    }
+
+    @PostMapping("/findByPage.do")
+    public ResponseResult<List<ExamItem>> handleFindByPage(@RequestParam(value = "pageIndex", defaultValue = "1") Integer pageIndex,
+                                                                @RequestParam(value = "pageSize", defaultValue = "10") Integer pageSize, HttpSession session) {
+        // 判断是否已经登录过(有两种可能管理员、考官)
+        if (null == session.getAttribute("username") && null == session.getAttribute("id")) {
+            throw new ManagerNotLoginException("操作失败！请先进行管理员或考官登录！");
+        }
+        List<ExamItem> examItemList = examItemService.findByPage(pageIndex, pageSize);
+        Integer count = examItemService.getExamItemCount();
+        return new ResponseResult<List<ExamItem>>(SUCCESS, count, examItemList, "查询成功！");
     }
 }
