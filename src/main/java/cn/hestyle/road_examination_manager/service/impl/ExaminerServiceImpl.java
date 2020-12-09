@@ -142,4 +142,28 @@ public class ExaminerServiceImpl implements IExaminerService{
             throw new DeleteException("批量删除失败，数据库发生未知异常！");
         }
     }
+
+    @Override
+    public Boolean modifyPassword(String id, String newPassword, String reNewPassword)  throws UpdateException {
+        // 通过username查询manager
+        Examiner examiner = examinerMapper.findById(id);
+        if (null == examiner) {
+            throw new UpdateException("密码修改失败，" + id + " 用户未注册！");
+        }
+        // 判断两次密码是否一致
+        if (null == newPassword || !newPassword.equals(reNewPassword)) {
+            throw new UpdateException("密码修改失败！两次密码不一致，请重新输入！");
+        }
+        // 判断密码长度是否合法
+        if (newPassword.length() < 6 || newPassword.length() > 20) {
+            throw new UpdateException("密码长度非法，请控制在6-20位！");
+        }
+        examiner.setPassword(newPassword);
+        try {
+            return 1 == examinerMapper.update(examiner);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new UpdateException("密码修改失败，数据库发生未知异常！");
+        }
+    }
 }

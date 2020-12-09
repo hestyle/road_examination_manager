@@ -98,6 +98,7 @@
 		UPDATE `t_examiner` SET
 			`id` = #{id},
 			`name` = #{name},
+			`password` = #{password},
 		 	`age` = #{age},
 			`gender` = #{gender},
 			`phone_number` = #{phoneNumber},

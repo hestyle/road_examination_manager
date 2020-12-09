@@ -20,4 +20,6 @@ public interface IExaminerService {
     Boolean modifyBaseInfo(Examiner examiner);
 
     Boolean deleteExaminerByIdList(List<String> idList);
+
+    Boolean modifyPassword(String id, String newPassword, String reNewPassword);
 }

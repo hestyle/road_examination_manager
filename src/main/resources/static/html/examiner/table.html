@@ -72,7 +72,7 @@
 </script>
 <!--每条数据的重置密码操作-->
 <script type="text/html" id="resetPasswordDialog">
-    <form class="layui-form" action="" style="padding: 20px;" lay-filter="editDialogForm">
+    <form class="layui-form" action="" style="padding: 20px;" lay-filter="resetPasswordForm">
         <div class="layui-form-item">
             <label class="layui-form-label">身份证号</label>
             <div class="layui-input-inline">
@@ -80,7 +80,7 @@
             </div>
         </div>
         <div class="layui-form-item">
-            <label class="layui-form-label">用户名</label>
+            <label class="layui-form-label">姓名</label>
             <div class="layui-input-inline">
                 <input id="reset_name" type="text" name="name" autocomplete="off" class="layui-input" disabled>
             </div>
@@ -355,7 +355,7 @@
                     btn: ['确定', '取消'],
                     success: function (index, layero) {
                         form.render();
-                        form.val("editDialogForm", data);
+                        form.val("resetPasswordForm", data);
                     },
                     yes: function (index, layero) {
                         // 更新缓存，同步到服务器
