@@ -3,11 +3,13 @@ package cn.hestyle.road_examination_manager.service.impl;
 import cn.hestyle.road_examination_manager.entity.Candidate;
 import cn.hestyle.road_examination_manager.mapper.CandidateMapper;
 import cn.hestyle.road_examination_manager.service.ICandidateService;
+import cn.hestyle.road_examination_manager.service.exception.DeleteException;
 import cn.hestyle.road_examination_manager.service.exception.PageFindErrorException;
 import cn.hestyle.road_examination_manager.service.exception.UpdateException;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -115,6 +117,31 @@ public class CandidateServiceImpl implements ICandidateService{
         } catch (Exception e) {
             e.printStackTrace();
             throw new PageFindErrorException("分页查询失败，数据库发生未知异常！");
+        }
+    }
+
+    @Override
+    public Boolean deleteCandidateByIdList(List<String> idList) throws DeleteException {
+        // 首先验证所有username是否都注册
+        List<Candidate> candidateList = new ArrayList<>();
+        for (String id : idList) {
+            Candidate manager = candidateMapper.findById(id);
+            if (manager == null) {
+                throw new DeleteException("批量删除失败，" + id + " 未注册！");
+            } else {
+                candidateList.add(manager);
+            }
+        }
+        // 批量删除
+        try {
+            for (Candidate candidate : candidateList) {
+                candidate.setIsDel(1);
+                candidateMapper.update(candidate);
+            }
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new DeleteException("批量删除失败，数据库发生未知异常！");
         }
     }
 }

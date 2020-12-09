@@ -6,6 +6,7 @@ import cn.hestyle.road_examination_manager.service.ICandidateService;
 import cn.hestyle.road_examination_manager.service.exception.CandidateNotFoundException;
 import cn.hestyle.road_examination_manager.util.ResponseResult;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,19 +22,8 @@ import java.util.List;
 @RequestMapping("/candidate")
 public class CandidateController extends BaseController{
         @Autowired
-    ICandidateService iCandidateService;
-        @PostMapping("/candidate_list.do")
-        public ResponseResult<List<Candidate>> handleList(HttpSession session) {
-            // 判断是否已经登录过
-            if (null == session.getAttribute("username")) {
-                throw new ManagerNotLoginException("操作失败！请先进行管理员登录！");
-            }
-            // 执行业务端的业务
-            List<Candidate> list = iCandidateService.candidateList();
-            // 将用户名发到session中，保存到服务端
-            session.setAttribute("candidates", list);
-            return new ResponseResult<>(SUCCESS, "考生查询成功！", list);
-        }
+        ICandidateService iCandidateService;
+
 
         @PostMapping("/candidate_add.do")
         public String handleAdd(@RequestParam("newCandidateJsonData")String newCandidateJsonData,
@@ -105,6 +95,28 @@ public class CandidateController extends BaseController{
             List<Candidate> candidateList = iCandidateService.findByPage(pageIndex, pageSize);
             Integer pageCount = (iCandidateService.getCandidateCount() + pageSize - 1) / pageSize;
             return new ResponseResult<List<Candidate>>(SUCCESS, pageCount, candidateList, "查询成功！");
+        }
+
+        @PostMapping("/deleteCandidatesById.do")
+        public ResponseResult<Void> handleDeleteCandidatesByUsername(@RequestParam("idListJsonData") String idListJsonData, HttpSession session) {
+            // 判断是否已经登录过
+            if (null == session.getAttribute("username")) {
+                throw new ManagerNotLoginException("操作失败！请先进行管理员登录！");
+            }
+            // 将usernameListJsonData转成String list
+            ObjectMapper objectMapper = new ObjectMapper();
+            List<String> idList = null;
+            try {
+                idList = objectMapper.readValue(idListJsonData, new TypeReference<List<String>>() {});
+            } catch (JsonProcessingException e) {
+                e.printStackTrace();
+                return new ResponseResult<>(FAILURE, "批量删除失败，信息格式不正确！");
+            }
+            if (iCandidateService.deleteCandidateByIdList(idList)) {
+                return new ResponseResult<>(SUCCESS, "修改保存成功！");
+            } else {
+                return new ResponseResult<>(FAILURE, "批量删除失败，原因未知！");
+            }
         }
 
 }

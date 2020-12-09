@@ -18,4 +18,6 @@ public interface ICandidateService {
     Integer getCandidateCount();
 
     Boolean modifyBaseInfo(Candidate candidate);
+
+    Boolean deleteCandidateByIdList(List<String> idList);
 }

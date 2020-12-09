@@ -3,12 +3,14 @@ package cn.hestyle.road_examination_manager.service.impl;
 import cn.hestyle.road_examination_manager.entity.Examiner;
 import cn.hestyle.road_examination_manager.mapper.ExaminerMapper;
 import cn.hestyle.road_examination_manager.service.IExaminerService;
+import cn.hestyle.road_examination_manager.service.exception.DeleteException;
 import cn.hestyle.road_examination_manager.service.exception.ExaminerNotFoundException;
 import cn.hestyle.road_examination_manager.service.exception.PageFindErrorException;
 import cn.hestyle.road_examination_manager.service.exception.UpdateException;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -113,6 +115,31 @@ public class ExaminerServiceImpl implements IExaminerService{
         } catch (Exception e) {
             e.printStackTrace();
             throw new UpdateException("信息修改失败，数据库发生未知异常！");
+        }
+    }
+
+    @Override
+    public Boolean deleteExaminerByIdList(List<String> idList) throws DeleteException {
+        // 首先验证所有username是否都注册
+        List<Examiner> examinerList = new ArrayList<>();
+        for (String id : idList) {
+            Examiner examiner = examinerMapper.findById(id);
+            if (examiner == null) {
+                throw new DeleteException("批量删除失败，" + id + " 未注册！");
+            } else {
+                examinerList.add(examiner);
+            }
+        }
+        // 批量删除
+        try {
+            for (Examiner candidate : examinerList) {
+                candidate.setIsDel(1);
+                examinerMapper.update(candidate);
+            }
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new DeleteException("批量删除失败，数据库发生未知异常！");
         }
     }
 }
