@@ -4,6 +4,7 @@ import cn.hestyle.road_examination_manager.entity.ExamItem;
 import cn.hestyle.road_examination_manager.service.exception.FindException;
 import cn.hestyle.road_examination_manager.service.exception.InsertException;
 import cn.hestyle.road_examination_manager.service.exception.PageFindErrorException;
+import cn.hestyle.road_examination_manager.service.exception.UpdateException;
 
 import java.util.List;
 
@@ -59,4 +60,11 @@ public interface IExamItemService {
      * @return          examItem的数量
      */
     Integer getExamItemCount();
+
+    /**
+     * 修改examItem
+     * @param examItem      examItem
+     * @return              是否修改成功
+     */
+    Boolean modify(ExamItem examItem) throws UpdateException;
 }

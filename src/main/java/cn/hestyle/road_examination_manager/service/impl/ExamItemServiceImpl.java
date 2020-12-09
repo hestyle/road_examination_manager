@@ -7,6 +7,7 @@ import cn.hestyle.road_examination_manager.service.IExamItemService;
 import cn.hestyle.road_examination_manager.service.exception.FindException;
 import cn.hestyle.road_examination_manager.service.exception.InsertException;
 import cn.hestyle.road_examination_manager.service.exception.PageFindErrorException;
+import cn.hestyle.road_examination_manager.service.exception.UpdateException;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -176,6 +177,74 @@ public class ExamItemServiceImpl implements IExamItemService {
             return examItemMapper.getExamItemCount();
         } catch (Exception e) {
             throw new PageFindErrorException("分页查询失败，数据库发生未知异常！");
+        }
+    }
+
+    @Override
+    public Boolean modify(ExamItem examItem) throws UpdateException {
+        // 判断各属性是否合法
+        if (examItem.getId() == null) {
+            throw new UpdateException("修改失败，未指定需要修改考试项的id！");
+        }
+        ExamItem examItemOriginData = examItemMapper.findById(examItem.getId());
+        if (examItemOriginData == null) {
+            throw new UpdateException("修改失败，考试项id = " + examItem.getId() + "未注册！");
+        }
+        // 如果名称发生了修改，则判断名称是否被注册
+        if (!examItemOriginData.getName().equals(examItem.getName())) {
+            if (examItem.getName() == null) {
+                throw new UpdateException("修改失败，考试项name字段必需设置！");
+            } else if (examItemMapper.findByName(examItem.getName()) != null) {
+                throw new UpdateException("修改失败，考试项name = " + examItem.getName() + "已被注册！");
+            } else {
+                examItemOriginData.setName(examItem.getName());
+            }
+        }
+        // 分值不可修改
+        if (!examItemOriginData.getScore().equals(examItem.getScore())) {
+            throw new UpdateException("修改失败，考试项分值不能修改，请恢复至score = " + examItemOriginData.getScore() + "！");
+        }
+        // 检查operation_ids是否合法
+        if (examItem.getOperationIds() == null || examItem.getOperationIds().length() == 0) {
+            throw new InsertException("修改失败，考试项所包含的操作项id必须设置！");
+        }
+        String[] operationIds = examItem.getOperationIds().split(",");
+        for (String idString : operationIds) {
+            if (idString == null || idString.length() == 0) {
+                throw new InsertException("修改失败，考试项operation_ids设置格式错误！");
+            }
+            Integer id = null;
+            try {
+                // 各个id必须是正确的数字，且是有效的operation_id
+                id = Integer.parseInt(idString);
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw new InsertException("修改失败，考试项operation_ids设置格式错误！");
+            }
+            if (null == examOperationMapper.findById(id)) {
+                throw new InsertException("修改失败，考试项operation_ids中id = " + id + "未注册！");
+            }
+        }
+        examItemOriginData.setOperationIds(examItem.getOperationIds());
+        // 检查description字段
+        if (examItem.getDescription() != null) {
+            if (examItem.getDescription().length() > 255) {
+                throw new UpdateException("修改失败，考试项描述过长，必须控制在1~255个字符！");
+            } else {
+                examItemOriginData.setDescription(examItem.getDescription());
+            }
+        }
+        // 检查isDel字段
+        if (examItem.getIsDel() == null || (examItem.getIsDel() != 0 && examItem.getIsDel() != 1)) {
+            throw new InsertException("修改失败，考试项状态必须设置，且有且只有0未删除、1已删除两种状态！");
+        } else {
+            examItemOriginData.setIsDel(examItem.getIsDel());
+        }
+        try {
+            return 1 == examItemMapper.update(examItemOriginData);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new UpdateException("修改失败，数据库发生未知异常！");
         }
     }
 }
