@@ -94,7 +94,7 @@
 </script>
 <!--增加操作-->
 <script type="text/html" id="addDialog">
-    <form class="layui-form" action="" style="padding: 20px;" lay-filter="editDialogForm">
+    <form class="layui-form" action="" style="padding: 20px;" lay-filter="addDialogForm">
         <div class="layui-form-item">
             <label class="layui-form-label">身份证号</label>
             <div class="layui-input-inline">
@@ -122,8 +122,8 @@
         <div class="layui-form-item">
             <label class="layui-form-label">性别</label>
             <div class="layui-input-inline">
-                <input type="radio" name="gender" value="男" title="男">
-                <input id="gender_female1" type="radio" name="gender" value="女" title="女" checked>
+                <input type="radio" name="gender1" value="男" title="男">
+                <input type="radio" name="gender1" value="女" title="女" checked>
             </div>
         </div>
         <div class="layui-form-item layui-form-text">
@@ -135,8 +135,8 @@
         <div class="layui-form-item">
             <label class="layui-form-label">是否删除</label>
             <div class="layui-input-inline">
-                <input type="radio" name="isDel" value="0" title="未删除" checked>
-                <input id="is_del_true1" type="radio" name="isDel" value="1" title="已删除">
+                <input type="radio" name="isDel1" value="0" title="未删除" checked>
+                <input type="radio" name="isDel1" value="1" title="已删除">
             </div>
         </div>
     </form>
@@ -221,18 +221,49 @@
             var checkStatus = table.checkStatus(obj.config.id);
             switch (obj.event) {
                 case 'add':
-                    layer.msg('添加');
                     layer.open({
                         type: 1,
                         title: '添加',
                         area:['50%','70%'],
-                        content: $('#addDialog').html(), //这里content是一个普通的String
+                        content: $('#addDialog').html(),
                         btn: ['确定', '取消'],
                         success: function (index, layero) {
                             form.render();
                         },
                         yes: function (index, layero) {
-
+                            if (checkAddForm() === false) {
+                                return false;
+                            }
+                            var url ="../../candidate/candidate_add.do";
+                            var postData = '{"id":"'+ $('#id1').val() + '",' +
+                                '"driverSchool":"' + $('#driverSchool1').val() + '",' +
+                                '"name":"' + $('#name1').val() + '","age":'+ $('#age1').val() + ',"gender":"' + $('input:radio[name="gender1"]:checked').val() + '",';
+                            if ($('#phoneNumber1').val().length !== 0) {
+                                postData += '"phoneNumber":"' + $('#phoneNumber1').val() + '",';
+                            }
+                            postData += '"isDel":' + $('input:radio[name="isDel1"]:checked').val() + '}';
+                            $.ajax({
+                                "url" : url,
+                                "data" : {"newCandidateJsonData":postData},
+                                "type" : "POST",
+                                "dataType" : "json",
+                                "success" : function (json) {
+                                    layer.open({
+                                        title: "提示信息",
+                                        content: json.message
+                                    });
+                                    if (json.code === 200) {
+                                        layer.close(index);
+                                    }
+                                },
+                                "error" : function () {
+                                    // 弹出中间提示框
+                                    layer.open({
+                                        title: "提示信息",
+                                        content: "保存失败，出现未知异常！"
+                                    });
+                                }
+                            });
                         },
                         btn2: function (index, layero) {
                             //return false 开启该代码可禁止点击该按钮关闭
@@ -240,10 +271,52 @@
                     });
                     break;
                 case 'delete':
-                    console.log(checkStatus);
-                    layer.confirm('真的删除选中行么', function (index) {
+                    // 拼接选中行的username
+                    var postData = '[';
+                    for (var value of checkStatus.data) {
+                        if (postData.length > 1) {
+                            postData += ',"' + value.username + '"';
+                        } else {
+                            postData += '"' + value.username + '"';
+                        }
+                    }
+                    postData += ']';
+                    // 判断是否选中待删除行
+                    if (postData.length === 2) {
+                        layer.open({
+                            title: "提示信息",
+                            content: "请选中需要删除的数据！"
+                        });
+                        return;
+                    }
+                    layer.confirm('删除选中行？', function (index) {
+                        var url ="../../manager/deleteMangersByUsername.do";
+                        $.ajax({
+                            "url" : url,
+                            "data" : {"usernameListJsonData":postData},
+                            "type" : "POST",
+                            "dataType" : "json",
+                            "success" : function (json) {
+                                layer.open({
+                                    title: "提示信息",
+                                    content: json.message
+                                });
+                                if (json.code === 200) {
+                                    // 更新成功，则关闭重置窗口、刷新表格
+                                    layer.close(index);
+                                    table.reload('managerTable');
+                                }
+                            },
+                            "error" : function () {
+                                // 弹出中间提示框
+                                layer.open({
+                                    title: "提示信息",
+                                    content: "保存失败，出现未知异常！"
+                                });
+                            }
+                        });
+
                         layer.close(index);
-                        //向服务端发送删除指令
                     });
                     break;
             }
@@ -324,6 +397,31 @@
             }
         });
 
+    }
+
+    function checkAddForm() {
+        if ($('#id1').val().length === 0) {
+            layer.open({
+                title: "提示信息",
+                content: "id字段不能为空！"
+            });
+            return false;
+        }
+        if ($('#password1').val().length === 0) {
+            layer.open({
+                title: "提示信息",
+                content: "密码字段不能为空！"
+            });
+            return false;
+        }
+        if ($('#name1').val().length === 0) {
+            layer.open({
+                title: "提示信息",
+                content: "姓名字段不能为空！"
+            });
+            return false;
+        }
+        return true;
     }
 
 </script>
