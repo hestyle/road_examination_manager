@@ -24,12 +24,12 @@ public class ExamOperationServiceImpl implements IExamOperationService {
         // 判断name字段是否为空
         if (examOperation.getName() == null || examOperation.getName().length() == 0) {
             throw new InsertException("保存失败，考试操作项name字段不能空！");
-        } else if (examOperation.getName().length() < 10 || examOperation.getName().length() > 50) {
-            throw new InsertException("保存失败，考试操作项name字段长度非法，请控制在10~50个字符！");
+        } else if (examOperation.getName().length() < 5 || examOperation.getName().length() > 50) {
+            throw new InsertException("保存失败，考试操作项name字段长度非法，请控制在5~50个字符！");
         }
         // 判断name是否被占用
         if (examOperationMapper.findByName(examOperation.getName()) != null) {
-            throw new InsertException("保存失败，考试操作项name字段已被占用，请修改再次提交！");
+            throw new InsertException("保存失败，考试操作项name = " + examOperation.getName() + " 已被占用，请修改再次提交！");
         }
         try {
             return 1 == examOperationMapper.addNew(examOperation);

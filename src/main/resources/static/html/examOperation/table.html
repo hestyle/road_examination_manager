@@ -59,40 +59,15 @@
     <script type="text/html" id="addDialog">
         <form id="add_form" class="layui-form" action="" style="padding: 20px;" lay-filter="addDialogForm">
             <div class="layui-form-item">
-                <label class="layui-form-label">用户名</label>
+                <label class="layui-form-label">名称</label>
                 <div class="layui-input-inline">
-                    <input id="add_username" type="text" name="username" placeholder="请输入用户名" autocomplete="off" class="layui-input">
+                    <input id="add_name" type="text" name="name" placeholder="请输入名称" autocomplete="off" class="layui-input" style="width: 140%;">
                 </div>
             </div>
             <div class="layui-form-item">
-                <label class="layui-form-label">密码</label>
+                <label class="layui-form-label">描述</label>
                 <div class="layui-input-inline">
-                    <input id="add_password" type="password" name="password" placeholder="请输入密码" autocomplete="off" class="layui-input">
-                </div>
-            </div>
-            <div class="layui-form-item">
-                <label class="layui-form-label">姓名</label>
-                <div class="layui-input-inline">
-                    <input id="add_name" type="text" name="name" placeholder="请输入姓名" autocomplete="off" class="layui-input">
-                </div>
-            </div>
-            <div class="layui-form-item">
-                <label class="layui-form-label">年龄</label>
-                <div class="layui-input-inline">
-                    <input id="add_age" type="text" name="age" placeholder="请输入年龄" autocomplete="off" class="layui-input" value="0">
-                </div>
-            </div>
-            <div class="layui-form-item">
-                <label class="layui-form-label">性别</label>
-                <div class="layui-input-inline">
-                    <input type="radio" name="add_gender" value="男" title="男">
-                    <input type="radio" name="add_gender" value="女" title="女" checked>
-                </div>
-            </div>
-            <div class="layui-form-item layui-form-text">
-                <label class="layui-form-label">电话</label>
-                <div class="layui-input-block">
-                    <input id="add_phoneNumber" type="text" name="phoneNumber" placeholder="请输入电话" autocomplete="off" class="layui-input">
+                    <textarea id="add_description" name="description" placeholder="请输入描述" class="layui-textarea" style="width: 140%;"></textarea>
                 </div>
             </div>
             <div class="layui-form-item">
@@ -194,16 +169,12 @@
                                 if (checkAddForm() === false) {
                                     return false;
                                 }
-                                var url ="../../manager/add.do";
-                                var postData = '{"username":"'+ $('#add_username').val() + '","password":"' + $('#add_password').val() + '",' +
-                                    '"name":"' + $('#add_name').val() + '","age":'+ $('#add_age').val() + ',"gender":"' + $('input:radio[name="add_gender"]:checked').val() + '",';
-                                if ($('#add_phoneNumber').val().length !== 0) {
-                                    postData += '"phoneNumber":"' + $('#add_phoneNumber').val() + '",';
-                                }
-                                postData += '"isDel":' + $('input:radio[name="add_isDel"]:checked').val() + '}';
+                                var url ="../../examOperation/add.do";
+                                var postData = '{"name":"' + $('#add_name').val() + '","description":"' + $('#add_description').val() + '",' +
+                                    '"isDel":' + $('input:radio[name="add_isDel"]:checked').val() + '}';
                                 $.ajax({
                                     "url" : url,
-                                    "data" : {"newManageJsonData":postData},
+                                    "data" : {"newExamOperationJsonData":postData},
                                     "type" : "POST",
                                     "dataType" : "json",
                                     "success" : function (json) {
@@ -407,24 +378,17 @@
         }
 
         function checkAddForm() {
-            if ($('#add_username').val().length === 0) {
-                layer.open({
-                    title: "提示信息",
-                    content: "用户名字段不能为空！"
-                });
-                return false;
-            }
-            if ($('#add_password').val().length === 0) {
-                layer.open({
-                    title: "提示信息",
-                    content: "密码字段不能为空！"
-                });
-                return false;
-            }
             if ($('#add_name').val().length === 0) {
                 layer.open({
                     title: "提示信息",
-                    content: "姓名字段不能为空！"
+                    content: "考试操作项名称不能为空！"
+                });
+                return false;
+            }
+            if ($('#add_description').val().length === 0) {
+                layer.open({
+                    title: "提示信息",
+                    content: "考试操作项描述不能为空！"
                 });
                 return false;
             }
