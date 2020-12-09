@@ -29,34 +29,21 @@
     <script type="text/html" id="editDialog">
         <form class="layui-form" action="" style="padding: 20px;" lay-filter="editDialogForm">
             <div class="layui-form-item">
-                <label class="layui-form-label">用户名</label>
+                <label class="layui-form-label">id</label>
                 <div class="layui-input-inline">
-                    <input id="username" type="text" name="username" placeholder="请输入用户名" autocomplete="off" class="layui-input" disabled>
+                    <input id="id" type="text" name="id" placeholder="请输入id" autocomplete="off" class="layui-input" style="width: 140%;" disabled>
                 </div>
             </div>
             <div class="layui-form-item">
-                <label class="layui-form-label">姓名</label>
+                <label class="layui-form-label">名称</label>
                 <div class="layui-input-inline">
-                    <input id="name" type="text" name="name" placeholder="请输入姓名" autocomplete="off" class="layui-input">
+                    <input id="name" type="text" name="name" placeholder="请输入名称" autocomplete="off" class="layui-input" style="width: 140%;">
                 </div>
             </div>
             <div class="layui-form-item">
-                <label class="layui-form-label">年龄</label>
+                <label class="layui-form-label">描述</label>
                 <div class="layui-input-inline">
-                    <input id="age" type="text" name="age" placeholder="请输入年龄" autocomplete="off" class="layui-input">
-                </div>
-            </div>
-            <div class="layui-form-item">
-                <label class="layui-form-label">性别</label>
-                <div class="layui-input-inline">
-                    <input type="radio" name="gender" value="男" title="男">
-                    <input id="gender_female" type="radio" name="gender" value="女" title="女" checked>
-                </div>
-            </div>
-            <div class="layui-form-item layui-form-text">
-                <label class="layui-form-label">电话</label>
-                <div class="layui-input-block">
-                    <input id="phoneNumber" type="text" name="phoneNumber" placeholder="请输入电话" autocomplete="off" class="layui-input">
+                    <textarea id="description" name="description" placeholder="请输入描述" class="layui-textarea" style="width: 140%;"></textarea>
                 </div>
             </div>
             <div class="layui-form-item">
@@ -335,6 +322,9 @@
                             // 对于radio单选框，int型数据转成string才能正确check
                             data.isDel = data.isDel + '';
                             form.val("editDialogForm", data);
+                        },
+                        cancel: function (index, layero) {
+
                         }
                     });
                 } else if (layEvent === 'resetPassword') {
@@ -391,7 +381,6 @@
                             form.render();
                             // 对于radio单选框，int型数据转成string才能正确check
                             data.isDel = data.isDel + '';
-                            console.log(data);
                             form.val("editDialogForm", data);
                         },
                         yes: function (index, layero) {
