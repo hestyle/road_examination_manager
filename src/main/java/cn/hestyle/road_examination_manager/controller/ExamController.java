@@ -119,6 +119,10 @@ public class ExamController extends BaseController {
     @PostMapping("/getDetailInfoByAdmissionNo/{admissionNo}")
     public ResponseResult<Map<String, Object>> handleGetDetailInfoByAdmissionNo(@PathVariable("admissionNo") String admissionNo,
                                                                    HttpSession session){
+        // 判断是否已经登录过
+        if (null == session.getAttribute("username")) {
+            throw new ManagerNotLoginException("操作失败！请先进行管理员登录！");
+        }
 
         Map<String, Object> data= examService.findDetailInfoByAdmissionNo(admissionNo);
 
@@ -128,6 +132,10 @@ public class ExamController extends BaseController {
     @PostMapping("/getExamItemsByAdmissionNo/{admissionNo}")
     public ResponseResult<Map<String, Object>> handleGetExamItemsInfoByAdmissionNo(@PathVariable("admissionNo") String admissionNo,
                                                                                 HttpSession session){
+        // 判断是否已经登录过
+        if (null == session.getAttribute("username")) {
+            throw new ManagerNotLoginException("操作失败！请先进行管理员登录！");
+        }
 
         Map<String, Object> data= examService.findExamItemsInfoByAdmissionNo(admissionNo);
 
@@ -137,6 +145,10 @@ public class ExamController extends BaseController {
     @PostMapping("/getExamLightItemsInfoByAdmissionNo/{admissionNo}")
     public ResponseResult<Map<String, Object>> handleGetExamLightTemplateInfoByAdmissionNo(@PathVariable("admissionNo") String admissionNo,
                                                                                       HttpSession session){
+        // 判断是否已经登录过
+        if (null == session.getAttribute("username")) {
+            throw new ManagerNotLoginException("操作失败！请先进行管理员登录！");
+        }
 
         Map<String, Object> data= examService.findExamLightItemsInfoByAdmissionNo(admissionNo);
 
