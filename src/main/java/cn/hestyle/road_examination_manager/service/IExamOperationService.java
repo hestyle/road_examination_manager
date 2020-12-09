@@ -1,10 +1,7 @@
 package cn.hestyle.road_examination_manager.service;
 
 import cn.hestyle.road_examination_manager.entity.ExamOperation;
-import cn.hestyle.road_examination_manager.service.exception.FindException;
-import cn.hestyle.road_examination_manager.service.exception.InsertException;
-import cn.hestyle.road_examination_manager.service.exception.PageFindErrorException;
-import cn.hestyle.road_examination_manager.service.exception.UpdateException;
+import cn.hestyle.road_examination_manager.service.exception.*;
 
 import java.util.List;
 
@@ -67,4 +64,18 @@ public interface IExamOperationService {
      * @return                  保存成功与否
      */
     Boolean modify(ExamOperation examOperation) throws UpdateException;
+
+    /**
+     * 通过id删除
+     * @param id        examOperation id
+     * @return          是否删除成功
+     */
+    Boolean deleteById(Integer id) throws DeleteException;
+
+    /**
+     * 通过id list删除
+     * @param idList    examOperation id list
+     * @return          是否删除成功
+     */
+    Boolean deleteByIdList(List<Integer> idList) throws DeleteException;
 }

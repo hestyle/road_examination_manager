@@ -23,7 +23,7 @@
     <script type="text/html" id="barDemo">
         <a class="layui-btn layui-btn-xs" lay-event="detail">查看</a>
         <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
-        <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="resetPassword">重置密码</a>
+        <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="deleteById">删除</a>
     </script>
     <!--每条数据的编辑操作-->
     <script type="text/html" id="editDialog">
@@ -51,29 +51,6 @@
                 <div class="layui-input-inline">
                     <input type="radio" name="isDel" value="0" title="未删除" checked>
                     <input id="is_del_true" type="radio" name="isDel" value="1" title="已删除">
-                </div>
-            </div>
-        </form>
-    </script>
-    <!--每条数据的重置密码操作-->
-    <script type="text/html" id="resetPasswordDialog">
-        <form class="layui-form" action="" style="padding: 20px;" lay-filter="resetPasswordForm">
-            <div class="layui-form-item">
-                <label class="layui-form-label">用户名</label>
-                <div class="layui-input-inline">
-                    <input id="reset_username" type="text" name="username" autocomplete="off" class="layui-input" disabled>
-                </div>
-            </div>
-            <div class="layui-form-item">
-                <label class="layui-form-label">新密码</label>
-                <div class="layui-input-inline">
-                    <input id="reset_newPassword" type="password" name="password" placeholder="请输入新密码" autocomplete="off" class="layui-input">
-                </div>
-            </div>
-            <div class="layui-form-item">
-                <label class="layui-form-label">确认密码</label>
-                <div class="layui-input-inline">
-                    <input id="reset_reNewPassword" type="password" name="reNewPassword" placeholder="请重复输入新密码" autocomplete="off" class="layui-input">
                 </div>
             </div>
         </form>
@@ -327,24 +304,25 @@
 
                         }
                     });
-                } else if (layEvent === 'resetPassword') {
+                } else if (layEvent === 'deleteById') {
+                    if (data.isDel === 1) {
+                        layer.open({
+                            title: "提示信息",
+                            content: "该考试操作项已处删除状态，无需再次删除！"
+                        });
+                        return;
+                    }
                     layer.open({
                         type: 1,
-                        title: '重置密码',
-                        area:['50%','70%'],
-                        content: $('#resetPasswordDialog').html(),
+                        title: '删除',
+                        content: '是否删除' + data + '这个考试操作项？',
                         btn: ['确定', '取消'],
-                        success: function (index, layero) {
-                            form.render();
-                            form.val("resetPasswordForm", data);
-                        },
                         yes: function (index, layero) {
                             // 更新缓存，同步到服务器
-                            var url ="../../manager/resetOtherPassword.do";
-                            var postData = '{"username":"'+ $('#reset_username').val() + '","newPassword":"' + $('#reset_newPassword').val() + '","reNewPassword":"'+ $('#reset_reNewPassword').val() + '"}';
+                            var url ="../../examOperation/deleteById.do";
                             $.ajax({
                                 "url" : url,
-                                "data" : {"newPasswordJsonData":postData},
+                                "data" : {"id":data.id},
                                 "type" : "POST",
                                 "dataType" : "json",
                                 "success" : function (json) {
@@ -354,6 +332,9 @@
                                     });
                                     if (json.code === 200) {
                                         // 更新成功，则关闭重置窗口
+                                        obj.update({
+                                            isDel: 1
+                                        });
                                         layer.close(index);
                                     }
                                 },
@@ -361,7 +342,7 @@
                                     // 弹出中间提示框
                                     layer.open({
                                         title: "提示信息",
-                                        content: "保存失败，出现未知异常！"
+                                        content: "删除失败，出现未知异常！"
                                     });
                                 }
                             });

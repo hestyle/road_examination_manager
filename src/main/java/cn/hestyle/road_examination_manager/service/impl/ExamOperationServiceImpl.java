@@ -3,10 +3,7 @@ package cn.hestyle.road_examination_manager.service.impl;
 import cn.hestyle.road_examination_manager.entity.ExamOperation;
 import cn.hestyle.road_examination_manager.mapper.ExamOperationMapper;
 import cn.hestyle.road_examination_manager.service.IExamOperationService;
-import cn.hestyle.road_examination_manager.service.exception.FindException;
-import cn.hestyle.road_examination_manager.service.exception.InsertException;
-import cn.hestyle.road_examination_manager.service.exception.PageFindErrorException;
-import cn.hestyle.road_examination_manager.service.exception.UpdateException;
+import cn.hestyle.road_examination_manager.service.exception.*;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -188,5 +185,50 @@ public class ExamOperationServiceImpl implements IExamOperationService {
             e.printStackTrace();
             throw new UpdateException("保存失败，数据库发生未知错误！");
         }
+    }
+
+    @Override
+    public Boolean deleteById(Integer id) throws DeleteException {
+        if (id == null) {
+            throw new DeleteException("删除失败，未指定需要删除考试操作项id！");
+        }
+        // 判断id是否注册
+        ExamOperation examOperation = examOperationMapper.findById(id);
+        if (examOperation == null) {
+            throw new DeleteException("删除失败，考试操作项id = " + id + " 未注册！");
+        }
+        // 判断是否需要删除
+        if (examOperation.getIsDel() == 1) {
+            throw new DeleteException("删除失败，该考试项已处删除的状态，无需再次删除！");
+        } else {
+            examOperation.setIsDel(1);
+        }
+        try {
+            return 1 == examOperationMapper.update(examOperation);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new DeleteException("删除失败，数据库发生未知异常！");
+        }
+    }
+
+    @Override
+    public Boolean deleteByIdList(List<Integer> idList) throws DeleteException {
+        if (idList == null || idList.size() == 0) {
+            throw new DeleteException("批量删除失败，未设置需要删除的id list！");
+        }
+        for (Integer id : idList) {
+            ExamOperation examOperation = examOperationMapper.findById(id);
+            if (examOperation == null) {
+                throw new DeleteException("批量删除失败，考试操作项id = " + id + " 未注册！");
+            }
+            examOperation.setIsDel(1);
+            try {
+                examOperationMapper.update(examOperation);
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw new DeleteException("批量删除失败，数据库发生未知异常！");
+            }
+        }
+        return Boolean.TRUE;
     }
 }
