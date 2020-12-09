@@ -23,7 +23,7 @@ public interface ExamOperationMapper {
      * @param name      操作项name
      * @return          examOperation list
      */
-    List<ExamOperation> findByName(String name);
+    ExamOperation findByName(String name);
 
     /**
      * 增加新examOperation
@@ -36,7 +36,7 @@ public interface ExamOperationMapper {
      * 分页查询所有examOperation
      * @param beginIndex    id降序排列
      * @param pageSize      一页大小
-     * @return              examOperation list
+     * @return              examOperation
      */
     List<ExamOperation> findByPage(Integer beginIndex, Integer pageSize);
 
