@@ -29,25 +29,43 @@
     <script type="text/html" id="editDialog">
         <form class="layui-form" action="" style="padding: 20px;" lay-filter="editDialogForm">
             <div class="layui-form-item">
-                <label class="layui-form-label">id</label>
+                <label class="layui-form-label" style="width: 30%;">id</label>
                 <div class="layui-input-inline">
                     <input id="id" type="text" name="id" placeholder="请输入id" autocomplete="off" class="layui-input" style="width: 140%;" disabled>
                 </div>
             </div>
             <div class="layui-form-item">
-                <label class="layui-form-label">名称</label>
+                <label class="layui-form-label" style="width: 30%;">名称</label>
                 <div class="layui-input-inline">
                     <input id="name" type="text" name="name" placeholder="请输入名称" autocomplete="off" class="layui-input" style="width: 140%;">
                 </div>
             </div>
             <div class="layui-form-item">
-                <label class="layui-form-label">描述</label>
+                <label class="layui-form-label" style="width: 30%;">分值</label>
+                <div class="layui-input-inline">
+                    <input id="score" type="text" name="score" placeholder="请输入分值" autocomplete="off" class="layui-input" style="width: 140%;" disabled>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label" style="width: 30%;">描述</label>
                 <div class="layui-input-inline">
                     <textarea id="description" name="description" placeholder="请输入描述" class="layui-textarea" style="width: 140%;"></textarea>
                 </div>
             </div>
             <div class="layui-form-item">
-                <label class="layui-form-label">是否删除</label>
+                <label class="layui-form-label" style="width: 30%;">音频路径</label>
+                <div class="layui-input-inline">
+                    <input id="voicePath" type="text" name="voicePath" placeholder="请输入音频路径" autocomplete="off" class="layui-input" style="width: 140%;" disabled>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label" style="width: 30%;">操作项ID列表</label>
+                <div class="layui-input-inline">
+                    <input id="operationIds" type="text" name="operationIds" placeholder="请输入操作项ID列表" autocomplete="off" class="layui-input" style="width: 140%;" disabled>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label" style="width: 30%;">是否删除</label>
                 <div class="layui-input-inline">
                     <input type="radio" name="isDel" value="0" title="未删除" checked>
                     <input id="is_del_true" type="radio" name="isDel" value="1" title="已删除">
@@ -98,7 +116,9 @@
                             , height: 550
                             , defaultToolbar: ['print', 'exports']
                             , method: 'POST'
-                            , cols: [[ //表头
+                            , cols: [[
+                                {title: '考试项表',align: 'center', colspan: 8} //rowspan即纵向跨越的单元格数
+                            ],[ //表头
                                 {checkbox: true, LAY_CHECKED: false}
                                 , {field: 'id', title: 'id', width: 80, sort: true}
                                 , {field: 'name', title: '名称', width: 200, sort: true}
