@@ -5,6 +5,7 @@ import cn.hestyle.road_examination_manager.entity.ExamItem;
 import cn.hestyle.road_examination_manager.service.IExamItemService;
 import cn.hestyle.road_examination_manager.util.ResponseResult;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -75,5 +76,23 @@ public class ExamItemController extends BaseController {
         List<ExamItem> examItemList = examItemService.findByPage(pageIndex, pageSize);
         Integer count = examItemService.getExamItemCount();
         return new ResponseResult<List<ExamItem>>(SUCCESS, count, examItemList, "查询成功！");
+    }
+
+    @PostMapping("/findByIdList.do")
+    public ResponseResult<List<ExamItem>> handleFindByIdList(@RequestParam(value = "idListJsonString", defaultValue = "") String idListJsonString, HttpSession session) {
+        // 判断是否已经登录过(有两种可能管理员、考官)
+        if (null == session.getAttribute("username") && null == session.getAttribute("id")) {
+            throw new ManagerNotLoginException("操作失败！请先进行管理员或考官登录！");
+        }
+        // 将idListJsonString转成json，然后转成List<Integer>
+        ObjectMapper objectMapper = new ObjectMapper();
+        List<Integer> idList = null;
+        try {
+            idList = objectMapper.readValue(idListJsonString, new TypeReference<List<Integer>>() {});
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            return new ResponseResult<>(FAILURE, "idList数据格式不正确！");
+        }
+        return new ResponseResult<List<ExamItem>>(SUCCESS, "查询成功！", examItemService.findByIdList(idList));
     }
 }

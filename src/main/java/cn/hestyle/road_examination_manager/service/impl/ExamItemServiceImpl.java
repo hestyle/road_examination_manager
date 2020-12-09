@@ -10,6 +10,7 @@ import cn.hestyle.road_examination_manager.service.exception.PageFindErrorExcept
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -120,6 +121,28 @@ public class ExamItemServiceImpl implements IExamItemService {
         } catch (Exception e) {
             e.printStackTrace();
             throw new PageFindErrorException("分页查询失败，数据库发生未知异常！");
+        }
+    }
+
+    @Override
+    public List<ExamItem> findByIdList(List<Integer> idList) throws FindException {
+        // 检查iDList长度
+        if (idList == null || idList.size() == 0) {
+            throw new FindException("查找失败，未指定需要查找的考试项id list！");
+        }
+        // 查找所有指定的id
+        List<ExamItem> examItemList = new ArrayList<>();
+        try {
+            for (Integer id : idList) {
+                ExamItem examItem = examItemMapper.findById(id);
+                if (examItem != null) {
+                    examItemList.add(examItem);
+                }
+            }
+            return examItemList;
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new FindException("查找失败，数据库发生未知异常");
         }
     }
 
