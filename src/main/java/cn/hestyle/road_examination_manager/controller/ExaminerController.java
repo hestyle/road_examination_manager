@@ -24,18 +24,13 @@ import java.util.Map;
 public class ExaminerController extends BaseController{
     @Autowired
     IExaminerService iExaminerService;
-    @PostMapping("/examiner_list.do")
-    public ResponseResult<List<Examiner>> handleList(HttpSession session) {
-        // 执行业务端的业务
-        List<Examiner> list = iExaminerService.examiner_list();
-        // 将用户名发到session中，保存到服务端
-        session.setAttribute("examiners", list);
-        return new ResponseResult<>(SUCCESS, "考官查询成功！", list);
-    }
-
     @PostMapping("/examiner_add.do")
-    public String handleAdd(@RequestParam("newExaminerJsonData")String newExaminerJsonData,
-                            RedirectAttributes attributes) {
+    public ResponseResult<Void> handleAdd(@RequestParam("newExaminerJsonData")String newExaminerJsonData,
+                            HttpSession session) {
+        // 判断是否已经登录过
+        if (null == session.getAttribute("username")) {
+            throw new ManagerNotLoginException("操作失败！请先进行管理员登录！");
+        }
         //考生信息
         ObjectMapper objectMapper = new ObjectMapper();
         Examiner examiner = null;
@@ -44,16 +39,19 @@ public class ExaminerController extends BaseController{
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
-        //添加到数据库
-        iExaminerService.addExaminer(examiner);
-        //返回消息
-        attributes.addFlashAttribute("message","考官添加成功！");
-        //返回考官列表界面
-        return "redirect:/examiner";
+        if (iExaminerService.addExaminer(examiner)) {
+            return new ResponseResult<>(SUCCESS, examiner.getId() + "账号已保存成功！");
+        } else {
+            return new ResponseResult<>(FAILURE, examiner.getId() + "账号保存失败，原因未知！");
+        }
     }
 
     @PostMapping("/examiner_del.do")
-    public String handleDel(@RequestParam("id")String id, RedirectAttributes attributes){
+    public String handleDel(@RequestParam("id")String id, HttpSession session){
+        // 判断是否已经登录过
+        if (null == session.getAttribute("username")) {
+            throw new ManagerNotLoginException("操作失败！请先进行管理员登录！");
+        }
 
         if(iExaminerService.findById(id)==null){
             throw new ExaminerNotFoundException("没有该考官信息，删除失败！");

@@ -26,8 +26,8 @@ public class CandidateController extends BaseController{
 
 
         @PostMapping("/candidate_add.do")
-        public String handleAdd(@RequestParam("newCandidateJsonData")String newCandidateJsonData,
-                                RedirectAttributes attributes, HttpSession session) {
+        public ResponseResult<Void> handleAdd(@RequestParam("newCandidateJsonData")String newCandidateJsonData,
+                                HttpSession session) {
             // 判断是否已经登录过
             if (null == session.getAttribute("username")) {
                 throw new ManagerNotLoginException("操作失败！请先进行管理员登录！");
@@ -40,12 +40,11 @@ public class CandidateController extends BaseController{
             } catch (JsonProcessingException e) {
                 e.printStackTrace();
             }
-            //添加到数据库
-            iCandidateService.addCandidate(candidate);
-            //返回消息
-            attributes.addFlashAttribute("message","考生添加成功！");
-            //返回考生列表界面
-            return "redirect:/candidate/table.html";
+            if (iCandidateService.addCandidate(candidate)) {
+                return new ResponseResult<>(SUCCESS, candidate.getId() + "账号已保存成功！");
+            } else {
+                return new ResponseResult<>(FAILURE, candidate.getId() + "账号保存失败，原因未知！");
+            }
         }
 
         @PostMapping("/candidate_del.do")

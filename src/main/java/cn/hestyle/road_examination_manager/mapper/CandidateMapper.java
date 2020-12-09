@@ -7,9 +7,8 @@ import java.util.List;
 
 @Mapper
 public interface CandidateMapper {
-    List<Candidate> findAll();
 
-    void addCandidate(Candidate candidate);
+    Integer addCandidate(Candidate candidate);
 
     Candidate findById(String id);
 

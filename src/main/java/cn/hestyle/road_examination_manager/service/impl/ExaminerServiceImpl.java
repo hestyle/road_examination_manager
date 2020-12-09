@@ -3,10 +3,7 @@ package cn.hestyle.road_examination_manager.service.impl;
 import cn.hestyle.road_examination_manager.entity.Examiner;
 import cn.hestyle.road_examination_manager.mapper.ExaminerMapper;
 import cn.hestyle.road_examination_manager.service.IExaminerService;
-import cn.hestyle.road_examination_manager.service.exception.DeleteException;
-import cn.hestyle.road_examination_manager.service.exception.ExaminerNotFoundException;
-import cn.hestyle.road_examination_manager.service.exception.PageFindErrorException;
-import cn.hestyle.road_examination_manager.service.exception.UpdateException;
+import cn.hestyle.road_examination_manager.service.exception.*;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -19,14 +16,37 @@ public class ExaminerServiceImpl implements IExaminerService{
     ExaminerMapper examinerMapper;
 
     @Override
-    public List<Examiner> examiner_list(){
-        List<Examiner> list = examinerMapper.findAll();
-        return list;
-    }
-
-    @Override
-    public void addExaminer(Examiner examiner){
-        examinerMapper.addExaminer(examiner);
+    public Boolean addExaminer(Examiner examiner){
+        // 检查candidate.username是否为空
+        if (null == examiner.getId()) {
+            throw new ExaminerAddFailedException("账号保存失败，未设置id！");
+        }
+        // 检查username是否已被注册（username是主键）
+        if (null != examinerMapper.findById(examiner.getId())) {
+            throw new ExaminerAddFailedException("账号保存失败，身份信息" + examiner.getId() + " 已经被注册！");
+        }
+        if (examiner.getName() == null || examiner.getName().length() < 2 || examiner.getName().length() > 20) {
+            throw new InsertException("增加失败，name字段长度非法，请控制在2-20位！");
+        }
+        if (examiner.getAge() != null && (examiner.getAge() < 1 || examiner.getAge() > 120)) {
+            throw new InsertException("增加失败，age必须大于零，且小于120！");
+        }
+        if (examiner.getGender() != null && !"男".equals(examiner.getGender()) && !"女".equals(examiner.getGender())) {
+            throw new InsertException("增加失败，gender只能为【男】或者【女】！");
+        }
+        if (examiner.getPhoneNumber() != null && (examiner.getPhoneNumber().length() < 8 || examiner.getName().length() > 11)) {
+            throw new InsertException("增加失败，phoneNumber字段长度非法，请控制在8-11位！");
+        }
+        if (examiner.getIsDel() != null && examiner.getIsDel() != 0 && examiner.getIsDel() != 1) {
+            throw new InsertException("增加失败，isDel字段必须为0或1！");
+        }
+        // 受影响的行数==1，说明插入成功
+        try {
+            return 1 == examinerMapper.addExaminer(examiner);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new ExaminerAddFailedException("账号保存失败，数据库发生未知异常！");
+        }
     }
 
     @Override
