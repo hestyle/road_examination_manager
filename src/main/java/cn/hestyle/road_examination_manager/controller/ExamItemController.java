@@ -45,4 +45,13 @@ public class ExamItemController extends BaseController {
             return new ResponseResult<>(FAILURE, examItem.getName() + "操作项保存失败，原因未知！");
         }
     }
+
+    @PostMapping("/findById.do")
+    public ResponseResult<ExamItem> handleFindById(@RequestParam(value = "id", defaultValue = "0") Integer id, HttpSession session) {
+        // 判断是否已经登录过(有两种可能管理员、考官)
+        if (null == session.getAttribute("username") && null == session.getAttribute("id")) {
+            throw new ManagerNotLoginException("操作失败！请先进行管理员或考官登录！");
+        }
+        return new ResponseResult<ExamItem>(SUCCESS, "查询成功！", examItemService.findById(id));
+    }
 }

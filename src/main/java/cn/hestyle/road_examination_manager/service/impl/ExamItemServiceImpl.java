@@ -4,6 +4,7 @@ import cn.hestyle.road_examination_manager.entity.ExamItem;
 import cn.hestyle.road_examination_manager.mapper.ExamItemMapper;
 import cn.hestyle.road_examination_manager.mapper.ExamOperationMapper;
 import cn.hestyle.road_examination_manager.service.IExamItemService;
+import cn.hestyle.road_examination_manager.service.exception.FindException;
 import cn.hestyle.road_examination_manager.service.exception.InsertException;
 import org.springframework.stereotype.Service;
 
@@ -67,4 +68,20 @@ public class ExamItemServiceImpl implements IExamItemService {
             throw new InsertException("保存失败，数据库发生未知错误！");
         }
     }
+
+    @Override
+    public ExamItem findById(Integer id) throws FindException {
+        ExamItem examItem = null;
+        try {
+            examItem = examItemMapper.findById(id);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new FindException("查找失败，数据库发生未知异常！");
+        }
+        if (examItem == null) {
+            throw new FindException("查找失败，id = " + id + "的考试项未注册！");
+        }
+        return examItem;
+    }
+
 }
