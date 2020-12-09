@@ -18,4 +18,6 @@ public interface IExaminerService {
     Integer getExaminerCount();
 
     Boolean modifyBaseInfo(Examiner examiner);
+
+    Boolean deleteExaminerByIdList(List<String> idList);
 }

@@ -10,25 +10,9 @@
     <link rel="stylesheet" href="../../css/style.css">
 </head>
 <body>
-<!--顶部搜索栏-->
-<form class="layui-form">
-    <label>城市</label>
-    <div class="layui-input-inline">
-        <select name="city">
-            <option value=""></option>
-            <option value="0">北京</option>
-            <option value="1">上海</option>
-            <option value="2">广州</option>
-            <option value="3">深圳</option>
-            <option value="4">杭州</option>
-        </select>
-    </div>
-    <div class="layui-input-inline">
-        <button class="layui-btn layui-btn-sm" lay-submit lay-filter="formSearch">搜索</button>
-    </div>
-</form>
+
 <!--中部表格-->
-<table id="demo" lay-filter="test"></table>
+<table id="examinerTable" lay-filter="test"></table>
 </body>
 <!--顶部操作栏-->
 <script type="text/html" id="toolbarDemo">
@@ -90,7 +74,7 @@
 <script type="text/html" id="resetPasswordDialog">
     <form class="layui-form" action="" style="padding: 20px;" lay-filter="editDialogForm">
         <div class="layui-form-item">
-            <label class="layui-form-label">用户名</label>
+            <label class="layui-form-label">身份证号</label>
             <div class="layui-input-inline">
                 <input id="reset_id" type="text" name="id" autocomplete="off" class="layui-input" disabled>
             </div>
@@ -115,6 +99,55 @@
         </div>
     </form>
 </script>
+<!--单条数据的插入操作-->
+<script type="text/html" id="addDialog">
+    <form id="add_form" class="layui-form" action="" style="padding: 20px;" lay-filter="addDialogForm">
+        <div class="layui-form-item">
+            <label class="layui-form-label">id</label>
+            <div class="layui-input-inline">
+                <input id="id1" type="text" name="username" placeholder="请输入用户名" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">密码</label>
+            <div class="layui-input-inline">
+                <input id="password1" type="password" name="password" placeholder="请输入密码" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">姓名</label>
+            <div class="layui-input-inline">
+                <input id="name1" type="text" name="name" placeholder="请输入姓名" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">年龄</label>
+            <div class="layui-input-inline">
+                <input id="age1" type="text" name="age" placeholder="请输入年龄" autocomplete="off" class="layui-input" value="0">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">性别</label>
+            <div class="layui-input-inline">
+                <input type="radio" name="add_gender1" value="男" title="男">
+                <input type="radio" name="add_gender1" value="女" title="女" checked>
+            </div>
+        </div>
+        <div class="layui-form-item layui-form-text">
+            <label class="layui-form-label">电话</label>
+            <div class="layui-input-block">
+                <input id="phoneNumber1" type="text" name="phoneNumber" placeholder="请输入电话" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">是否删除</label>
+            <div class="layui-input-inline">
+                <input type="radio" name="add_isDel1" value="0" title="未删除" checked>
+                <input type="radio" name="add_isDel1" value="1" title="已删除">
+            </div>
+        </div>
+    </form>
+</script>
 <script>
     layuiModules=['table', 'layer', 'form'];
 
@@ -129,7 +162,7 @@
                 if (json.code === 200) {
                     // 往table填充服务器返回的数据
                     table.render({
-                        elem: '#demo'
+                        elem: '#examinerTable'
                         , toolbar: '#toolbarDemo'
                         , height: 550
                         , defaultToolbar: []
@@ -194,18 +227,49 @@
             var checkStatus = table.checkStatus(obj.config.id);
             switch (obj.event) {
                 case 'add':
-                    layer.msg('添加');
                     layer.open({
                         type: 1,
                         title: '添加',
                         area:['50%','70%'],
-                        content: $('#editDialog').html(), //这里content是一个普通的String
+                        content: $('#addDialog').html(),
                         btn: ['确定', '取消'],
                         success: function (index, layero) {
                             form.render();
                         },
                         yes: function (index, layero) {
-
+                            if (checkAddForm() === false) {
+                                return false;
+                            }
+                            var url ="../../examiner/examiner_add.do";
+                            var postData = '{"id":"'+ $('#id1').val() + '",' +
+                                '"password":"' + $('#password1').val() + '",' +
+                                '"name":"' + $('#name1').val() + '","age":'+ $('#age1').val() + ',"gender":"' + $('input:radio[name="add_gender1"]:checked').val() + '",';
+                            if ($('#phoneNumber1').val().length !== 0) {
+                                postData += '"phoneNumber":"' + $('#phoneNumber1').val() + '",';
+                            }
+                            postData += '"isDel":' + $('input:radio[name="add_isDel1"]:checked').val() + '}';
+                            $.ajax({
+                                "url" : url,
+                                "data" : {"newExaminerJsonData":postData},
+                                "type" : "POST",
+                                "dataType" : "json",
+                                "success" : function (json) {
+                                    layer.open({
+                                        title: "提示信息",
+                                        content: json.message
+                                    });
+                                    if (json.code === 200) {
+                                        layer.close(index);
+                                    }
+                                },
+                                "error" : function () {
+                                    // 弹出中间提示框
+                                    layer.open({
+                                        title: "提示信息",
+                                        content: "保存失败，出现未知异常！"
+                                    });
+                                }
+                            });
                         },
                         btn2: function (index, layero) {
                             //return false 开启该代码可禁止点击该按钮关闭
@@ -213,10 +277,52 @@
                     });
                     break;
                 case 'delete':
-                    console.log(checkStatus);
-                    layer.confirm('真的删除选中行么', function (index) {
+                    // 拼接选中行的username
+                    var postData = '[';
+                    for (var value of checkStatus.data) {
+                        if (postData.length > 1) {
+                            postData += ',"' + value.id + '"';
+                        } else {
+                            postData += '"' + value.id + '"';
+                        }
+                    }
+                    postData += ']';
+                    // 判断是否选中待删除行
+                    if (postData.length === 2) {
+                        layer.open({
+                            title: "提示信息",
+                            content: "请选中需要删除的数据！"
+                        });
+                        return;
+                    }
+                    layer.confirm('删除选中行？', function (index) {
+                        var url ="../../examiner/deleteExaminersById.do";
+                        $.ajax({
+                            "url" : url,
+                            "data" : {"idListJsonData":postData},
+                            "type" : "POST",
+                            "dataType" : "json",
+                            "success" : function (json) {
+                                layer.open({
+                                    title: "提示信息",
+                                    content: json.message
+                                });
+                                if (json.code === 200) {
+                                    // 更新成功，则关闭重置窗口、刷新表格
+                                    layer.close(index);
+                                    table.reload('examinerTable');
+                                }
+                            },
+                            "error" : function () {
+                                // 弹出中间提示框
+                                layer.open({
+                                    title: "提示信息",
+                                    content: "保存失败，出现未知异常！"
+                                });
+                            }
+                        });
+
                         layer.close(index);
-                        //向服务端发送删除指令
                     });
                     break;
             }

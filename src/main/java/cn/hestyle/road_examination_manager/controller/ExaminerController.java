@@ -6,6 +6,7 @@ import cn.hestyle.road_examination_manager.service.IExaminerService;
 import cn.hestyle.road_examination_manager.service.exception.ExaminerNotFoundException;
 import cn.hestyle.road_examination_manager.util.ResponseResult;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -43,7 +44,6 @@ public class ExaminerController extends BaseController{
             e.printStackTrace();
         }
         //添加到数据库
-        examiner.setIsDel(0);
         iExaminerService.addExaminer(examiner);
         //返回消息
         attributes.addFlashAttribute("message","考官添加成功！");
@@ -95,6 +95,28 @@ public class ExaminerController extends BaseController{
             return new ResponseResult<>(SUCCESS, "基本信息修改保存成功！");
         } else {
             return new ResponseResult<>(FAILURE, "修改保存失败，原因未知！");
+        }
+    }
+
+    @PostMapping("/deleteExaminersById.do")
+    public ResponseResult<Void> handleDeleteExaminersByUsername(@RequestParam("idListJsonData") String idListJsonData, HttpSession session) {
+        // 判断是否已经登录过
+        if (null == session.getAttribute("username")) {
+            throw new ManagerNotLoginException("操作失败！请先进行管理员登录！");
+        }
+        // 将usernameListJsonData转成String list
+        ObjectMapper objectMapper = new ObjectMapper();
+        List<String> idList = null;
+        try {
+            idList = objectMapper.readValue(idListJsonData, new TypeReference<List<String>>() {});
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            return new ResponseResult<>(FAILURE, "批量删除失败，信息格式不正确！");
+        }
+        if (iExaminerService.deleteExaminerByIdList(idList)) {
+            return new ResponseResult<>(SUCCESS, "修改保存成功！");
+        } else {
+            return new ResponseResult<>(FAILURE, "批量删除失败，原因未知！");
         }
     }
 
