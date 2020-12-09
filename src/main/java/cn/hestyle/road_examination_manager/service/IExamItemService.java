@@ -67,4 +67,11 @@ public interface IExamItemService {
      * @return              是否修改成功
      */
     Boolean modify(ExamItem examItem) throws UpdateException;
+
+    /**
+     * 修改examItem
+     * @param id            examItem id
+     * @return              是否修改成功
+     */
+    Boolean modifyVoicePath(Integer id, String voicePath) throws UpdateException;
 }
