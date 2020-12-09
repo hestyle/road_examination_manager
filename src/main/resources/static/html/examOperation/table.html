@@ -385,30 +385,26 @@
                         },
                         yes: function (index, layero) {
                             // 更新缓存，同步到服务器
-                            var url ="../../manager/modifyOtherBaseInfo.do";
-                            var postData = '{"username":"'+ $('#username').val() + '","name":"' + $('#name').val() + '","age":'+ $('#age').val() + ',' +
-                                '"gender":"' + $('input:radio[name="gender"]:checked').val() + '","phoneNumber":"' + $('#phoneNumber').val() + '",' +
+                            var url ="../../examOperation/modify.do";
+                            var postData = '{"id":'+ $('#id').val() + ',"name":"' + $('#name').val() + '","description":"' + $('#description').val() + '",' +
                                 '"isDel":' + $('input:radio[name="isDel"]:checked').val() + '}';
                             $.ajax({
                                 "url" : url,
-                                "data" : {"newBaseInfoJsonData":postData},
+                                "data" : {"newExamOperationJsonData":postData},
                                 "type" : "POST",
                                 "dataType" : "json",
                                 "success" : function (json) {
+                                    layer.open({
+                                        title: "提示信息",
+                                        content: json.message
+                                    });
                                     if (json.code === 200) {
                                         obj.update({
                                             name: $('#name').val()
-                                            ,age: $('#age').val()
-                                            ,gender: $('input:radio[name="gender"]:checked').val()
-                                            ,phoneNumber: $('#phoneNumber').val()
+                                            ,description: $('#description').val()
                                             ,isDel: $('input:radio[name="isDel"]:checked').val()
                                         });
                                         layer.close(index);
-                                    } else {
-                                        layer.open({
-                                            title: "提示信息",
-                                            content: json.message
-                                        });
                                     }
                                 },
                                 "error" : function () {

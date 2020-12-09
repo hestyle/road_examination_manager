@@ -160,16 +160,30 @@ public class ExamOperationServiceImpl implements IExamOperationService {
         if (examOperationData == null) {
             throw new UpdateException("修改失败，id = " + examOperation.getId() + " 未注册！");
         }
+        // 检测name字段
+        if (examOperation.getName() == null || examOperation.getName().length() == 0) {
+            throw new UpdateException("修改失败，操作项name字段必须设置！");
+        } else if (!examOperation.getName().equals(examOperationData.getName())) {
+            if (examOperationMapper.findByName(examOperation.getName()) != null) {
+                throw new UpdateException("修改失败，操作项name = " + examOperation.getName() + "已被注册！");
+            } else {
+                examOperationData.setName(examOperation.getName());
+            }
+        }
         // 检测description长度是否合法
         if (examOperation.getDescription() != null && examOperation.getDescription().length() > 255) {
-            throw new UpdateException("修改失败，考试项的描述过长，请控制在0~255个字符！");
+            throw new UpdateException("修改失败，考试操作项的描述过长，请控制在0~255个字符！");
+        } else {
+            examOperationData.setDescription(examOperation.getDescription());
         }
         // 检查isDel状态合法性
         if (examOperation.getIsDel() == null || (examOperation.getIsDel() != 0 && examOperation.getIsDel() != 1)) {
-            throw new UpdateException("修改失败，考试项只有0未删除、1已删除两种状态！");
+            throw new UpdateException("修改失败，考试操作项只有0未删除、1已删除两种状态！");
+        } else {
+            examOperationData.setIsDel(examOperation.getIsDel());
         }
         try {
-            return 1 == examOperationMapper.update(examOperation);
+            return 1 == examOperationMapper.update(examOperationData);
         } catch (Exception e) {
             e.printStackTrace();
             throw new UpdateException("保存失败，数据库发生未知错误！");
