@@ -8,6 +8,7 @@ import cn.hestyle.road_examination_manager.service.exception.UpdateException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 
 public interface IExamService {
     /**
@@ -26,4 +27,20 @@ public interface IExamService {
     Boolean deleteByAdmissionNo(String admissionNo)  throws AccessDefinedException, DeleteException;
 
     Boolean modifyExamInfo(Exam newExam) throws UpdateException, AccessDefinedException;
+
+    Map<String, Object> findDetailInfoByAdmissionNo(String admissionNo);
+
+    /**
+     * 根据准考证号获取道路考试模板信息、道路考试模板对应的考试项目
+     * @param admissionNo
+     * @return
+     */
+    Map<String, Object> findExamItemsInfoByAdmissionNo(String admissionNo);
+
+    /**
+     * 根据准考证号获取灯光考试模板信息、道路考试模板对应的考试项目
+     * @param admissionNo
+     * @return
+     */
+    Map<String, Object> findExamLightItemsInfoByAdmissionNo(String admissionNo);
 }
