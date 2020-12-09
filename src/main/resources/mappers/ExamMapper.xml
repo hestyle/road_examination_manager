@@ -40,6 +40,8 @@
             `is_del` AS `isDel`
 		FROM
 			`t_exam`
+		WHERE
+			is_del = 0
 		ORDER BY
 			`exam_time` desc
 		LIMIT
