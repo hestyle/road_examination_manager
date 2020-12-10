@@ -6,8 +6,10 @@
     <script src="../../js/jquery.min.js"></script>
     <script src="../../layui/layui.all.js"></script>
     <script src="../../js/common.js"></script>
+    <script src="../../plugins/soulTable/soulTable.js"></script>
     <link rel="stylesheet" href="../../layui/css/layui.css" media="all">
     <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="../../plugins/soulTable/soulTable.css">
 </head>
     <body>
         <table id="examItemTable" lay-filter="test"></table>
@@ -189,7 +191,13 @@
         <table id="all_operation_table" lay-filter="allOperationTable"></table>
     </script>
     <script>
-        layuiModules=['table', 'layer', 'form', 'upload'];
+        layui.config({
+            base: '../../plugins/soulTable/',
+            version: 'v1.5.20'
+        }).extend({
+            soulTable: 'soulTable/soulTable.slim'
+        });
+        layuiModules=['table', 'layer', 'form', 'upload', 'soulTable'];
         // operationIds对应的操作项
         var operationData = [];
         function mounted() {
@@ -559,6 +567,20 @@
                                                 , {field: 'description', title: '描述', width: 250}
                                                 , {fixed: 'right', width: 80, align: 'center', toolbar: '#changeOperationIdsBar'} //这里的toolbar值是模板元素的选择器
                                             ]]
+                                            , rowDrag: {
+                                                done: function(obj) {
+                                                    // 完成时（松开时）触发(soulTable插件，移动行
+                                                    operationData = obj.cache;
+                                                    var operationIds = [];
+                                                    for (var row of obj.cache) {
+                                                        operationIds.push(row.id);
+                                                    }
+                                                    $('#change_operationIds_operationIds').val(operationIds.join(','));
+                                                }
+                                            }
+                                            , done: function () {
+                                                soulTable.render(this)
+                                            }
                                         });
                                     } else {
                                         // 弹出中间提示框
@@ -812,6 +834,20 @@
                                     , {field: 'description', title: '描述', width: 250}
                                     , {fixed: 'right', width: 80, align: 'center', toolbar: '#changeOperationIdsBar'} //这里的toolbar值是模板元素的选择器
                                 ]]
+                                , rowDrag: {
+                                    done: function(obj) {
+                                        // 完成时（松开时）触发(soulTable插件，移动行
+                                        operationData = obj.cache;
+                                        var operationIds = [];
+                                        for (var row of obj.cache) {
+                                            operationIds.push(row.id);
+                                        }
+                                        $('#add_operationIds').val(operationIds.join(','));
+                                    }
+                                }
+                                , done: function () {
+                                    soulTable.render(this)
+                                }
                             });
                         } else {
                             // 否则reload
