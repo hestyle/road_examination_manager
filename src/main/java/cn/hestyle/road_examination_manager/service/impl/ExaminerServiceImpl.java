@@ -16,6 +16,28 @@ public class ExaminerServiceImpl implements IExaminerService{
     ExaminerMapper examinerMapper;
 
     @Override
+    public Examiner login(String id, String password) throws ExaminerNotFoundException, PasswordNotMatchException {
+        Examiner examiner = examinerMapper.findById(id);
+        // 判断用户名是否存在账号
+        if (null == examiner) {
+            throw new ExaminerNotFoundException("登录失败!您尝试登录的用户名" + id + "不存在!");
+        }
+        // 判断用户账号是否被注销
+        if (1 == examiner.getIsDel()) {
+            throw new ExaminerNotFoundException("登录失败!您尝试登录的用户名" + id + "已经被注销!");
+        }
+        // 判断密码是否正确
+        if (password != null && password.equals(examiner.getPassword())) {
+            // 将password置空
+            examiner.setPassword(null);
+            return examiner;
+        } else {
+            // 比对失败，抛出异常，密码不匹配
+            throw new PasswordNotMatchException("登录失败!您尝试登录的用户密码错误!");
+        }
+    }
+
+    @Override
     public Boolean addExaminer(Examiner examiner){
         // 检查candidate.username是否为空
         if (null == examiner.getId()) {

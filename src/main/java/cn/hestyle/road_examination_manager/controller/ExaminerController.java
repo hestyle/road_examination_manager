@@ -24,6 +24,16 @@ import java.util.Map;
 public class ExaminerController extends BaseController{
     @Autowired
     IExaminerService iExaminerService;
+
+    @PostMapping("/login.do")
+    public ResponseResult<Examiner> handleLogin(@RequestParam("id") String id, @RequestParam("password") String password, HttpSession session) {
+        // 执行业务端的业务
+        Examiner examiner = iExaminerService.login(id, password);
+        // 将用户名发到session中，保存到服务端
+        session.setAttribute("id", examiner.getId());
+        return new ResponseResult<>(SUCCESS, "登录成功！", examiner);
+    }
+
     @PostMapping("/examiner_add.do")
     public ResponseResult<Void> handleAdd(@RequestParam("newExaminerJsonData")String newExaminerJsonData,
                             HttpSession session) {

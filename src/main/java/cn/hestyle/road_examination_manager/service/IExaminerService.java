@@ -6,6 +6,8 @@ import java.util.List;
 
 public interface IExaminerService {
 
+    Examiner login(String id, String password);
+
     Boolean addExaminer(Examiner examiner);
 
     void delExaminer(String id);
