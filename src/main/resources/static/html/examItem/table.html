@@ -82,46 +82,46 @@
     <script type="text/html" id="addDialog">
         <form id="add_form" class="layui-form" action="" style="padding: 20px;" lay-filter="addDialogForm">
             <div class="layui-form-item">
-                <label class="layui-form-label" style="width: 25%;">名称</label>
+                <label class="layui-form-label" style="width: 20%;">名称</label>
                 <div class="layui-input-inline">
                     <input id="add_name" type="text" name="name" placeholder="请输入名称" autocomplete="off" class="layui-input" style="width: 140%;">
                 </div>
             </div>
             <div class="layui-form-item">
-                <label class="layui-form-label" style="width: 25%;">分值</label>
+                <label class="layui-form-label" style="width: 20%;">分值</label>
                 <div class="layui-input-inline">
                     <input id="add_score" type="number" name="score" placeholder="请输入分值" autocomplete="off" class="layui-input" style="width: 140%;" value="0">
                 </div>
             </div>
             <div class="layui-form-item">
-                <label class="layui-form-label" style="width: 25%;">描述</label>
+                <label class="layui-form-label" style="width: 20%;">描述</label>
                 <div class="layui-input-inline">
                     <textarea id="add_description" name="description" placeholder="请输入描述" class="layui-textarea" style="width: 140%;"></textarea>
                 </div>
             </div>
             <div class="layui-form-item">
-                <label class="layui-form-label" style="width: 25%;">音频路径</label>
+                <label class="layui-form-label" style="width: 20%;">音频路径</label>
                 <div class="layui-input-inline">
                     <input id="add_voice_path" type="text" name="voicePath" placeholder="请输入音频路径" autocomplete="off" class="layui-input" style="width: 140%;" disabled>
                     <button type="button" class="layui-btn" id="add_uploadVoiceButton"><i class="layui-icon">&#xe67c;</i>上传音频</button>
                 </div>
             </div>
             <div class="layui-form-item">
-                <label class="layui-form-label" style="width: 25%;">播放</label>
+                <label class="layui-form-label" style="width: 20%;">播放</label>
                 <div class="layui-input-inline">
                     <audio id="add_examItemVoiceAudio" src="xxxx.mp3" controls="controls"></audio>
                 </div>
             </div>
             <div class="layui-form-item">
-                <label class="layui-form-label" style="width: 25%;">操作项ID列表</label>
+                <label class="layui-form-label" style="width: 20%;">操作项ID列表</label>
                 <div class="layui-input-inline">
-                    <input id="add_operationIds" type="text" name="operationIds" placeholder="请输入操作项ID列表，以英文逗号隔开！" autocomplete="off" class="layui-input" style="width: 140%;">
+                    <input id="add_operationIds" type="text" name="operationIds" placeholder="请输入操作项ID列表，以英文逗号隔开！" autocomplete="off" class="layui-input" style="width: 140%;" disabled>
                     <button id="select_opeations" type="button" class="layui-btn" onclick="addOperation(1)">选择操作项</button>
                 </div>
             </div>
-            <table id="add_operationIds_table"></table>
+            <table id="add_operationIds_table" lay-filter="addOperationIdsTable"></table>
             <div class="layui-form-item">
-                <label class="layui-form-label" style="width: 25%;">是否删除</label>
+                <label class="layui-form-label" style="width: 20%;">是否删除</label>
                 <div class="layui-input-inline">
                     <input type="radio" name="add_isDel" value="0" title="未删除" checked>
                     <input type="radio" name="add_isDel" value="1" title="已删除">
@@ -274,10 +274,12 @@
                         layer.open({
                             type: 1,
                             title: '添加',
-                            area:['50%','70%'],
+                            area:['70%','80%'],
                             content: $('#addDialog').html(),
                             btn: ['确定', '取消'],
                             success: function (index, layero) {
+                                // 清空缓存
+                                operationData = [];
                                 form.render();
                                 upload.render({
                                     elem: '#add_uploadVoiceButton'
@@ -648,7 +650,38 @@
                         layer.close(index);
                     });
                 }
-            })
+            });
+
+            // 监听addOperationIdsTable中的工具条
+            table.on('tool(addOperationIdsTable)', function (obj) {
+                var data = obj.data; //获得当前行数据
+                var layEvent = obj.event; //获得 lay-event 对应的值（也可以是表头的 event 参数对应的值）
+                var tr = obj.tr; //获得当前行 tr 的DOM对象
+                if (layEvent === 'delete') {
+                    layer.confirm('真的删除这个操作项吗？', function(index){
+                        // 获取行所在的行index
+                        var objIndex = $(tr).attr("data-index");
+                        console.log('objIndex = ' + objIndex);
+                        // 然后把add_operationIds输入框中的内容更新
+                        var operationIds = $('#add_operationIds').val().split(',');
+                        operationIds.splice(objIndex, 1);
+                        if (operationIds.length > 1) {
+                            $('#add_operationIds').val(operationIds.join(','));
+                        } else if (operationIds.length === 1) {
+                            $('#add_operationIds').val(operationIds);
+                        } else {
+                            $('#add_operationIds').val('');
+                        }
+                        obj.del(); //删除对应行（tr）的DOM结构，并更新缓存
+                        operationData.splice(objIndex, 1);
+                        layui.table.reload('addOperationIdsTable', {
+                            url: null,
+                            data: operationData
+                        });
+                        layer.close(index);
+                    });
+                }
+            });
         }
 
         function checkAddForm() {
@@ -750,9 +783,13 @@
                     }
                     var operationIds = [];
                     if (dialogIndex === 1) {
-                        operationIds = $('#add_operationIds').val().split(',');
+                        if ($('#add_operationIds').val().length !== 0) {
+                            operationIds = $('#add_operationIds').val().split(',');
+                        }
                     } else if (dialogIndex === 2) {
-                        operationIds = $('#change_operationIds_operationIds').val().split(',');
+                        if ($('#change_operationIds_operationIds').val().length !== 0) {
+                            operationIds = $('#change_operationIds_operationIds').val().split(',');
+                        }
                     }
                     for (var value of checkStatus.data) {
                         operationIds.push(value.id);
@@ -761,11 +798,29 @@
                     layer.close(index);
                     // 再分别更新add_operationIds_table、change_operationIds_table表
                     if (dialogIndex === 1) {
+                        if ($('#add_operationIds').val().length === 0) {
+                            // $('#add_operationIds').val()为空，说明是刚打开添加页面，初始化表格
+                            table.render({
+                                elem: '#add_operationIds_table'
+                                , data: operationData
+                                , width: 700
+                                , cols: [[
+                                    {title: '考试项包含的操作项（拖动行可排序）',align: 'center', colspan: 5} //rowspan即纵向跨越的单元格数
+                                ],[ //表头
+                                    {field: 'id', title: 'id', width: 70}
+                                    , {field: 'name', title: '名称', width: 300}
+                                    , {field: 'description', title: '描述', width: 250}
+                                    , {fixed: 'right', width: 80, align: 'center', toolbar: '#changeOperationIdsBar'} //这里的toolbar值是模板元素的选择器
+                                ]]
+                            });
+                        } else {
+                            // 否则reload
+                            layui.table.reload('add_operationIds_table', {
+                                url: null,
+                                data: operationData
+                            });
+                        }
                         $('#add_operationIds').val(operationIds.join(','));
-                        layui.table.reload('add_operationIds_table', {
-                            url: null,
-                            data: operationData
-                        });
                     } else if (dialogIndex === 2) {
                         $('#change_operationIds_operationIds').val(operationIds.join(','));
                         layui.table.reload('change_operationIds_table', {
