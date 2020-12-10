@@ -558,11 +558,12 @@
                                         table.render({
                                             elem: '#change_operationIds_table'
                                             , data: json.data
-                                            , width: 700
+                                            , width: 750
                                             , cols: [[
                                                 {title: '考试项包含的操作项（拖动行可排序）',align: 'center', colspan: 5} //rowspan即纵向跨越的单元格数
                                             ],[ //表头
-                                                {field: 'id', title: 'id', width: 70}
+                                                {type: 'numbers', title: '序号', width: 60}
+                                                , {field: 'id', title: 'id', width: 60}
                                                 , {field: 'name', title: '名称', width: 300}
                                                 , {field: 'description', title: '描述', width: 250}
                                                 , {fixed: 'right', width: 80, align: 'center', toolbar: '#changeOperationIdsBar'} //这里的toolbar值是模板元素的选择器
@@ -821,11 +822,12 @@
                             table.render({
                                 elem: '#add_operationIds_table'
                                 , data: operationData
-                                , width: 700
+                                , width: 750
                                 , cols: [[
                                     {title: '考试项包含的操作项（拖动行可排序）',align: 'center', colspan: 5} //rowspan即纵向跨越的单元格数
                                 ],[ //表头
-                                    {field: 'id', title: 'id', width: 70}
+                                    {type: 'numbers', title: '序号', width: 60}
+                                    , {field: 'id', title: 'id', width: 60}
                                     , {field: 'name', title: '名称', width: 300}
                                     , {field: 'description', title: '描述', width: 250}
                                     , {fixed: 'right', width: 80, align: 'center', toolbar: '#changeOperationIdsBar'} //这里的toolbar值是模板元素的选择器
