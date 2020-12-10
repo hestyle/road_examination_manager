@@ -56,4 +56,10 @@
         LIMIT
 			#{beginIndex}, #{pageSize}
     </select>
+
+    <update id="deleteById" parameterType="String">
+        UPDATE t_exam_template
+		SET is_del = 1
+		WHERE id=#{id}
+    </update>
 </mapper>

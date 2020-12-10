@@ -8,4 +8,6 @@ public interface IExamTemplateService {
     List<ExamTemplate> findByPage(Integer pageIndex, Integer pageSize);
 
     Integer getExamTemplateCount();
+
+    Boolean delById(String id);
 }

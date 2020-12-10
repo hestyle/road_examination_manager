@@ -25,4 +25,6 @@ public interface ExamTemplateMapper {
     public Integer getExamTemplateCount();
 
     public List<ExamTemplate> findByPage(Integer beginIndex, Integer pageSize);
+
+    Integer deleteById(String id);
 }
