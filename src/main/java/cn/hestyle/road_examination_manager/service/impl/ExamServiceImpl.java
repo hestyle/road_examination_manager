@@ -38,9 +38,9 @@ public class ExamServiceImpl implements IExamService {
     }
 
     @Override
-    public Integer getExamCount() throws PageFindErrorException {
+    public Integer getExamCount(String admissionNo) {
         try{
-            return examMapper.getExamCount();
+            return examMapper.getExamCount(admissionNo);
         }catch (Exception e){
             e.printStackTrace();
             throw new PageFindErrorException("分页查询失败，数据库发生未知异常！");
@@ -48,7 +48,7 @@ public class ExamServiceImpl implements IExamService {
     }
 
     @Override
-    public List<Exam> findByPage(Integer pageIndex, Integer pageSize) throws PageFindErrorException {
+    public List<Exam> findByPage(Integer pageIndex, Integer pageSize, String admissionNo) throws PageFindErrorException {
         // 检查页码是否合法
         if (pageIndex < 1) {
             throw new PageFindErrorException("页码 " + pageIndex + " 非法，必须大于0！");
@@ -59,12 +59,17 @@ public class ExamServiceImpl implements IExamService {
         }
         // 调用持久层mapper
         try{
-            return examMapper.findByPage((pageIndex - 1)*pageSize, pageSize);
+            return examMapper.findByPage((pageIndex - 1)*pageSize, pageSize, admissionNo);
         }catch (Exception e){
             e.printStackTrace();
             throw new PageFindErrorException("分页查询考试信息失败，数据库发生未知异常！");
         }
     }
+
+//    @Override
+//    public List<Exam> findByPage(Integer pageIndex, Integer pageSize, String admissionNo) throws PageFindErrorException {
+//        return null;
+//    }
 
     @Override
     public Boolean add(Exam newExam) throws AccessDefinedException{

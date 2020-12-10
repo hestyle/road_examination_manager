@@ -46,6 +46,7 @@ public class ExamController extends BaseController {
     @PostMapping("/findByPage.do")
     public ResponseResult<List<Exam>> handleFindByPage(@RequestParam("pageIndex") Integer pageIndex,
                                                        @RequestParam("pageSize") Integer pageSize,
+                                                       @RequestParam(name = "admissionNo", required = false) String admissionNo,
                                                        HttpSession session) {
         // 判断是否已经登录过
         // 判断是否已经登录过
@@ -53,9 +54,13 @@ public class ExamController extends BaseController {
             throw new ManagerNotLoginException("操作失败！请先进行管理员登录！");
         }
 
-        List<Exam> examList = examService.findByPage(pageIndex, pageSize);
+        List<Exam> examList = null;
+        Integer count = 0;
+        examList = examService.findByPage(pageIndex, pageSize, admissionNo);
+        count = examService.getExamCount(admissionNo);
+
 //        Integer pageCount = (examService.getExamCount() + pageSize - 1) / pageSize;
-        return new ResponseResult<List<Exam>>(SUCCESS, examService.getExamCount(), examList, "查询成功！");
+        return new ResponseResult<List<Exam>>(SUCCESS, count, examList, "查询成功！");
     }
 
     @PostMapping("add.do")
