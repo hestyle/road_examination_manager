@@ -98,7 +98,9 @@
                             , height: 550
                             , defaultToolbar: ['print', 'exports']
                             , method: 'POST'
-                            , cols: [[ //表头
+                            , cols: [[
+                                {title: '<a class="" style="font-size: 20px; color:black;">考试操作项表</a>',align: 'center', colspan: 6} //rowspan即纵向跨越的单元格数
+                            ],[ //表头
                                 {checkbox: true, LAY_CHECKED: false}
                                 , {field: 'id', title: 'id', width: 80, sort: true}
                                 , {field: 'name', title: '名称', width: 350, sort: true}

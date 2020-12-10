@@ -12,7 +12,6 @@ public interface CandidateMapper {
 
     Candidate findById(String id);
 
-    void delCandidate(String id);
     /**
      * 分页查询所有manager
      * @param beginIndex    username降序排列

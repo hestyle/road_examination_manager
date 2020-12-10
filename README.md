@@ -15,3 +15,8 @@ idea打开项目后，进入`file->settings->Build,Execution,Deployment->Build T
 修改成自己的本地mysql数据库账号（注意修改后每次提交代码时，不要提交到分支里！！！）
 记得先运行群里最先的数据库sql脚本
 ![4](https://user-images.githubusercontent.com/44233477/101240889-1a589100-372d-11eb-9afb-29f05e35933f.png)
+# 4、运行项目后，访问网页
+登录地址 http://localhost:9090/road_examination_manager/login.html
+![5](https://user-images.githubusercontent.com/44233477/101782774-655f1380-3b34-11eb-9980-07a33e73c576.png)
+
+![6](https://user-images.githubusercontent.com/44233477/101782854-7c056a80-3b34-11eb-80f9-c25865d5dbab.png)
