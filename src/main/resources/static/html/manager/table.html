@@ -159,7 +159,9 @@
                             , height: 550
                             , defaultToolbar: ['print', 'exports']
                             , method: 'POST'
-                            , cols: [[ //表头
+                            , cols: [[
+                                {title: '<a class="" style="font-size: 20px; color:black;">管理员表</a>',align: 'center', colspan: 8} //rowspan即纵向跨越的单元格数
+                            ],[ //表头
                                 {checkbox: true, LAY_CHECKED: false}
                                 , {field: 'username', title: '用户名', width: 140, sort: true}
                                 , {field: 'name', title: '姓名', width: 140, sort: true}
