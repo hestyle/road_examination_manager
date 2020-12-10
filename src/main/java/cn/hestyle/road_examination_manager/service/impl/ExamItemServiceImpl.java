@@ -195,32 +195,6 @@ public class ExamItemServiceImpl implements IExamItemService {
                 examItemOriginData.setName(examItem.getName());
             }
         }
-//        // 分值不可修改
-//        if (!examItemOriginData.getScore().equals(examItem.getScore())) {
-//            throw new UpdateException("修改失败，考试项分值不能修改，请恢复至score = " + examItemOriginData.getScore() + "！");
-//        }
-//        // 检查operation_ids是否合法
-//        if (examItem.getOperationIds() == null || examItem.getOperationIds().length() == 0) {
-//            throw new InsertException("修改失败，考试项所包含的操作项id必须设置！");
-//        }
-//        String[] operationIds = examItem.getOperationIds().split(",");
-//        for (String idString : operationIds) {
-//            if (idString == null || idString.length() == 0) {
-//                throw new InsertException("修改失败，考试项operation_ids设置格式错误！");
-//            }
-//            Integer id = null;
-//            try {
-//                // 各个id必须是正确的数字，且是有效的operation_id
-//                id = Integer.parseInt(idString);
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//                throw new InsertException("修改失败，考试项operation_ids设置格式错误！");
-//            }
-//            if (null == examOperationMapper.findById(id)) {
-//                throw new InsertException("修改失败，考试项operation_ids中id = " + id + "未注册！");
-//            }
-//        }
-//        examItemOriginData.setOperationIds(examItem.getOperationIds());
         // 检查description字段
         if (examItem.getDescription() != null && examItem.getDescription().length() != 0) {
             if (examItem.getDescription().length() > 255) {
@@ -251,21 +225,13 @@ public class ExamItemServiceImpl implements IExamItemService {
         if (id == null) {
             throw new UpdateException("保存失败，未设置需要修改考试项id！");
         }
-        if (voicePath == null || voicePath.length() == 0) {
-            throw new UpdateException("保存失败，未设置voicePath！");
-        }
-        // 检查在resource/static/upload/audio是否存在该文件
+        // 检查音频路径合法性
         try {
-            String pathNameTemp = ResourceUtils.getURL("classpath:").getPath() + "static/upload/audio";
-            String pathNameTruth = pathNameTemp.replace("target", "src").replace("classes", "main/resources");
-            String filePath = pathNameTruth + voicePath.substring(voicePath.lastIndexOf('/'));
-            File file = new File(filePath);
-            if (!file.exists()) {
-                throw new Exception("文件不存在！");
+            if (!checkVoicePath(voicePath)) {
+                throw new Exception("音频路径不存在！");
             }
         } catch (Exception e) {
-            e.printStackTrace();
-            throw new UpdateException("保存失败，voicePath = " + voicePath + " 不存在！");
+            throw new InsertException("保存失败，" + e.getMessage());
         }
         // 检查id是否注册
         ExamItem examItem = null;
