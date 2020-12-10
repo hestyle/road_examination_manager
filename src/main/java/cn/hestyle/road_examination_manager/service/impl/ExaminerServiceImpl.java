@@ -72,14 +72,6 @@ public class ExaminerServiceImpl implements IExaminerService{
     }
 
     @Override
-    public void delExaminer(String id){
-        if(findById(id)==null){
-            throw new ExaminerNotFoundException("删除考官失败！未找到考官信息");
-        }
-        examinerMapper.delExaminer(id);
-    }
-
-    @Override
     public Examiner findById(String id) {
         return examinerMapper.findById(id);
     }

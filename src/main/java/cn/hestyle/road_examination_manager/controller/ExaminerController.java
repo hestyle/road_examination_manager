@@ -3,7 +3,6 @@ package cn.hestyle.road_examination_manager.controller;
 import cn.hestyle.road_examination_manager.controller.exception.ManagerNotLoginException;
 import cn.hestyle.road_examination_manager.entity.Examiner;
 import cn.hestyle.road_examination_manager.service.IExaminerService;
-import cn.hestyle.road_examination_manager.service.exception.ExaminerNotFoundException;
 import cn.hestyle.road_examination_manager.util.ResponseResult;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -13,7 +12,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpSession;
 import java.util.List;
@@ -38,8 +36,8 @@ public class ExaminerController extends BaseController{
     public ResponseResult<Void> handleAdd(@RequestParam("newExaminerJsonData")String newExaminerJsonData,
                             HttpSession session) {
         // 判断是否已经登录过
-        if (null == session.getAttribute("username")) {
-            throw new ManagerNotLoginException("操作失败！请先进行管理员登录！");
+        if (null == session.getAttribute("username") && null == session.getAttribute("id")) {
+            throw new ManagerNotLoginException("操作失败！管理员或考官未登录！请先进行登录");
         }
         //考生信息
         ObjectMapper objectMapper = new ObjectMapper();
@@ -56,40 +54,22 @@ public class ExaminerController extends BaseController{
         }
     }
 
-    @PostMapping("/examiner_del.do")
-    public String handleDel(@RequestParam("id")String id, HttpSession session){
-        // 判断是否已经登录过
-        if (null == session.getAttribute("username")) {
-            throw new ManagerNotLoginException("操作失败！请先进行管理员登录！");
-        }
-
-        if(iExaminerService.findById(id)==null){
-            throw new ExaminerNotFoundException("没有该考官信息，删除失败！");
-        }
-        if(iExaminerService.findById(id).getIsDel()==1){
-            throw new ExaminerNotFoundException("该考官已经删除，不能重复删除！");
-        }
-        iExaminerService.delExaminer(id);
-        return "redirect:/examiner";
-
-    }
-
     @PostMapping("/findByPage.do")
     public ResponseResult<List<Examiner>> handleFindByPage(@RequestParam("pageIndex") Integer pageIndex, @RequestParam("pageSize") Integer pageSize, HttpSession session) {
         // 判断是否已经登录过
-        if (null == session.getAttribute("username")) {
-            throw new ManagerNotLoginException("操作失败！请先进行管理员登录！");
+        if (null == session.getAttribute("username") && null == session.getAttribute("id")) {
+            throw new ManagerNotLoginException("操作失败！管理员或考官未登录！请先进行登录");
         }
         List<Examiner> examinerList = iExaminerService.findByPage(pageIndex, pageSize);
-        Integer pageCount = (iExaminerService.getExaminerCount() + pageSize - 1) / pageSize;
-        return new ResponseResult<List<Examiner>>(SUCCESS, pageCount, examinerList, "查询成功！");
+        Integer count = iExaminerService.getExaminerCount();
+        return new ResponseResult<List<Examiner>>(SUCCESS, count, examinerList, "查询成功！");
     }
 
-    @PostMapping("/modifyOtherBaseInfo.do")
-    public ResponseResult<Void> handleModifyOtherBaseInfo(@RequestParam("newBaseInfoJsonData") String newBaseInfoJsonData, HttpSession session) {
+    @PostMapping("/modifyExaminerBaseInfo.do")
+    public ResponseResult<Void> handleModifyExaminerBaseInfo(@RequestParam("newBaseInfoJsonData") String newBaseInfoJsonData, HttpSession session) {
         // 判断是否已经登录过
-        if (null == session.getAttribute("username")) {
-            throw new ManagerNotLoginException("操作失败！请先进行管理员登录！");
+        if (null == session.getAttribute("username") && null == session.getAttribute("id")) {
+            throw new ManagerNotLoginException("操作失败！管理员或考官未登录！请先进行登录");
         }
         // 将newBaseInfoJsonData转成json，取出新baseInfo的各个属性
         ObjectMapper objectMapper = new ObjectMapper();
@@ -110,8 +90,8 @@ public class ExaminerController extends BaseController{
     @PostMapping("/deleteExaminersById.do")
     public ResponseResult<Void> handleDeleteExaminersByUsername(@RequestParam("idListJsonData") String idListJsonData, HttpSession session) {
         // 判断是否已经登录过
-        if (null == session.getAttribute("username")) {
-            throw new ManagerNotLoginException("操作失败！请先进行管理员登录！");
+        if (null == session.getAttribute("username") && null == session.getAttribute("id")) {
+            throw new ManagerNotLoginException("操作失败！管理员或考官未登录！请先进行登录");
         }
         // 将usernameListJsonData转成String list
         ObjectMapper objectMapper = new ObjectMapper();
@@ -129,11 +109,11 @@ public class ExaminerController extends BaseController{
         }
     }
 
-    @PostMapping("/resetOtherPassword.do")
-    public ResponseResult<Void> handleResetOtherPassword(@RequestParam("newPasswordJsonData") String newPasswordJsonData, HttpSession session) {
+    @PostMapping("/resetExaminerPassword.do")
+    public ResponseResult<Void> handleResetExaminerPassword(@RequestParam("newPasswordJsonData") String newPasswordJsonData, HttpSession session) {
         // 判断是否已经登录过
-        if (null == session.getAttribute("username")) {
-            throw new ManagerNotLoginException("操作失败！请先进行管理员登录！");
+        if (null == session.getAttribute("username") && null == session.getAttribute("id")) {
+            throw new ManagerNotLoginException("操作失败！管理员或考官未登录！请先进行登录");
         }
         // 将newManagerData转成json，取出username、newPassword、reNewPassword三个属性
         ObjectMapper objectMapper = new ObjectMapper();
