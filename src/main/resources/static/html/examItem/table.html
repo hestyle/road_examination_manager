@@ -217,7 +217,7 @@
                             , defaultToolbar: ['print', 'exports']
                             , method: 'POST'
                             , cols: [[
-                                {title: '考试项表',align: 'center', colspan: 8} //rowspan即纵向跨越的单元格数
+                                {title: '<a class="" style="font-size: 20px; color:black;">考试项表</a>',align: 'center', colspan: 8} //rowspan即纵向跨越的单元格数
                             ],[ //表头
                                 {checkbox: true, LAY_CHECKED: false}
                                 , {field: 'id', title: 'id', width: 80, sort: true}
@@ -560,7 +560,7 @@
                                             , data: json.data
                                             , width: 750
                                             , cols: [[
-                                                {title: '考试项包含的操作项（拖动行可排序）',align: 'center', colspan: 5} //rowspan即纵向跨越的单元格数
+                                                {title: '考试项包含的操作项（<a class="" style="font-size: 20px; color:red;">拖动行可排序</a>）',align: 'center', colspan: 5} //rowspan即纵向跨越的单元格数
                                             ],[ //表头
                                                 {type: 'numbers', title: '序号', width: 60}
                                                 , {field: 'id', title: 'id', width: 60}
@@ -760,7 +760,9 @@
                         , height: 550
                         , defaultToolbar: ['print', 'exports']
                         , method: 'POST'
-                        , cols: [[ //表头
+                        , cols: [[
+                            {title: '<a class="" style="font-size: 20px; color:black;">考试操作项表</a>',align: 'center', colspan: 5} //rowspan即纵向跨越的单元格数
+                        ],[ //表头
                             {checkbox: true, LAY_CHECKED: false}
                             , {field: 'id', title: 'id', width: 70, sort: true}
                             , {field: 'name', title: '名称', width: 350, sort: true}
@@ -824,7 +826,7 @@
                                 , data: operationData
                                 , width: 750
                                 , cols: [[
-                                    {title: '考试项包含的操作项（拖动行可排序）',align: 'center', colspan: 5} //rowspan即纵向跨越的单元格数
+                                    {title: '考试项包含的操作项（<a class="" style="font-size: 20px; color:red;">拖动行可排序</a>）',align: 'center', colspan: 5} //rowspan即纵向跨越的单元格数
                                 ],[ //表头
                                     {type: 'numbers', title: '序号', width: 60}
                                     , {field: 'id', title: 'id', width: 60}
