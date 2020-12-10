@@ -10,8 +10,6 @@ public interface ExaminerMapper{
 
     Integer addExaminer(Examiner examiner);
 
-    void delExaminer(String id);
-
     Examiner findById(String id);
 
     /**

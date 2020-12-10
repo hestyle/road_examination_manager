@@ -343,6 +343,7 @@
                     btn: ['关闭'],
                     success: function (index, layero) {
                         form.render();
+                        data.isDel = data.isDel + '';
                         form.val("editDialogForm", data);
                     }
                 });
@@ -359,7 +360,7 @@
                     },
                     yes: function (index, layero) {
                         // 更新缓存，同步到服务器
-                        var url ="../../examiner/resetOtherPassword.do";
+                        var url ="../../examiner/resetExaminerPassword.do";
                         var postData = '{"id":"'+ $('#reset_id').val() + '","newPassword":"' + $('#reset_newPassword').val() + '","reNewPassword":"'+ $('#reset_reNewPassword').val() + '"}';
                         $.ajax({
                             "url" : url,
@@ -402,7 +403,7 @@
                     },
                     yes: function (index, layero) {
                         // 更新缓存，同步到服务器
-                        var url ="../../examiner/modifyOtherBaseInfo.do";
+                        var url ="../../examiner/modifyExaminerBaseInfo.do";
                         var postData = '{"id":"'+ $('#id').val() + '","name":"' + $('#name').val() + '","age":'+ $('#age').val() + ',' +
                             '"gender":"' + $('input:radio[name="gender"]:checked').val() + '","phoneNumber":"' + $('#phoneNumber').val() + '",' +
                             '"isDel":' + $('input:radio[name="isDel"]:checked').val() + '}';

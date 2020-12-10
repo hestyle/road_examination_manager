@@ -24,7 +24,6 @@ public class CandidateController extends BaseController{
         @Autowired
         ICandidateService iCandidateService;
 
-
         @PostMapping("/candidate_add.do")
         public ResponseResult<Void> handleAdd(@RequestParam("newCandidateJsonData")String newCandidateJsonData,
                                 HttpSession session) {
@@ -47,24 +46,8 @@ public class CandidateController extends BaseController{
             }
         }
 
-        @PostMapping("/candidate_del.do")
-        public String handleDel(@RequestParam("id")String id, HttpSession session){
-            // 判断是否已经登录过
-            if (null == session.getAttribute("username")) {
-                throw new ManagerNotLoginException("操作失败！请先进行管理员登录！");
-            }
-            if(iCandidateService.findById(id)==null){
-                throw new CandidateNotFoundException("考生信息不存在，请重新确认");
-            }
-            if(iCandidateService.findById(id).getIsDel()==1){
-                throw new CandidateNotFoundException("该考生已删除，不能重复删除！");
-            }
-            iCandidateService.delCandidate(id);
-            return "redirect:/examiner";
-        }
-
-        @PostMapping("/modifyOtherBaseInfo.do")
-        public ResponseResult<Void> handleModifyOtherBaseInfo(@RequestParam("newBaseInfoJsonData") String newBaseInfoJsonData, HttpSession session) {
+        @PostMapping("/modifyCandidateBaseInfo.do")
+        public ResponseResult<Void> handleModifyCandidateBaseInfo(@RequestParam("newBaseInfoJsonData") String newBaseInfoJsonData, HttpSession session) {
             // 判断是否已经登录过
             if (null == session.getAttribute("username")) {
                 throw new ManagerNotLoginException("操作失败！请先进行管理员登录！");
@@ -92,12 +75,12 @@ public class CandidateController extends BaseController{
                 throw new ManagerNotLoginException("操作失败！请先进行管理员登录！");
             }
             List<Candidate> candidateList = iCandidateService.findByPage(pageIndex, pageSize);
-            Integer pageCount = (iCandidateService.getCandidateCount() + pageSize - 1) / pageSize;
-            return new ResponseResult<List<Candidate>>(SUCCESS, pageCount, candidateList, "查询成功！");
+            Integer count = iCandidateService.getCandidateCount();
+            return new ResponseResult<List<Candidate>>(SUCCESS, count, candidateList, "查询成功！");
         }
 
         @PostMapping("/deleteCandidatesById.do")
-        public ResponseResult<Void> handleDeleteCandidatesByUsername(@RequestParam("idListJsonData") String idListJsonData, HttpSession session) {
+        public ResponseResult<Void> handleDeleteCandidatesById(@RequestParam("idListJsonData") String idListJsonData, HttpSession session) {
             // 判断是否已经登录过
             if (null == session.getAttribute("username")) {
                 throw new ManagerNotLoginException("操作失败！请先进行管理员登录！");

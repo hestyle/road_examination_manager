@@ -58,11 +58,6 @@ public class CandidateServiceImpl implements ICandidateService{
     }
 
     @Override
-    public void delCandidate(String id) {
-        candidateMapper.delCandidate(id);
-    }
-
-    @Override
     public List<Candidate> findByPage(Integer pageIndex, Integer pageSize) throws PageFindErrorException {
         // 检查页码是否合法
         if (pageIndex < 1) {
@@ -149,18 +144,18 @@ public class CandidateServiceImpl implements ICandidateService{
         // 首先验证所有username是否都注册
         List<Candidate> candidateList = new ArrayList<>();
         for (String id : idList) {
-            Candidate manager = candidateMapper.findById(id);
-            if (manager == null) {
+            Candidate candidate = candidateMapper.findById(id);
+            if (candidate == null) {
                 throw new DeleteException("批量删除失败，" + id + " 未注册！");
             } else {
-                candidateList.add(manager);
+                candidateList.add(candidate);
             }
         }
         // 批量删除
         try {
-            for (Candidate candidate : candidateList) {
-                candidate.setIsDel(1);
-                candidateMapper.update(candidate);
+            for (Candidate candidate1 : candidateList) {
+                candidate1.setIsDel(1);
+                candidateMapper.update(candidate1);
             }
             return true;
         } catch (Exception e) {

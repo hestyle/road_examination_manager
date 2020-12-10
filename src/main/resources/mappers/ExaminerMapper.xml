@@ -42,14 +42,6 @@
 			#{isDel}
 		)
     </insert>
-    <!--删除考官-->
-    <!--void delExaminer(String id)-->
-    <update id="delExaminer">
-		UPDATE t_examiner
-		SET is_del = 1
-		WHERE id=#{id}
-	</update>
-
     <!--分页查询所有管理员-->
     <!--List<Candidate> findByPage(Integer beginIndex, Integer pageSize)-->
     <select id="findByPage" resultType="cn.hestyle.road_examination_manager.entity.Examiner">

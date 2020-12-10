@@ -42,14 +42,6 @@
 		WHERE
 		    `id`=#{id}
     </select>
-    <!--根据id删除考生-->
-    <!--void delCandidate(String id)-->
-    <update id="delCandidate">
-		UPDATE t_candidate
-		SET is_del = 1
-		WHERE id=#{id}
-	</update>
-
     <!--分页查询所有管理员-->
     <!--List<Candidate> findByPage(Integer beginIndex, Integer pageSize)-->
     <select id="findByPage" resultType="cn.hestyle.road_examination_manager.entity.Candidate">

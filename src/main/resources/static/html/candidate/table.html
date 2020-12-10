@@ -322,6 +322,7 @@
                     btn: ['关闭'],
                     success: function (index, layero) {
                         form.render();
+                        data.isDel = data.isDel + '';
                         form.val("editDialogForm", data);
                     }
                 });
@@ -338,7 +339,7 @@
                     },
                     yes: function (index, layero) {
                         // 更新缓存，同步到服务器
-                        var url ="../../candidate/modifyOtherBaseInfo.do";
+                        var url ="../../candidate/modifyCandidateBaseInfo.do";
                         var postData = '{"id":"'+ $('#id').val() + '","name":"' + $('#name').val() + '","age":"'+ $('#age').val() + '",' +
                             '"gender":"' + $('input:radio[name="gender"]:checked').val() + '","phoneNumber":"' + $('#phoneNumber').val() + '",' +
                             '"driverSchool":"' + $('#driverSchool').val()+

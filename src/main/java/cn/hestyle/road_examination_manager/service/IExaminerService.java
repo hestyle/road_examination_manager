@@ -10,8 +10,6 @@ public interface IExaminerService {
 
     Boolean addExaminer(Examiner examiner);
 
-    void delExaminer(String id);
-
     Examiner findById(String id);
 
     List<Examiner> findByPage(Integer pageIndex, Integer pageSize);
