@@ -10,8 +10,6 @@ public interface ICandidateService {
 
     Candidate findById(String id);
 
-    void delCandidate(String id);
-
     List<Candidate> findByPage(Integer pageIndex, Integer pageSize);
 
     Integer getCandidateCount();
