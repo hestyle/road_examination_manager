@@ -78,19 +78,46 @@
     <script type="text/html" id="addDialog">
         <form id="add_form" class="layui-form" action="" style="padding: 20px;" lay-filter="addDialogForm">
             <div class="layui-form-item">
-                <label class="layui-form-label">名称</label>
+                <label class="layui-form-label" style="width: 25%;">名称</label>
                 <div class="layui-input-inline">
                     <input id="add_name" type="text" name="name" placeholder="请输入名称" autocomplete="off" class="layui-input" style="width: 140%;">
                 </div>
             </div>
             <div class="layui-form-item">
-                <label class="layui-form-label">描述</label>
+                <label class="layui-form-label" style="width: 25%;">分值</label>
+                <div class="layui-input-inline">
+                    <input id="add_score" type="number" name="score" placeholder="请输入分值" autocomplete="off" class="layui-input" style="width: 140%;" value="0">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label" style="width: 25%;">描述</label>
                 <div class="layui-input-inline">
                     <textarea id="add_description" name="description" placeholder="请输入描述" class="layui-textarea" style="width: 140%;"></textarea>
                 </div>
             </div>
             <div class="layui-form-item">
-                <label class="layui-form-label">是否删除</label>
+                <label class="layui-form-label" style="width: 25%;">音频路径</label>
+                <div class="layui-input-inline">
+                    <input id="add_voice_path" type="text" name="voicePath" placeholder="请输入音频路径" autocomplete="off" class="layui-input" style="width: 140%;" disabled>
+                    <button type="button" class="layui-btn" id="add_uploadVoiceButton"><i class="layui-icon">&#xe67c;</i>上传音频</button>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label" style="width: 25%;">播放</label>
+                <div class="layui-input-inline">
+                    <audio id="add_examItemVoiceAudio" src="xxxx.mp3" controls="controls"></audio>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label" style="width: 25%;">操作项ID列表</label>
+                <div class="layui-input-inline">
+                    <input id="add_operationIds" type="text" name="operationIds" placeholder="请输入操作项ID列表，以英文逗号隔开！" autocomplete="off" class="layui-input" style="width: 140%;">
+                    <button id="select_opeations" type="button" class="layui-btn">选择操作项</button>
+                </div>
+            </div>
+            <table id="opeations"></table>
+            <div class="layui-form-item">
+                <label class="layui-form-label" style="width: 25%;">是否删除</label>
                 <div class="layui-input-inline">
                     <input type="radio" name="add_isDel" value="0" title="未删除" checked>
                     <input type="radio" name="add_isDel" value="1" title="已删除">
@@ -218,17 +245,35 @@
                             btn: ['确定', '取消'],
                             success: function (index, layero) {
                                 form.render();
+                                upload.render({
+                                    elem: '#add_uploadVoiceButton'
+                                    ,url: '../../examItem/uploadVoice.do'
+                                    ,accept: 'audio'
+                                    ,acceptMime: 'audio/mpeg'
+                                    ,done: function(res){
+                                        // 文件上传成功后修改音频路径
+                                        $('#add_voice_path').val(res.data);
+                                        $('#add_examItemVoiceAudio').attr('src', res.data);
+                                    }
+                                    ,error: function(){
+                                        layer.open({
+                                            title: '提示信息',
+                                            content: '文件上传失败！'
+                                        });
+                                    }
+                                });
                             },
                             yes: function (index, layero) {
                                 if (checkAddForm() === false) {
                                     return false;
                                 }
-                                var url ="../../examOperation/add.do";
-                                var postData = '{"name":"' + $('#add_name').val() + '","description":"' + $('#add_description').val() + '",' +
-                                    '"isDel":' + $('input:radio[name="add_isDel"]:checked').val() + '}';
+                                var url ="../../examItem/add.do";
+                                var postData = '{"name":"' + $('#add_name').val() + '","score":' + $('#add_score').val() + ',"description":"' +
+                                    $('#add_description').val() + '","voicePath":"' + $('#add_voice_path').val() + '","operationIds":"' + $('#add_operationIds').val()  +
+                                    '","isDel":' + $('input:radio[name="add_isDel"]:checked').val() + '}';
                                 $.ajax({
                                     "url" : url,
-                                    "data" : {"newExamOperationJsonData":postData},
+                                    "data" : {"newExamItemJsonData":postData},
                                     "type" : "POST",
                                     "dataType" : "json",
                                     "success" : function (json) {
@@ -454,7 +499,14 @@
             if ($('#add_name').val().length === 0) {
                 layer.open({
                     title: "提示信息",
-                    content: "考试操作项名称不能为空！"
+                    content: "考试项名称不能为空！"
+                });
+                return false;
+            }
+            if (($('#add_score').val() + '').length === 0) {
+                layer.open({
+                    title: "提示信息",
+                    content: "考试项分值必须填写！"
                 });
                 return false;
             }
@@ -462,6 +514,20 @@
                 layer.open({
                     title: "提示信息",
                     content: "考试操作项描述不能为空！"
+                });
+                return false;
+            }
+            if ($('#add_voice_path').val().length === 0) {
+                layer.open({
+                    title: "提示信息",
+                    content: "考试项的音频不能为空，请上传音频文件！"
+                });
+                return false;
+            }
+            if ($('#add_operationIds').val().length === 0) {
+                layer.open({
+                    title: "提示信息",
+                    content: "考试项的操作项ID列表不能为空！"
                 });
                 return false;
             }
