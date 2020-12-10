@@ -5,10 +5,7 @@ import cn.hestyle.road_examination_manager.entity.ExamOperation;
 import cn.hestyle.road_examination_manager.mapper.ExamItemMapper;
 import cn.hestyle.road_examination_manager.mapper.ExamOperationMapper;
 import cn.hestyle.road_examination_manager.service.IExamItemService;
-import cn.hestyle.road_examination_manager.service.exception.FindException;
-import cn.hestyle.road_examination_manager.service.exception.InsertException;
-import cn.hestyle.road_examination_manager.service.exception.PageFindErrorException;
-import cn.hestyle.road_examination_manager.service.exception.UpdateException;
+import cn.hestyle.road_examination_manager.service.exception.*;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ResourceUtils;
 
@@ -289,6 +286,27 @@ public class ExamItemServiceImpl implements IExamItemService {
             e.printStackTrace();
             throw new UpdateException("保存失败，数据库发生未知异常！");
         }
+    }
+
+    @Override
+    public Boolean deleteByIdList(List<Integer> idList) throws DeleteException {
+        if (idList == null || idList.size() == 0) {
+            throw new DeleteException("批量删除失败，未设置需要删除的id list！");
+        }
+        for (Integer id : idList) {
+            ExamItem examItem = examItemMapper.findById(id);
+            if (examItem == null) {
+                throw new DeleteException("批量删除失败，考试项id = " + id + " 未注册！");
+            }
+            examItem.setIsDel(1);
+            try {
+                examItemMapper.update(examItem);
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw new DeleteException("批量删除失败，数据库发生未知异常！");
+            }
+        }
+        return Boolean.TRUE;
     }
 
     /**

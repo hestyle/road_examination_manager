@@ -319,7 +319,7 @@
                             return;
                         }
                         layer.confirm('删除选中行？', function (index) {
-                            var url ="../../examOperation/deleteByIdList.do";
+                            var url ="../../examItem/deleteByIdList.do";
                             $.ajax({
                                 "url" : url,
                                 "data" : {"idListJsonString":postData},
