@@ -209,4 +209,39 @@ public class ExamItemController extends BaseController {
             return new ResponseResult<>(FAILURE, "修改保存失败，原因未知！");
         }
     }
+
+    @PostMapping("/modifyOperationIds.do")
+    public ResponseResult<Void> handleModifyOperationIds(@RequestParam("id") Integer id, @RequestParam("operationIds") String operationIds, HttpSession session) {
+        // 判断是否已经登录过
+        if (null == session.getAttribute("username")) {
+            throw new ManagerNotLoginException("操作失败！请先进行管理员登录！");
+        }
+        if (examItemService.modifyOperationIds(id, operationIds)) {
+            return new ResponseResult<Void>(SUCCESS, "保存成功！");
+        } else {
+            return new ResponseResult<>(FAILURE, "修改保存失败，原因未知！");
+        }
+    }
+
+    @PostMapping("/deleteByIdList.do")
+    public ResponseResult<Void> handleDeleteById(@RequestParam("idListJsonString") String idListJsonString, HttpSession session) {
+        // 判断是否已经登录过
+        if (null == session.getAttribute("username")) {
+            throw new ManagerNotLoginException("操作失败！请先进行管理员登录！");
+        }
+        // 将idListJsonString转成json，然后转成List<Integer>对象
+        ObjectMapper objectMapper = new ObjectMapper();
+        List<Integer> idList = null;
+        try {
+            idList = objectMapper.readValue(idListJsonString, new TypeReference<List<Integer>>() {});
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            return new ResponseResult<>(FAILURE, "id list数据格式不正确！");
+        }
+        if (examItemService.deleteByIdList(idList)) {
+            return new ResponseResult<Void>(SUCCESS, "批量删除成功！");
+        } else {
+            return new ResponseResult<Void>(FAILURE, "考试项批量删除失败，原因未知！");
+        }
+    }
 }

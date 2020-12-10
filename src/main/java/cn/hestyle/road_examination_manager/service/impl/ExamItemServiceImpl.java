@@ -1,13 +1,11 @@
 package cn.hestyle.road_examination_manager.service.impl;
 
 import cn.hestyle.road_examination_manager.entity.ExamItem;
+import cn.hestyle.road_examination_manager.entity.ExamOperation;
 import cn.hestyle.road_examination_manager.mapper.ExamItemMapper;
 import cn.hestyle.road_examination_manager.mapper.ExamOperationMapper;
 import cn.hestyle.road_examination_manager.service.IExamItemService;
-import cn.hestyle.road_examination_manager.service.exception.FindException;
-import cn.hestyle.road_examination_manager.service.exception.InsertException;
-import cn.hestyle.road_examination_manager.service.exception.PageFindErrorException;
-import cn.hestyle.road_examination_manager.service.exception.UpdateException;
+import cn.hestyle.road_examination_manager.service.exception.*;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ResourceUtils;
 
@@ -43,26 +41,21 @@ public class ExamItemServiceImpl implements IExamItemService {
         if (examItem.getScore() == null || examItem.getScore() < 1 || examItem.getScore() > 100) {
             throw new InsertException("保存失败，考试项分值必须为 1 ~ 100");
         }
-        // 检查operation_ids
-        if (examItem.getOperationIds() == null || examItem.getOperationIds().length() == 0) {
-            throw new InsertException("保存失败，考试项所包含的操作项必须设置！");
+        // 检查音频路径合法性
+        try {
+            if (!checkVoicePath(examItem.getVoicePath())) {
+                throw new Exception("音频路径不存在！");
+            }
+        } catch (Exception e) {
+            throw new InsertException("保存失败，" + e.getMessage());
         }
-        String[] operationIds = examItem.getOperationIds().split(",");
-        for (String idString : operationIds) {
-            if (idString == null || idString.length() == 0) {
-                throw new InsertException("保存失败，考试项operation_ids设置格式错误！");
+        // 检查operation_ids
+        try {
+            if (!checkOperationIds(examItem.getOperationIds())) {
+                throw new Exception("操作项id列表格式错误！");
             }
-            Integer id = null;
-            try {
-                // 各个id必须是正确的数字，且是有效的operation_id
-                id = Integer.parseInt(idString);
-            } catch (Exception e) {
-                e.printStackTrace();
-                throw new InsertException("保存失败，考试项operation_ids设置格式错误！");
-            }
-            if (null == examOperationMapper.findById(id)) {
-                throw new InsertException("保存失败，考试项operation_ids中id = " + id + "未注册！");
-            }
+        } catch (Exception e) {
+            throw new InsertException("保存失败，" + e.getMessage());
         }
         if (examItem.getIsDel() == null || (examItem.getIsDel() != 0 && examItem.getIsDel() != 1)) {
             throw new InsertException("保存失败，考试项状态必须设置，且有且只有0未删除、1已删除两种状态！");
@@ -202,32 +195,6 @@ public class ExamItemServiceImpl implements IExamItemService {
                 examItemOriginData.setName(examItem.getName());
             }
         }
-//        // 分值不可修改
-//        if (!examItemOriginData.getScore().equals(examItem.getScore())) {
-//            throw new UpdateException("修改失败，考试项分值不能修改，请恢复至score = " + examItemOriginData.getScore() + "！");
-//        }
-//        // 检查operation_ids是否合法
-//        if (examItem.getOperationIds() == null || examItem.getOperationIds().length() == 0) {
-//            throw new InsertException("修改失败，考试项所包含的操作项id必须设置！");
-//        }
-//        String[] operationIds = examItem.getOperationIds().split(",");
-//        for (String idString : operationIds) {
-//            if (idString == null || idString.length() == 0) {
-//                throw new InsertException("修改失败，考试项operation_ids设置格式错误！");
-//            }
-//            Integer id = null;
-//            try {
-//                // 各个id必须是正确的数字，且是有效的operation_id
-//                id = Integer.parseInt(idString);
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//                throw new InsertException("修改失败，考试项operation_ids设置格式错误！");
-//            }
-//            if (null == examOperationMapper.findById(id)) {
-//                throw new InsertException("修改失败，考试项operation_ids中id = " + id + "未注册！");
-//            }
-//        }
-//        examItemOriginData.setOperationIds(examItem.getOperationIds());
         // 检查description字段
         if (examItem.getDescription() != null && examItem.getDescription().length() != 0) {
             if (examItem.getDescription().length() > 255) {
@@ -258,21 +225,13 @@ public class ExamItemServiceImpl implements IExamItemService {
         if (id == null) {
             throw new UpdateException("保存失败，未设置需要修改考试项id！");
         }
-        if (voicePath == null || voicePath.length() == 0) {
-            throw new UpdateException("保存失败，未设置voicePath！");
-        }
-        // 检查在resource/static/upload/audio是否存在该文件
+        // 检查音频路径合法性
         try {
-            String pathNameTemp = ResourceUtils.getURL("classpath:").getPath() + "static/upload/audio";
-            String pathNameTruth = pathNameTemp.replace("target", "src").replace("classes", "main/resources");
-            String filePath = pathNameTruth + voicePath.substring(voicePath.lastIndexOf('/'));
-            File file = new File(filePath);
-            if (!file.exists()) {
-                throw new Exception("文件不存在！");
+            if (!checkVoicePath(voicePath)) {
+                throw new Exception("音频路径不存在！");
             }
         } catch (Exception e) {
-            e.printStackTrace();
-            throw new UpdateException("保存失败，voicePath = " + voicePath + " 不存在！");
+            throw new InsertException("保存失败，" + e.getMessage());
         }
         // 检查id是否注册
         ExamItem examItem = null;
@@ -293,5 +252,123 @@ public class ExamItemServiceImpl implements IExamItemService {
             e.printStackTrace();
             throw new UpdateException("保存失败，数据库发生未知异常！");
         }
+    }
+
+    @Override
+    public Boolean modifyOperationIds(Integer id, String operationIds) throws UpdateException {
+        // 检查id、operationIds
+        if (id == null) {
+            throw new UpdateException("保存失败，未设置需要修改考试项id！");
+        }
+        // 检查operation_ids
+        try {
+            if (!checkOperationIds(operationIds)) {
+                throw new Exception("操作项id列表格式错误！");
+            }
+        } catch (Exception e) {
+            throw new InsertException("保存失败，" + e.getMessage());
+        }
+        // 检查id是否注册
+        ExamItem examItem = null;
+        try {
+            examItem = examItemMapper.findById(id);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new UpdateException("保存失败，数据库发生未知异常！");
+        }
+        if (examItem == null) {
+            throw new UpdateException("保存失败，id = " + id + " 考试项不存在！");
+        }
+        // 保存修改
+        examItem.setOperationIds(operationIds);
+        try {
+            return 1 == examItemMapper.update(examItem);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new UpdateException("保存失败，数据库发生未知异常！");
+        }
+    }
+
+    @Override
+    public Boolean deleteByIdList(List<Integer> idList) throws DeleteException {
+        if (idList == null || idList.size() == 0) {
+            throw new DeleteException("批量删除失败，未设置需要删除的id list！");
+        }
+        for (Integer id : idList) {
+            ExamItem examItem = examItemMapper.findById(id);
+            if (examItem == null) {
+                throw new DeleteException("批量删除失败，考试项id = " + id + " 未注册！");
+            }
+            examItem.setIsDel(1);
+            try {
+                examItemMapper.update(examItem);
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw new DeleteException("批量删除失败，数据库发生未知异常！");
+            }
+        }
+        return Boolean.TRUE;
+    }
+
+    /**
+     * 检查voicePath是否合法（音频文件是否存在
+     * @param voicePath     音频路径
+     * @return              是否合法
+     */
+    private Boolean checkVoicePath(String voicePath) throws Exception {
+        if (voicePath == null || voicePath.length() == 0) {
+            throw new Exception("音频路径为空！");
+        }
+        // 检查在resource/static/upload/audio是否存在该文件
+        try {
+            String pathNameTemp = ResourceUtils.getURL("classpath:").getPath() + "static/upload/audio";
+            String pathNameTruth = pathNameTemp.replace("target", "src").replace("classes", "main/resources");
+            String filePath = pathNameTruth + voicePath.substring(voicePath.lastIndexOf('/'));
+            File file = new File(filePath);
+            if (!file.exists()) {
+                throw new Exception(voicePath + "文件不存在！");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new Exception(voicePath + "文件不存在！");
+        }
+        return true;
+    }
+
+    /**
+     * 检查operationIds是否合法（操作项id是否都存在
+     * @param operationIdsString        操作项id
+     * @return                          是否合法
+     */
+    private Boolean checkOperationIds(String operationIdsString) throws Exception {
+        // 检查operation_ids
+        if (operationIdsString == null || operationIdsString.length() == 0) {
+            throw new Exception("操作项id列表为空！");
+        }
+        String[] operationIds = operationIdsString.split(",");
+        for (String idString : operationIds) {
+            if (idString == null || idString.length() == 0) {
+                throw new Exception("操作项id列表格式错误！");
+            }
+            Integer id = null;
+            try {
+                // 各个id必须是正确的数字，且是有效的operation_id
+                id = Integer.parseInt(idString);
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw new Exception("操作项id列表格式错误！");
+            }
+            // 检查id是否存在
+            ExamOperation examOperation = null;
+            try {
+                examOperation = examOperationMapper.findById(id);
+            } catch (Exception e) {
+                throw new Exception("数据库发生未知异常！");
+            }
+            if (examOperation == null) {
+                throw new Exception("考试项operation_ids中id = " + id + "未注册！");
+            }
+        }
+        return true;
     }
 }
