@@ -21,4 +21,8 @@ public interface ExamTemplateMapper {
      * @return
      */
     public List<ExamItem> findExamItemListByExamTemplateId(String id);
+
+    public Integer getExamTemplateCount();
+
+    public List<ExamTemplate> findByPage(Integer beginIndex, Integer pageSize);
 }

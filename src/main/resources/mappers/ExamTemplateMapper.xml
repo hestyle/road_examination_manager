@@ -35,4 +35,25 @@
 		    WHERE exam_template_id = #{id}
 		)
     </select>
+
+    <select id="getExamTemplateCount" resultType="Integer">
+        SELECT COUNT(id)
+        FROM t_exam_template
+        WHERE is_del = 0
+    </select>
+
+    <select id="findByPage" resultType="cn.hestyle.road_examination_manager.entity.ExamTemplate">
+         SELECT
+            `id` AS `id`,
+            `name` AS `name`,
+            `score` AS `score`,
+            `type` AS `type`,
+            `is_del` AS `isDel`
+        FROM
+            t_exam_template
+        WHERE
+            is_del = 0
+        LIMIT
+			#{beginIndex}, #{pageSize}
+    </select>
 </mapper>
