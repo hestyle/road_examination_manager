@@ -6,8 +6,10 @@
     <script src="../../js/jquery.min.js"></script>
     <script src="../../layui/layui.all.js"></script>
     <script src="../../js/common.js"></script>
+    <script src="../../plugins/soulTable/soulTable.js"></script>
     <link rel="stylesheet" href="../../layui/css/layui.css" media="all">
     <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="../../plugins/soulTable/soulTable.css">
 </head>
     <body>
         <table id="examItemTable" lay-filter="test"></table>
@@ -189,7 +191,13 @@
         <table id="all_operation_table" lay-filter="allOperationTable"></table>
     </script>
     <script>
-        layuiModules=['table', 'layer', 'form', 'upload'];
+        layui.config({
+            base: '../../plugins/soulTable/',
+            version: 'v1.5.20'
+        }).extend({
+            soulTable: 'soulTable/soulTable.slim'
+        });
+        layuiModules=['table', 'layer', 'form', 'upload', 'soulTable'];
         // operationIds对应的操作项
         var operationData = [];
         function mounted() {
@@ -550,15 +558,30 @@
                                         table.render({
                                             elem: '#change_operationIds_table'
                                             , data: json.data
-                                            , width: 700
+                                            , width: 750
                                             , cols: [[
                                                 {title: '考试项包含的操作项（拖动行可排序）',align: 'center', colspan: 5} //rowspan即纵向跨越的单元格数
                                             ],[ //表头
-                                                {field: 'id', title: 'id', width: 70}
+                                                {type: 'numbers', title: '序号', width: 60}
+                                                , {field: 'id', title: 'id', width: 60}
                                                 , {field: 'name', title: '名称', width: 300}
                                                 , {field: 'description', title: '描述', width: 250}
                                                 , {fixed: 'right', width: 80, align: 'center', toolbar: '#changeOperationIdsBar'} //这里的toolbar值是模板元素的选择器
                                             ]]
+                                            , rowDrag: {
+                                                done: function(obj) {
+                                                    // 完成时（松开时）触发(soulTable插件，移动行
+                                                    operationData = obj.cache;
+                                                    var operationIds = [];
+                                                    for (var row of obj.cache) {
+                                                        operationIds.push(row.id);
+                                                    }
+                                                    $('#change_operationIds_operationIds').val(operationIds.join(','));
+                                                }
+                                            }
+                                            , done: function () {
+                                                soulTable.render(this)
+                                            }
                                         });
                                     } else {
                                         // 弹出中间提示框
@@ -630,7 +653,6 @@
                     layer.confirm('真的删除这个操作项吗？', function(index){
                         // 获取行所在的行index
                         var objIndex = $(tr).attr("data-index");
-                        console.log('objIndex = ' + objIndex);
                         // 然后把change_operationIds_operationIds输入框中的内容更新
                         var operationIds = $('#change_operationIds_operationIds').val().split(',');
                         operationIds.splice(objIndex, 1);
@@ -641,7 +663,6 @@
                         } else {
                             $('#change_operationIds_operationIds').val('');
                         }
-                        obj.del(); //删除对应行（tr）的DOM结构，并更新缓存
                         operationData.splice(objIndex, 1);
                         layui.table.reload('change_operationIds_table', {
                             url: null,
@@ -661,7 +682,6 @@
                     layer.confirm('真的删除这个操作项吗？', function(index){
                         // 获取行所在的行index
                         var objIndex = $(tr).attr("data-index");
-                        console.log('objIndex = ' + objIndex);
                         // 然后把add_operationIds输入框中的内容更新
                         var operationIds = $('#add_operationIds').val().split(',');
                         operationIds.splice(objIndex, 1);
@@ -672,9 +692,8 @@
                         } else {
                             $('#add_operationIds').val('');
                         }
-                        obj.del(); //删除对应行（tr）的DOM结构，并更新缓存
                         operationData.splice(objIndex, 1);
-                        layui.table.reload('addOperationIdsTable', {
+                        layui.table.reload('add_operationIds_table', {
                             url: null,
                             data: operationData
                         });
@@ -803,15 +822,30 @@
                             table.render({
                                 elem: '#add_operationIds_table'
                                 , data: operationData
-                                , width: 700
+                                , width: 750
                                 , cols: [[
                                     {title: '考试项包含的操作项（拖动行可排序）',align: 'center', colspan: 5} //rowspan即纵向跨越的单元格数
                                 ],[ //表头
-                                    {field: 'id', title: 'id', width: 70}
+                                    {type: 'numbers', title: '序号', width: 60}
+                                    , {field: 'id', title: 'id', width: 60}
                                     , {field: 'name', title: '名称', width: 300}
                                     , {field: 'description', title: '描述', width: 250}
                                     , {fixed: 'right', width: 80, align: 'center', toolbar: '#changeOperationIdsBar'} //这里的toolbar值是模板元素的选择器
                                 ]]
+                                , rowDrag: {
+                                    done: function(obj) {
+                                        // 完成时（松开时）触发(soulTable插件，移动行
+                                        operationData = obj.cache;
+                                        var operationIds = [];
+                                        for (var row of obj.cache) {
+                                            operationIds.push(row.id);
+                                        }
+                                        $('#add_operationIds').val(operationIds.join(','));
+                                    }
+                                }
+                                , done: function () {
+                                    soulTable.render(this)
+                                }
                             });
                         } else {
                             // 否则reload
