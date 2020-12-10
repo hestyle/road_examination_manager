@@ -1,8 +1,10 @@
 package cn.hestyle.road_examination_manager.service.impl;
 
+import cn.hestyle.road_examination_manager.entity.Candidate;
 import cn.hestyle.road_examination_manager.entity.Exam;
 import cn.hestyle.road_examination_manager.entity.ExamItem;
 import cn.hestyle.road_examination_manager.entity.ExamTemplate;
+import cn.hestyle.road_examination_manager.mapper.CandidateMapper;
 import cn.hestyle.road_examination_manager.mapper.ExamItemMapper;
 import cn.hestyle.road_examination_manager.mapper.ExamMapper;
 import cn.hestyle.road_examination_manager.mapper.ExamTemplateMapper;
@@ -10,11 +12,13 @@ import cn.hestyle.road_examination_manager.service.IExamService;
 import cn.hestyle.road_examination_manager.service.exception.*;
 import org.apache.ibatis.javassist.NotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.annotation.Resource;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 @Service
 public class ExamServiceImpl implements IExamService {
@@ -24,6 +28,8 @@ public class ExamServiceImpl implements IExamService {
     ExamItemMapper examItemMapper;
     @Resource
     ExamTemplateMapper examTemplateMapper;
+    @Resource
+    CandidateMapper candidateMapper;
 
     @Override
     public Exam findByAdmissionNo(String admissionNo) throws AccessDefinedException{
@@ -242,5 +248,100 @@ public class ExamServiceImpl implements IExamService {
         res.put("lightExamItemList", lightExamItemList);
 
         return res;
+    }
+
+    @Override
+    public Exam generateExamInfo(String candidateId, String examTemplateId, String lightExamTemplateId) {
+        // 检查考生历史考生信息
+        String historyExamAdmissonNo = examMapper.findAdmissionByCandidateId(candidateId);
+        String historyYYYYMMDD = historyExamAdmissonNo.substring(0, 8);
+        DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
+        Long intervalDays = 0L;
+        try {
+            Date lastDate = dateFormat.parse(historyYYYYMMDD);
+            Date today = new Date();
+            intervalDays = (today.getTime() -  lastDate.getTime()) / 24 / 60 / 60 / 1000;
+        } catch (ParseException e) {
+            e.printStackTrace();
+            throw new ServiceException("操作失败，未知错误！");
+        }
+        if(intervalDays <= 7){
+            throw new ServiceException("距上次考试未超过7天，无法考试！");
+        }
+
+        Exam exam = new Exam();
+
+        Candidate candidate = null;
+        try {
+            candidate = candidateMapper.findById(candidateId);
+        }catch (Exception e){
+            e.printStackTrace();
+            throw new AccessDefinedException("获取考生信息时访问数据库失败！");
+        }
+        if(candidate == null){
+            throw new FindException("符合要求的考生不存在！");
+        }
+        exam.setCandidateId(candidateId);
+
+        ExamTemplate examTemplate = null;
+        try {
+            examTemplateMapper.findById(examTemplateId);
+        }catch (Exception e){
+            e.printStackTrace();
+            throw new AccessDefinedException("获取考试模板信息时访问数据库失败！");
+        }
+        exam.setExamTemplateId(examTemplateId);
+
+        ExamTemplate lightExamTemplate = null;
+        try {
+            examTemplateMapper.findById(lightExamTemplateId);
+        }catch (Exception e){
+            e.printStackTrace();
+            throw new AccessDefinedException("获取考试模板信息时访问数据库失败！");
+        }
+        exam.setLightExamTemplateId(lightExamTemplateId);
+
+        // 准考证号： 日期 + 八位流水
+        exam.setAdmissionNo(generateAdmissionNo());
+
+        // 随机分配考官  考试当天随机分配 考官与考试车辆有关
+//        List<String> examinerIdList = examMapper.findAvailableExaminerIdList();
+//        Random random = new Random();
+//        Integer index = random.nextInt(examinerIdList.size());
+//        exam.setExaminerId(examinerIdList.get(index));
+
+        // 设置考试状态 未考试
+        exam.setState(0);
+
+        // 随机分配考试车辆 考试当天随机分配
+//        List<Integer> carIdList = examMapper.findAvailableCarIdList();
+//        index = random.nextInt(carIdList.size());
+//        exam.setCarId(carIdList.get(index));
+
+
+
+
+
+        return exam;
+    }
+
+    /**
+     * 生成准考证号
+     * @param
+     * @return
+     */
+    private String generateAdmissionNo() throws AccessDefinedException {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+        String yyyymmdd = sdf.format(new Date()).substring(0, 8);
+        Integer num = 0;
+        try {
+            num = examMapper.getTodayNum(yyyymmdd);
+        }catch (Exception e){
+            e.printStackTrace();
+            throw new AccessDefinedException("生成准考证时访问数据库失败！");
+        }
+        num = num + 1;
+        String strNum = String.format("%08d", num);
+        return yyyymmdd + strNum;
     }
 }

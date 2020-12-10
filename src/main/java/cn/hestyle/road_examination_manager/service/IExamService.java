@@ -50,4 +50,6 @@ public interface IExamService {
      * @return
      */
     Integer getExamCount(String admissionNo);
+
+    Exam generateExamInfo(String candidateId, String examTemplateId, String lightExamTemplateId);
 }

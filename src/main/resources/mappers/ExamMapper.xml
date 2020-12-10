@@ -121,4 +121,30 @@
             `is_del`=#{isDel}
 		WHERE admission_no=#{admissionNo}
     </update>
+
+    <select id="getTodayNum" parameterType="String" resultType="Integer">
+        SELECT COUNT(admission_no)
+        FROM t_exam
+        WHERE admission_no LIKE CONCAT(#{yyyymmdd}, '%')
+    </select>
+
+    <select id="findAvailableExaminerIdList" resultType="String">
+        SELECT id
+        FROM t_examiner
+        WHERE is_del = 0
+    </select>
+
+    <select id="findAvailableCarIdList" resultType="Integer">
+        SELECT id
+        FROM t_car
+        WHERE is_del = 0
+    </select>
+
+    <select id="findAdmissionByCandidateId" parameterType="String" resultType="String">
+        SELECT admission_no
+        FROM t_exam
+        WHERE candidate_id = #{candidateId}
+        ORDER BY exam_time DESC
+        LIMIT 1
+    </select>
 </mapper>

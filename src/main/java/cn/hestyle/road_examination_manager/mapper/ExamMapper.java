@@ -35,5 +35,13 @@ public interface ExamMapper {
 
     Integer update(Exam newExam);
 
+    Integer getTodayNum(String yyyymmdd);
+
 //    Integer getExamCountByAdmissionNo(String admissionNo);
+
+    List<String> findAvailableExaminerIdList();
+
+    List<Integer> findAvailableCarIdList();
+
+    String findAdmissionByCandidateId(String candidateId);
 }

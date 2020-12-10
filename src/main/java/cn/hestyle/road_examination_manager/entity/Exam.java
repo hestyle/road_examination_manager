@@ -34,7 +34,7 @@ public class Exam {
     /** 丢分描述 */
     private String scoreLossDesc;
     /** 是否删除 */
-    private Integer isDel;
+    private Integer isDel = 0;
 
     public String getAdmissionNo() {
         return admissionNo;

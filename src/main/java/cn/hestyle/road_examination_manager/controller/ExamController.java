@@ -8,6 +8,7 @@ import cn.hestyle.road_examination_manager.service.ICandidateService;
 import cn.hestyle.road_examination_manager.service.IExamService;
 import cn.hestyle.road_examination_manager.util.ResponseResult;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -164,7 +165,7 @@ public class ExamController extends BaseController {
         return new ResponseResult<Map<String, Object>>(SUCCESS, "查询成功", data);
     }
 
-    @PostMapping("getCandidateInfoByCandidateId/{candidateId}")
+    @PostMapping("/getCandidateInfoByCandidateId/{candidateId}")
     public ResponseResult<Candidate> handleGetCandidateInfoByCandidateId(@PathVariable("candidateId") String id,
                                                                          HttpSession session){
         // 判断是否已经登录过
@@ -178,5 +179,37 @@ public class ExamController extends BaseController {
         }
 
         return new ResponseResult<Candidate>(SUCCESS, "查询成功！", candidate);
+    }
+
+    @PostMapping("/generateExamInfo.do")
+    public ResponseResult<Exam> handleGenerateExamInfo(@RequestParam(name = "jsonData") String jsonData,
+                                                       HttpSession session){
+
+        // 判断是否已经登录过
+        if (null == session.getAttribute("username")) {
+            throw new ManagerNotLoginException("操作失败！请先进行管理员登录！");
+        }
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        Map<String, Object> map = null;
+        try {
+            map = objectMapper.readValue(jsonData, new TypeReference<Map<String, Object>>() {});
+        }catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseResult<>(FAILURE, "数据格式不正确！");
+        }
+
+        String candidateId = (String) map.get("candidateId");
+        String examTemplateId = (String) map.get("examTemplateId");
+        String lightExamTemplateId = (String) map.get("lightExamTemplateId");
+
+        if(candidateId==null || examTemplateId==null || lightExamTemplateId==null
+                || candidateId=="" || examTemplateId=="" || lightExamTemplateId==""){
+            return new ResponseResult<>(FAILURE, "请输入正确的数据！");
+        }
+
+
+        Exam exam = examService.generateExamInfo(candidateId, examTemplateId, lightExamTemplateId);
+        return new ResponseResult<Exam>(SUCCESS, "考试信息生成成功！", exam);
     }
 }
