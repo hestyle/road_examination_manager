@@ -181,6 +181,9 @@ public class ExamController extends BaseController {
         return new ResponseResult<Candidate>(SUCCESS, "查询成功！", candidate);
     }
 
+    /*
+    需要参数 考生id 道路考生模板id 灯光考生模板id
+     */
     @PostMapping("/generateExamInfo.do")
     public ResponseResult<Exam> handleGenerateExamInfo(@RequestParam(name = "jsonData") String jsonData,
                                                        HttpSession session){

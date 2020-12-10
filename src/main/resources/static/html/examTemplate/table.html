@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>考生模板列表</title>
+    <link rel="stylesheet" href="../../layui/css/layui.css">
+    <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+    <div>
+        <table id="examTemplateTable" lay-filter="examTemplateTable"></table>
+    </div>
+</body>
+</html>
+
+<script src="../../js/jquery.min.js"></script>
+<script src="../../layui/layui.all.js"></script>
+
+<script>
+    layui.use(['table','form'], function() {
+        var table = layui.table;
+        var form = layui.form;
+        var examTemplateTableIns = table.render({
+            elem: '#examTemplateTable' //指定原始表格元素选择器（推荐id选择器）
+            , toolbar: '<div><a class="layui-btn layui-btn-sm" lay-event="add">添加考试模板</a></div>'
+            , defaultToolbar: ['print']
+            , url: '/road_examination_manager/examTemplate/findByPage.do'
+            , method: 'POST'
+            , cols: [[
+                {field: 'id', title: '考试模板ID'}
+                ,{field: 'name', title: '考试模板名称'}
+                ,{field: 'score', title: '分值'}
+                ,{field: 'type', title: '类型'}
+                ,{fixed:'right', unresize:true ,align:'center', toolbar: '#rowBar', title: '操作'}
+            ]]
+            ,page:true
+            ,request: {
+                pageName: 'pageIndex' //页码的参数名称，默认：page
+                ,limitName: 'pageSize' //每页数据量的参数名，默认：limit
+            }
+            ,parseData:function(res){
+                return {
+                    "status": res.code,
+                    "data" : res.data, //解析数据列表
+                    "message": res.message,
+                    "count": res.count
+                }
+            }
+            ,response: {
+                statusName: 'status' //规定数据状态的字段名称，默认：code
+                ,statusCode: 200 //规定成功的状态码，默认：0
+                ,msgName: 'message' //规定状态信息的字段名称，默认：msg
+                ,countName: 'count' //规定数据总数的字段名称，默认：count
+                ,dataName: 'data' //规定数据列表的字段名称，默认：data
+            }
+            ,done: function(res, curr, count){
+                //如果是异步请求数据方式，res即为你接口返回的信息。
+                //如果是直接赋值的方式，res即为：{data: [], count: 99} data为当前页数据、count为数据总长度
+            }
+        });
+
+        table.on('toolbar(examTemplateTable)', function (obj) {
+            switch (obj.event) {
+                case 'add':
+                    layer.open({
+                        type: 1,
+                        title: '添加考试模板',
+                        area: ['50%', '70%'],
+                        content: $('#addDialog').html(),
+                        btn: ['确定', '取消'],
+                        success: function (index, layero) {
+
+                        },
+                        yes: function (index, layero) {
+
+                        },
+                        btn2: function (index, layero) {
+                            layer.close(index);
+                        }
+                    });
+                    break;
+            }
+        });
+
+        table.on('tool(examTemplateTable)', function (obj) {
+            var rowdata = obj.data;
+            rowobj = obj;
+            switch(obj.event) {
+                case 'delete':
+                    layer.confirm('确定删除?', function (index) {
+                        var url = '/road_examination_manager/examTemplate/del.do';
+                        $.ajax({
+                            "url": url,
+                            "type": "POST",
+                            "dataType": "json",
+                            "data":{'id': rowdata.id},
+                            "success": function (json) {
+                                if (json.code == 200) {
+                                    // 成功
+                                    layer.open({
+                                        content: "删除成功!",
+                                        yes: function (index, layero) {//layero 当前层DOM对象
+                                            layer.close(index); //如果设定了yes回调，需进行手工关闭
+                                            location.reload();
+                                        }
+                                    });
+                                } else {
+                                    // 失败
+                                    layer.alert(json.message);
+                                }
+                            },
+                            "error": function () {
+                                layer.open({
+                                    content: "您的登录信息已过期!请重新登录!",
+                                    yes: function (index, layero) {//layero 当前层DOM对象
+                                        layer.close(index); //如果设定了yes回调，需进行手工关闭
+                                        parent.location.href = "../../login.html";
+                                    }
+                                });
+                            }
+                        });
+                        layer.close(index);
+                    }, function (index) {
+                        layer.close(index);
+                    });
+                    break;
+            }
+        });
+
+    });
+</script>
+
+<script type="text/html" id="rowBar">
+    <a class="layui-btn layui-btn-sm layui-btn-danger" lay-event="delete">删除</a>
+</script>
+
+<script type="text/html" id="topBar">
+    <a class="layui-btn layui-btn-sm" lay-event="add">添加考试模板</a>
+</script>
+
+<script type="text/html" id="addDialog">
+
+</script>
