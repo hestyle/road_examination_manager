@@ -289,6 +289,41 @@ public class ExamItemServiceImpl implements IExamItemService {
     }
 
     @Override
+    public Boolean modifyOperationIds(Integer id, String operationIds) throws UpdateException {
+        // 检查id、operationIds
+        if (id == null) {
+            throw new UpdateException("保存失败，未设置需要修改考试项id！");
+        }
+        // 检查operation_ids
+        try {
+            if (!checkOperationIds(operationIds)) {
+                throw new Exception("操作项id列表格式错误！");
+            }
+        } catch (Exception e) {
+            throw new InsertException("保存失败，" + e.getMessage());
+        }
+        // 检查id是否注册
+        ExamItem examItem = null;
+        try {
+            examItem = examItemMapper.findById(id);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new UpdateException("保存失败，数据库发生未知异常！");
+        }
+        if (examItem == null) {
+            throw new UpdateException("保存失败，id = " + id + " 考试项不存在！");
+        }
+        // 保存修改
+        examItem.setOperationIds(operationIds);
+        try {
+            return 1 == examItemMapper.update(examItem);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new UpdateException("保存失败，数据库发生未知异常！");
+        }
+    }
+
+    @Override
     public Boolean deleteByIdList(List<Integer> idList) throws DeleteException {
         if (idList == null || idList.size() == 0) {
             throw new DeleteException("批量删除失败，未设置需要删除的id list！");

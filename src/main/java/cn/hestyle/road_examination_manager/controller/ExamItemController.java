@@ -210,6 +210,19 @@ public class ExamItemController extends BaseController {
         }
     }
 
+    @PostMapping("/modifyOperationIds.do")
+    public ResponseResult<Void> handleModifyOperationIds(@RequestParam("id") Integer id, @RequestParam("operationIds") String operationIds, HttpSession session) {
+        // 判断是否已经登录过
+        if (null == session.getAttribute("username")) {
+            throw new ManagerNotLoginException("操作失败！请先进行管理员登录！");
+        }
+        if (examItemService.modifyOperationIds(id, operationIds)) {
+            return new ResponseResult<Void>(SUCCESS, "保存成功！");
+        } else {
+            return new ResponseResult<>(FAILURE, "修改保存失败，原因未知！");
+        }
+    }
+
     @PostMapping("/deleteByIdList.do")
     public ResponseResult<Void> handleDeleteById(@RequestParam("idListJsonString") String idListJsonString, HttpSession session) {
         // 判断是否已经登录过

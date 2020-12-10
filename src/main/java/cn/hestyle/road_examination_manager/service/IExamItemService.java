@@ -73,6 +73,14 @@ public interface IExamItemService {
     Boolean modifyVoicePath(Integer id, String voicePath) throws UpdateException;
 
     /**
+     * 修改examItem
+     * @param id            examItem id
+     * @param operationIds  operationIds string
+     * @return              是否修改成功
+     */
+    Boolean modifyOperationIds(Integer id, String operationIds) throws UpdateException;
+
+    /**
      * 通过id list删除
      * @param idList    examItem id list
      * @return          是否删除成功
