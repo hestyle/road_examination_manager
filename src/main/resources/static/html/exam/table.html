@@ -7,12 +7,12 @@
     <link rel="stylesheet" href="../../css/style.css">
 </head>
 <body>
-<!--    <div class="div-search">-->
-<!--        <div class="layui-inline">-->
-<!--            <input class="layui-input" name="admissionNo" id="admissionNo" autocomplete="off" placeholder="准考证号">-->
-<!--        </div>-->
-<!--        <button class="layui-btn" data-type="reload">搜索</button>-->
-<!--    </div>-->
+    <div class="div-search">
+        <div class="layui-inline">
+            <input class="layui-input" name="admissionNo" id="admissionNo" autocomplete="off" placeholder="准考证号">
+        </div>
+        <button class="layui-btn" data-type="reload">搜索</button>
+    </div>
     <table id="examTable" lay-filter="examTable"></table>
 </body>
 </html>
@@ -39,7 +39,6 @@
                             content = content + '<br>' + num + '、' + operationListData[i].description;
                         }
                     }
-                    console.log(content);
                     layer.open({
                         content: content,
                         title: '所需操作',
@@ -72,8 +71,8 @@
 
         var examTableIns = table.render({
             elem: '#examTable'
-            ,toolbar: '#topBar'
-            ,defaultToolbar: ['print', 'exports']
+            // ,toolbar: '#topBar'
+            // ,defaultToolbar: []
             ,url: '/road_examination_manager/exam/findByPage.do'
             ,method: 'POST'
             ,cols:[[
@@ -97,14 +96,14 @@
                 for(i in res.data){
                     switch (res.data[i].state) {
                         case 0:
-                            res.data[i]['stateDesc']="<b style='color: #FF5722'>未考试</b>";
+                            res.data[i]['stateDesc']="<span style='color: #FF5722'>未考试</span>";
 
                             break;
                         case 1:
-                            res.data[i]['stateDesc']="<b style='color: #FFB800'>考试中</b>";
+                            res.data[i]['stateDesc']="<span style='color: #FFB800'>考试中</span>";
                             break;
                         case 2:
-                            res.data[i]['stateDesc']="<b style='color: #FFB800'>完成考试</b>";
+                            res.data[i]['stateDesc']="<span style='color: #FFB800'>完成考试</span>";
                             break;
                     }
                     if(res.data[i].scored == null || res.data[i].scored == '' || res.data[i].scored == undefined){
@@ -328,6 +327,37 @@
                 }
             })
 
+            // 获取考试车辆信息
+            $.ajax({
+                url: '/road_examination_manager/car/findByCarId.do?carId=' + examData.carId
+                ,type: 'GET'
+                ,"success": function (res) {
+                    if(res.code == 200) {
+                        var carData = res.data;
+                        $('#carId').html(carData.id);
+                        $('#carIpAddress').html(carData.ipAddress);
+                        $('#carMacAddress').html(carData.macAddress);
+                        $('#carDesc').html(carData.description);
+                    }else{
+                        layer.open({
+                            content: res.message,
+                            yes: function (index, layero) {//layero 当前层DOM对象
+                                layer.closeAll(); //如果设定了yes回调，需进行手工关闭
+                            }
+                        });
+                    }
+                },
+                "error": function (res) {
+                    layer.open({
+                        content: res.message,
+                        yes: function (index, layero) {//layero 当前层DOM对象
+                            layer.close(index); //如果设定了yes回调，需进行手工关闭
+                        }
+                    });
+                }
+            })
+
+
             if(examData.state == 0){
                 var html = '<lable class="layui-form-label" style="width: 120px; color: #FF5722">考生还未参加考试</lable>';
                 $('#div-exam-result').html(html)
@@ -356,26 +386,49 @@
                     htmlPass=htmlPass.replace('#{pass}', '异常');
                 }
                 $('#div-exam-result').append(htmlPass)
+
+                var htmlScoreLossDesc = '<div class="layui-row">'
+                    +'<label class="layui-form-label" style="width: 120px">失分描述:</label>'
+                    +'<label class="layui-form-label" style="width: 100px; text-align: left">#{scoreLossDesc}</label>'
+                    +'</div>';
+                if(examData.scoreLossDesc== null || examData.scoreLossDesc == '' || examData.scoreLossDesc == undefined){
+                    htmlScoreLossDesc = htmlScoreLossDesc.replace('#{scoreLossDesc}', '无');
+                }else {
+                    htmlScoreLossDesc = htmlScoreLossDesc.replace('#{scoreLossDesc}', examData.scoreLossDesc);
+                }
+                $('#div-exam-result').append(htmlScoreLossDesc)
+
+                if(examData.state == 1 || examData.state == 2){
+                    var htmlExamStartTime = '<div class="layui-row">'
+                        +'<label class="layui-form-label" style="width: 120px">开考时间:</label>'
+                        +'<label class="layui-form-label" style="width: auto; text-align: left">#{examStartTime}</label>'
+                        +'</div>';
+                    htmlExamStartTime = htmlExamStartTime.replace('#{examStartTime}', examData.examTime);
+                    $('#div-exam-result').append(htmlExamStartTime)
+                }
+
+                if(examData.state == 2){
+                    var htmlExamEndTime = '<div class="layui-row">'
+                        +'<label class="layui-form-label" style="width: 120px">结束时间:</label>'
+                        +'<label class="layui-form-label" style="width: auto; text-align: left">#{examEndTime}</label>'
+                        +'</div>';
+                    htmlExamEndTime = htmlExamEndTime.replace('#{examEndTime}', examData.completedTime);
+                    $('#div-exam-result').append(htmlExamEndTime)
+                }
             }else{ //考试状态异常
                 var html = '<lable class="layui-form-label" style="width: 120px; color: #FF5722">系统异常</lable>';
                 $('#div-exam-result').html(html)
             }
-
-
-
         }
 
         $('.div-search .layui-btn').on('click', function () {
             var search_val = $('.div-search .layui-inline .layui-input').val();
-            console.log(search_val);
             examTableIns.reload({
                 page: {
                     curr: 1
                 }
                 ,where: {
-                    key: {
-                        admissionNo: search_val
-                    }
+                    admissionNo: search_val
                 }
             })
         })
@@ -431,6 +484,28 @@
         <legend>考试结果</legend>
         <div class="layui-field-box" id="div-exam-result">
 
+        </div>
+    </fieldset>
+
+    <fieldset class="layui-elem-field">
+        <legend>考试用车</legend>
+        <div class="layui-field-box">
+            <div class="layui-row">
+                <label class="layui-form-label" style="width: 120px">车辆ID:</label>
+                <label class="layui-form-label" id="carId" style="width: 100px; text-align: left"></label>
+            </div>
+            <div class="layui-row">
+                <label class="layui-form-label" style="width: 120px;">IP地址:</label>
+                <label class="layui-form-label" id="carIpAddress" style="width: auto; text-align: left"></label>
+            </div>
+            <div class="layui-row">
+                <label class="layui-form-label" style="width: 120px;">MAC地址:</label>
+                <label class="layui-form-label" id="carMacAddress" style="width: auto; text-align: left"></label>
+            </div>
+            <div class="layui-row">
+                <label class="layui-form-label" style="width: 120px;">车辆描述:</label>
+                <label class="layui-form-label" id="carDesc" style="width: auto; text-align: left"></label>
+            </div>
         </div>
     </fieldset>
 

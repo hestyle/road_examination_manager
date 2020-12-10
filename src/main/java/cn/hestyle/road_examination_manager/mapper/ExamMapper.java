@@ -20,18 +20,20 @@ public interface ExamMapper {
      * @param pageSize
      * @return
      */
-    List<Exam> findByPage(Integer beginIndex, Integer pageSize);
+    List<Exam> findByPage(Integer beginIndex, Integer pageSize, String admissionNo);
 
     /**
      * 获取考试信息数量
      * 只查询未删除的
      * @return
      */
-    Integer getExamCount();
+    Integer getExamCount(String admissionNo);
 
     Integer addNew(Exam exam);
 
     Integer deleteByAdmissionNo(String admissionNo);
 
     Integer update(Exam newExam);
+
+//    Integer getExamCountByAdmissionNo(String admissionNo);
 }

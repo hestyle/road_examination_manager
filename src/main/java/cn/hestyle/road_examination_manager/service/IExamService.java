@@ -18,9 +18,9 @@ public interface IExamService {
      */
     Exam findByAdmissionNo(String admissionNo) throws AccessDefinedException;
 
-    Integer getExamCount() throws PageFindErrorException;
+    List<Exam> findByPage(Integer pageIndex, Integer pageSize, String admissionNo) throws PageFindErrorException;
 
-    List<Exam> findByPage(Integer pageIndex, Integer pageSize) throws PageFindErrorException;
+//    List<Exam> findByPage(Integer pageIndex, Integer pageSize, String admissionNo) throws PageFindErrorException;
 
     Boolean add(Exam newExam) throws AccessDefinedException;
 
@@ -43,4 +43,11 @@ public interface IExamService {
      * @return
      */
     Map<String, Object> findExamLightItemsInfoByAdmissionNo(String admissionNo);
+
+    /**
+     * 获取符合准考证的数据数量，只查询未删除的
+     * @param admissionNo
+     * @return
+     */
+    Integer getExamCount(String admissionNo);
 }

@@ -42,17 +42,29 @@
 			`t_exam`
 		WHERE
 			is_del = 0
+        <if test="admissionNo != null">
+            AND admission_no LIKE CONCAT('%', #{admissionNo}, '%')
+        </if>
 		ORDER BY
 			`exam_time` desc
 		LIMIT
 			#{beginIndex}, #{pageSize}
 	</select>
 
-    <select id="getExamCount"  resultType="java.lang.Integer">
+    <select id="getExamCount"  resultType="java.lang.Integer" parameterType="String">
 			SELECT COUNT(admission_no)
 			FROM t_exam
 			WHERE is_del=0
+        <if test="_parameter != null">
+            AND admission_no LIKE CONCAT('%', #{admissionNo}, '%')
+        </if>
 	</select>
+
+<!--    <select id="getExamCountByAdmissionNo"  resultType="java.lang.Integer" parameterType="String">-->
+<!--			SELECT COUNT(admission_no)-->
+<!--			FROM t_exam-->
+<!--			WHERE is_del=0 AND admission_no LIKE CONCAT('%', #{admissionNo}, '%')-->
+<!--	</select>-->
 
     <insert id="addNew" parameterType="cn.hestyle.road_examination_manager.entity.Exam">
         INSERT INTO t_exam(
