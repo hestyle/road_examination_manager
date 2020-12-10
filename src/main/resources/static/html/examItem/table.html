@@ -652,7 +652,6 @@
                     layer.confirm('真的删除这个操作项吗？', function(index){
                         // 获取行所在的行index
                         var objIndex = $(tr).attr("data-index");
-                        console.log('objIndex = ' + objIndex);
                         // 然后把change_operationIds_operationIds输入框中的内容更新
                         var operationIds = $('#change_operationIds_operationIds').val().split(',');
                         operationIds.splice(objIndex, 1);
@@ -663,7 +662,6 @@
                         } else {
                             $('#change_operationIds_operationIds').val('');
                         }
-                        obj.del(); //删除对应行（tr）的DOM结构，并更新缓存
                         operationData.splice(objIndex, 1);
                         layui.table.reload('change_operationIds_table', {
                             url: null,
@@ -683,7 +681,6 @@
                     layer.confirm('真的删除这个操作项吗？', function(index){
                         // 获取行所在的行index
                         var objIndex = $(tr).attr("data-index");
-                        console.log('objIndex = ' + objIndex);
                         // 然后把add_operationIds输入框中的内容更新
                         var operationIds = $('#add_operationIds').val().split(',');
                         operationIds.splice(objIndex, 1);
@@ -694,9 +691,8 @@
                         } else {
                             $('#add_operationIds').val('');
                         }
-                        obj.del(); //删除对应行（tr）的DOM结构，并更新缓存
                         operationData.splice(objIndex, 1);
-                        layui.table.reload('addOperationIdsTable', {
+                        layui.table.reload('add_operationIds_table', {
                             url: null,
                             data: operationData
                         });
