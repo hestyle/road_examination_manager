@@ -63,6 +63,117 @@
             }
         })
     }
+    function selectExamTemplate(num){
+        layui.use(['table','layer'], function() {
+            var table = layui.table;
+            var index = layer.open({
+                type: 1,
+                title: '选择考试模板',
+                area:['80%','80%'],
+                content: $('#examTemplateSelectDialog').html(),
+                btn: [],
+                success: function (index, layero) {
+                    table.render({
+                        elem: '#examTemplateTable'
+                        ,url: '/road_examination_manager/examTemplate/findByPage.do'
+                        ,method: 'POST'
+                        , cols: [[
+                            {field: 'id', title: '考试模板ID'}
+                            ,{field: 'name', title: '考试模板名称'}
+                            ,{field: 'score', title: '分值'}
+                            ,{field: 'type', title: '类型'}
+                        ]]
+                        ,page:true
+                        ,request: {
+                            pageName: 'pageIndex' //页码的参数名称，默认：page
+                            ,limitName: 'pageSize' //每页数据量的参数名，默认：limit
+                        }
+                        ,parseData:function(res){
+                            console.log(res);
+                            return {
+                                "status": res.code,
+                                "data" : res.data, //解析数据列表
+                                "message": res.message,
+                                "count": res.count
+                            }
+                        }
+                        ,response: {
+                            statusName: 'status' //规定数据状态的字段名称，默认：code
+                            ,statusCode: 200 //规定成功的状态码，默认：0
+                            ,msgName: 'message' //规定状态信息的字段名称，默认：msg
+                            ,countName: 'count' //规定数据总数的字段名称，默认：count
+                            ,dataName: 'data' //规定数据列表的字段名称，默认：data
+                        }
+
+                    });
+                }
+            });
+
+            table.on('row(examTemplateTable)', function(rowObj){
+                if(num == 1){
+                    $('#examTemplateIdAdd').val(rowObj.data.id);
+                }else if(num == 2){
+                    $('#lightExamTemplateIdAdd').val(rowObj.data.id);
+                }
+                layer.close(index);
+            });
+        });
+
+    }
+    function selectCandidate(){
+        layui.use(['table','layer'], function() {
+            var table = layui.table;
+            var index = layer.open({
+                type: 1,
+                title: '选择考生',
+                area:['80%','80%'],
+                content: $('#candidateSelectDialog').html(),
+                btn: [],
+                success: function (index, layero) {
+                    table.render({
+                        elem: '#candidateTable'
+                        ,url: '/road_examination_manager/candidate/findByPage.do'
+                        ,method: 'POST'
+                        , cols: [[
+                            {field: 'id', title: '身份证号', width: 140, sort: true}
+                            , {field: 'name', title: '姓名', width: 140, sort: true}
+                            , {field: 'age', title: '年龄', width: 80, sort: true}
+                            , {field: 'gender', title: '性别', width: 80, sort: true}
+                            , {field: 'phoneNumber', title: '电话', width: 140, sort: true}
+                            , {field: 'driverSchool', title: '驾校', width: 140, sort: true}
+                        ]]
+                        ,page:true
+                        ,request: {
+                            pageName: 'pageIndex' //页码的参数名称，默认：page
+                            ,limitName: 'pageSize' //每页数据量的参数名，默认：limit
+                        }
+                        ,parseData:function(res){
+                            console.log(res);
+                            return {
+                                "status": res.code,
+                                "data" : res.data, //解析数据列表
+                                "message": res.message,
+                                "count": res.count
+                            }
+                        }
+                        ,response: {
+                            statusName: 'status' //规定数据状态的字段名称，默认：code
+                            ,statusCode: 200 //规定成功的状态码，默认：0
+                            ,msgName: 'message' //规定状态信息的字段名称，默认：msg
+                            ,countName: 'count' //规定数据总数的字段名称，默认：count
+                            ,dataName: 'data' //规定数据列表的字段名称，默认：data
+                        }
+
+                    });
+                }
+            });
+
+            table.on('row(candidateTable)', function(rowObj){
+                $('#candidateIdAdd').val(rowObj.data.id);
+                layer.close(index);
+            });
+        });
+    }
 
     layui.use(['table','form', 'layer', 'laydate'], function() {
         var table = layui.table
@@ -624,7 +735,8 @@
             <div class="layui-inline">
                 <label class="layui-form-label" style="width: 120px">考生身份证号</label>
                 <div class="layui-input-inline">
-                    <input type="text" name="candidateId" lay-verify="" autocomplete="off" placeholder="" class="layui-input" style="width: 250px">
+                    <input type="text" id="candidateIdAdd" name="candidateId" lay-verify="" autocomplete="off" placeholder="" class="layui-input" style="width: 250px">
+                    <a class="layui-btn layui-btn-sm" onclick="selectCandidate()">选择考生</a>
                 </div>
             </div>
         </div>
@@ -642,7 +754,8 @@
             <div class="layui-inline">
                 <label class="layui-form-label" style="width: 120px">道路考试模板</label>
                 <div class="layui-input-inline">
-                    <input type="text" name="examTemplateId" lay-verify="" autocomplete="off" placeholder="" class="layui-input" style="width: 250px">
+                    <input type="text" id="examTemplateIdAdd" name="examTemplateId" lay-verify="" autocomplete="off" placeholder="" class="layui-input" style="width: 250px">
+                    <a class="layui-btn layui-btn-sm" onclick="selectExamTemplate(1)">选择道路考试模板</a>
                 </div>
             </div>
         </div>
@@ -651,7 +764,8 @@
             <div class="layui-inline">
                 <label class="layui-form-label" style="width: 120px">灯光考试模板</label>
                 <div class="layui-input-inline">
-                    <input type="text" name="lightExamTemplateId" lay-verify=""  autocomplete="off" class="layui-input" style="width: 250px">
+                    <input type="text" id="lightExamTemplateIdAdd" name="lightExamTemplateId" lay-verify=""  autocomplete="off" class="layui-input" style="width: 250px">
+                    <a class="layui-btn layui-btn-sm" onclick="selectExamTemplate(2)">选择灯光考试模板</a>
                 </div>
             </div>
         </div>
@@ -666,4 +780,12 @@
             </div>
         </div>
     </form>
+</script>
+
+<script type="text/html" id="examTemplateSelectDialog">
+    <table id="examTemplateTable" lay-filter="examTemplateTable"></table>
+</script>
+
+<script type="text/html" id="candidateSelectDialog">
+    <table id="candidateTable" lay-filter="candidateTable"></table>
 </script>

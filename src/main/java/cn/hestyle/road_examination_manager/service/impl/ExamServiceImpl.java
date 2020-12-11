@@ -260,19 +260,21 @@ public class ExamServiceImpl implements IExamService {
             e.printStackTrace();
             throw new AccessDefinedException("获取历史考试信息时访问数据库失败！");
         }
-        String historyYYYYMMDD = historyExamAdmissonNo.substring(0, 8);
-        DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
-        Long intervalDays = 0L;
-        try {
-            Date lastDate = dateFormat.parse(historyYYYYMMDD);
-            Date today = new Date();
-            intervalDays = (today.getTime() -  lastDate.getTime()) / 24 / 60 / 60 / 1000;
-        } catch (ParseException e) {
-            e.printStackTrace();
-            throw new ServiceException("操作失败，未知错误！");
-        }
-        if(intervalDays <= 7){
-            throw new ServiceException("距上次考试未超过7天，无法考试！");
+        if(historyExamAdmissonNo != null){
+            String historyYYYYMMDD = historyExamAdmissonNo.substring(0, 8);
+            DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
+            Long intervalDays = 0L;
+            try {
+                Date lastDate = dateFormat.parse(historyYYYYMMDD);
+                Date today = new Date();
+                intervalDays = (today.getTime() -  lastDate.getTime()) / 24 / 60 / 60 / 1000;
+            } catch (ParseException e) {
+                e.printStackTrace();
+                throw new ServiceException("操作失败，未知错误！");
+            }
+            if(intervalDays <= 7){
+                throw new ServiceException("距上次考试未超过7天，无法考试！");
+            }
         }
 
         Exam exam = new Exam();
