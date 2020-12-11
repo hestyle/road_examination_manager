@@ -5,8 +5,10 @@ import cn.hestyle.road_examination_manager.mapper.CandidateMapper;
 import cn.hestyle.road_examination_manager.service.ICandidateService;
 import cn.hestyle.road_examination_manager.service.exception.*;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ResourceUtils;
 
 import javax.annotation.Resource;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,6 +44,14 @@ public class CandidateServiceImpl implements ICandidateService{
         }
         if (candidate.getIsDel() != null && candidate.getIsDel() != 0 && candidate.getIsDel() != 1) {
             throw new InsertException("增加失败，isDel字段必须为0或1！");
+        }
+        //检查图片路径是否合法
+        try {
+            if (!checkImagePath(candidate.getPhotoPath())) {
+                throw new Exception("音频路径不存在！");
+            }
+        } catch (Exception e) {
+            throw new InsertException("保存失败，" + e.getMessage());
         }
         // 受影响的行数==1，说明插入成功
         try {
@@ -162,5 +172,30 @@ public class CandidateServiceImpl implements ICandidateService{
             e.printStackTrace();
             throw new DeleteException("批量删除失败，数据库发生未知异常！");
         }
+    }
+
+    /**
+     * 检查voicePath是否合法（音频文件是否存在
+     * @param voicePath     音频路径
+     * @return              是否合法
+     */
+    private Boolean checkImagePath(String voicePath) throws Exception {
+        if (voicePath == null || voicePath.length() == 0) {
+            throw new Exception("图片路径为空！");
+        }
+        // 检查在resource/static/upload/audio是否存在该文件
+        try {
+            String pathNameTemp = ResourceUtils.getURL("classpath:").getPath() + "static/upload/image";
+            String pathNameTruth = pathNameTemp.replace("target", "src").replace("classes", "main/resources");
+            String filePath = pathNameTruth + voicePath.substring(voicePath.lastIndexOf('/'));
+            File file = new File(filePath);
+            if (!file.exists()) {
+                throw new Exception(voicePath + "文件不存在！");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new Exception(voicePath + "文件不存在！");
+        }
+        return true;
     }
 }
