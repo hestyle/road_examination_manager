@@ -51,5 +51,5 @@ public interface IExamService {
      */
     Integer getExamCount(String admissionNo);
 
-    Exam generateExamInfo(String candidateId, String examTemplateId, String lightExamTemplateId);
+    Exam generateExamInfo(String candidateId, String examTemplateId, String lightExamTemplateId, String examTime);
 }

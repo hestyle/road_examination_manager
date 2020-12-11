@@ -64,20 +64,19 @@
         })
     }
 
-    layui.use(['table','form', 'layer'], function() {
-        var table = layui.table;
-        var form = layui.form;
-        layer = layui.layer;
+    layui.use(['table','form', 'layer', 'laydate'], function() {
+        var table = layui.table
+            , form = layui.form
+            , layer = layui.layer
+            , laydate = layui.laydate;
 
         var examTableIns = table.render({
             elem: '#examTable'
-            // ,toolbar: '#topBar'
-            // ,defaultToolbar: []
+            ,toolbar: '<div><a class="layui-btn layui-btn-sm" lay-event="generate">考生考试信息注册</a></div>'
+            ,defaultToolbar: ['']
             ,url: '/road_examination_manager/exam/findByPage.do'
             ,method: 'POST'
             ,cols:[[
-                {title: '考试信息列表',align: 'center', colspan: 10}
-            ],[
                 {title: '准考证号', field: 'admissionNo'}
                 ,{title: '考生身份证', field: 'candidateId'}
                 ,{title: '成绩', field: 'scoredDesc'}
@@ -137,6 +136,69 @@
                 //如果是异步请求数据方式，res即为你接口返回的信息。
                 //如果是直接赋值的方式，res即为：{data: [], count: 99} data为当前页数据、count为数据总长度
             }
+        });
+
+        // 表格顶部操作
+        table.on('toolbar(examTable)', function (obj) {
+            switch (obj.event) {
+                case 'generate':
+                    layer.open({
+                        type: 1,
+                        title: '考试考试信息注册',
+                        area: ['50%', '70%'],
+                        content: $('#examAddDialog').html(),
+                        btn: ['确定', '取消'],
+                        success: function (index, layero) {
+
+                        },
+                        yes: function (index, layero) {
+                            document.getElementById("add-submit").click();
+                        },
+                        btn2: function (index, layero) {
+                            layer.close(index);
+                        }
+                    });
+                    laydate.render({
+                        elem: '#examTime'
+                        ,type: 'datetime'
+                        ,format: 'yyyy年MM月dd日 HH时mm分'
+                        ,position: 'abolute'
+                    });
+                    break;
+            }
+        });
+
+        form.on('submit(addexam-submit)', function(data){
+            $.ajax({
+                "url": "/road_examination_manager/exam/generateExamInfo.do",
+                "type": "POST",
+                "data": {"jsonData": JSON.stringify(data.field)},
+                "dataType": "json",
+                "success": function (res) {
+                    if (res.code === 200) {
+                        layer.open({
+                            title: "提示信息",
+                            content: "考生考试信息注册成功！"
+                        });
+                        $('.div-search .layui-btn').click();
+                    } else {
+                        layer.open({
+                            title: "提示信息",
+                            content: res.message
+                        });
+                    }
+                },
+                "error": function (res) {
+                    layer.open({
+                        content: res.message,
+                        yes: function (index, layero) {//layero 当前层DOM对象
+                            layer.close(index); //如果设定了yes回调，需进行手工关闭
+                        }
+                    });
+                }
+            });
+
+            return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
         });
 
         //每行的操作相应
@@ -431,14 +493,11 @@
                     admissionNo: search_val
                 }
             })
-        })
+        });
     });
 
 </script>
 
-<script type="text/html" id="topBar">
-
-</script>
 
 <script type="text/html" id="rowBar">
     <a class="layui-btn layui-btn-sm" lay-event="detail">详细</a>
@@ -557,4 +616,54 @@
         </div>
     </fieldset>
 
+</script>
+
+<script type="text/html" id="examAddDialog">
+    <form class="layui-form" action="" id="form-add-exam">
+        <div class="layui-form-item" style="margin-top: 5px">
+            <div class="layui-inline">
+                <label class="layui-form-label" style="width: 120px">考生身份证号</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="candidateId" lay-verify="" autocomplete="off" placeholder="" class="layui-input" style="width: 250px">
+                </div>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <div class="layui-inline">
+                <label class="layui-form-label" style="width: 120px">考试时间</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="examTime" id="examTime" lay-verify="datetime" placeholder="yyyy年MM月dd日 HH时mm分" readonly autocomplete="off" class="layui-input" style="width: 250px">
+                </div>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <div class="layui-inline">
+                <label class="layui-form-label" style="width: 120px">道路考试模板</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="examTemplateId" lay-verify="" autocomplete="off" placeholder="" class="layui-input" style="width: 250px">
+                </div>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <div class="layui-inline">
+                <label class="layui-form-label" style="width: 120px">灯光考试模板</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="lightExamTemplateId" lay-verify=""  autocomplete="off" class="layui-input" style="width: 250px">
+                </div>
+            </div>
+        </div>
+
+        <div class="layui-form-item layui-hide">
+            <div class="layui-input-block">
+                <!--提交按钮-->
+                <!--<div class="layui-inline">-->
+                <button id="add-submit" type="submit" lay-submit="" class="layui-btn"
+                        lay-filter="addexam-submit">保存
+                </button>
+            </div>
+        </div>
+    </form>
 </script>
