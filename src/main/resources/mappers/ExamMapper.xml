@@ -140,7 +140,7 @@
         WHERE is_del = 0
     </select>
 
-    <select id="findAdmissionByCandidateId" parameterType="String" resultType="String">
+    <select id="findLatestAdmissionNoByCandidateId" parameterType="String" resultType="String">
         SELECT admission_no
         FROM t_exam
         WHERE candidate_id = #{candidateId}

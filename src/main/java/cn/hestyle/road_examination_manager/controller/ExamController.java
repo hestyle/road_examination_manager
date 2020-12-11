@@ -205,14 +205,15 @@ public class ExamController extends BaseController {
         String candidateId = (String) map.get("candidateId");
         String examTemplateId = (String) map.get("examTemplateId");
         String lightExamTemplateId = (String) map.get("lightExamTemplateId");
+        String examTime = (String) map.get("examTime");
 
-        if(candidateId==null || examTemplateId==null || lightExamTemplateId==null
-                || candidateId=="" || examTemplateId=="" || lightExamTemplateId==""){
+        if(candidateId==null || examTemplateId==null || lightExamTemplateId==null || examTime==null
+                || candidateId=="" || examTemplateId=="" || lightExamTemplateId=="" || examTime==""){
             return new ResponseResult<>(FAILURE, "请输入正确的数据！");
         }
 
 
-        Exam exam = examService.generateExamInfo(candidateId, examTemplateId, lightExamTemplateId);
+        Exam exam = examService.generateExamInfo(candidateId, examTemplateId, lightExamTemplateId, examTime);
         return new ResponseResult<Exam>(SUCCESS, "考试信息生成成功！", exam);
     }
 }

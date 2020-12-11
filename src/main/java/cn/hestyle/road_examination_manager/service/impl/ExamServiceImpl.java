@@ -251,22 +251,30 @@ public class ExamServiceImpl implements IExamService {
     }
 
     @Override
-    public Exam generateExamInfo(String candidateId, String examTemplateId, String lightExamTemplateId) {
+    public Exam generateExamInfo(String candidateId, String examTemplateId, String lightExamTemplateId, String examTime) {
         // 检查考生历史考生信息
-        String historyExamAdmissonNo = examMapper.findAdmissionByCandidateId(candidateId);
-        String historyYYYYMMDD = historyExamAdmissonNo.substring(0, 8);
-        DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
-        Long intervalDays = 0L;
+        String historyExamAdmissonNo = null;
         try {
-            Date lastDate = dateFormat.parse(historyYYYYMMDD);
-            Date today = new Date();
-            intervalDays = (today.getTime() -  lastDate.getTime()) / 24 / 60 / 60 / 1000;
-        } catch (ParseException e) {
+            historyExamAdmissonNo = examMapper.findLatestAdmissionNoByCandidateId(candidateId);
+        }catch (Exception e){
             e.printStackTrace();
-            throw new ServiceException("操作失败，未知错误！");
+            throw new AccessDefinedException("获取历史考试信息时访问数据库失败！");
         }
-        if(intervalDays <= 7){
-            throw new ServiceException("距上次考试未超过7天，无法考试！");
+        if(historyExamAdmissonNo != null){
+            String historyYYYYMMDD = historyExamAdmissonNo.substring(0, 8);
+            DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
+            Long intervalDays = 0L;
+            try {
+                Date lastDate = dateFormat.parse(historyYYYYMMDD);
+                Date today = new Date();
+                intervalDays = (today.getTime() -  lastDate.getTime()) / 24 / 60 / 60 / 1000;
+            } catch (ParseException e) {
+                e.printStackTrace();
+                throw new ServiceException("操作失败，未知错误！");
+            }
+            if(intervalDays <= 7){
+                throw new ServiceException("距上次考试未超过7天，无法考试！");
+            }
         }
 
         Exam exam = new Exam();
@@ -304,25 +312,40 @@ public class ExamServiceImpl implements IExamService {
         // 准考证号： 日期 + 八位流水
         exam.setAdmissionNo(generateAdmissionNo());
 
-        // 随机分配考官  考试当天随机分配 考官与考试车辆有关
-//        List<String> examinerIdList = examMapper.findAvailableExaminerIdList();
-//        Random random = new Random();
-//        Integer index = random.nextInt(examinerIdList.size());
-//        exam.setExaminerId(examinerIdList.get(index));
+        // 随机分配考官
+        List<String> examinerIdList = examMapper.findAvailableExaminerIdList();
+        Random random = new Random();
+        Integer index = random.nextInt(examinerIdList.size());
+        exam.setExaminerId(examinerIdList.get(index));
 
         // 设置考试状态 未考试
         exam.setState(0);
 
-        // 随机分配考试车辆 考试当天随机分配
-//        List<Integer> carIdList = examMapper.findAvailableCarIdList();
-//        index = random.nextInt(carIdList.size());
-//        exam.setCarId(carIdList.get(index));
+        // 随机分配考试车辆
+        List<Integer> carIdList = examMapper.findAvailableCarIdList();
+        index = random.nextInt(carIdList.size());
+        exam.setCarId(carIdList.get(index));
 
+        //设置考试时间
+        SimpleDateFormat examDateFormat = new SimpleDateFormat("yyyy年MM月dd日 HH时mm分");
+        Date dateExamTime = null;
+        try {
+            dateExamTime = examDateFormat.parse(examTime);
+        }catch (Exception e){
+            e.printStackTrace();
+            throw new ServiceException("日期格式不正确！");
+        }
+        exam.setExamTime(dateExamTime);
 
-
-
-
-        return exam;
+        try {
+            if(1 == examMapper.addNew(exam)){
+                return exam;
+            }else {
+                throw new AccessDefinedException("保存考试信息时访问数据库失败！");
+            }
+        }catch (Exception e){
+            throw new AccessDefinedException("保存考试信息时访问数据库失败！");
+        }
     }
 
     /**
