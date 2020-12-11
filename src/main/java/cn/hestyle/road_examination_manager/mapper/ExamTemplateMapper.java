@@ -27,4 +27,10 @@ public interface ExamTemplateMapper {
     public List<ExamTemplate> findByPage(Integer beginIndex, Integer pageSize);
 
     Integer deleteById(String id);
+
+    List<ExamItem> findAllAvailableExamItem();
+
+    Integer getTodayNum(String yyyymmdd);
+
+    Integer addNew(ExamTemplate examTemplate);
 }

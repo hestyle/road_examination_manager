@@ -2,9 +2,14 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>考生模板列表</title>
-    <link rel="stylesheet" href="../../layui/css/layui.css">
+    <title>考试模板列表</title>
+    <script src="../../js/jquery.min.js"></script>
+    <script src="../../layui/layui.all.js"></script>
+    <script src="../../js/common.js"></script>
+    <script src="../../plugins/soulTable/soulTable.js"></script>
+    <link rel="stylesheet" href="../../layui/css/layui.css" media="all">
     <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="../../plugins/soulTable/soulTable.css">
 </head>
 <body>
     <div>
@@ -13,13 +18,113 @@
 </body>
 </html>
 
-<script src="../../js/jquery.min.js"></script>
-<script src="../../layui/layui.all.js"></script>
-
 <script>
+    layui.config({
+        base: '../../plugins/soulTable/',
+        version: 'v1.5.20'
+    }).extend({
+        soulTable: 'soulTable/soulTable.slim'
+    });
+    layuiModules=['table', 'layer', 'form', 'upload', 'soulTable'];
+    function mounted() {}
+
+    var EXAM_ITEM_DATA_LIST = [];
+
+    // num 1:添加考试模板
+    function selectExamItem(num){
+        layui.use(['table','form', 'layer'], function() {
+            var table = layui.table;
+            var form = layui.form;
+            var layer = layui.layer;
+            layer.open({
+                type: 1,
+                title: '选择考试项',
+                area:['70%','80%'],
+                content: $('#examItemSelectDialog').html(),
+                btn: ['添加', '取消'],
+                success: function (index, layero) {
+                    table.render({
+                        elem: '#examItemSelectTable'
+                        ,url: '/road_examination_manager/examTemplate/findAllExamItem.do'
+                        ,method: 'POST'
+                        ,cols: [[
+                            {title: '<a class="" style="font-size: 20px; color:black;">考试项表</a>',align: 'center', colspan: 5} //rowspan即纵向跨越的单元格数
+                        ],[ //表头
+                            {checkbox: true, LAY_CHECKED: false}
+                            , {field: 'id', title: 'id', width: 70, sort: true}
+                            , {field: 'name', title: '名称', width: 350}
+                            , {field: 'description', title: '描述', width: 300}
+                            , {field: 'score', fixed: 'right', title: '分值', width: 70}
+                        ]]
+                        , response: {
+                            statusName: 'code' //规定数据状态的字段名称，默认：code
+                            ,statusCode: 200 //规定成功的状态码，默认：0
+                            ,msgName: 'message' //规定状态信息的字段名称，默认：msg
+                            ,countName: 'count' //规定数据总数的字段名称，默认：count
+                            ,dataName: 'data' //规定数据列表的字段名称，默认：data
+                        }
+                        , parseData: function(res){ //res 即为原始返回的数据
+                            return {
+                                "code": res.code, //解析接口状态
+                                "message": res.message, //解析提示文本
+                                "count": res.count, //解析数据长度
+                                "data": res.data //解析数据列表
+                            };
+                        }
+                    })
+                },
+                yes: function (index, layero) {
+                    var checkStatus = layui.table.checkStatus('examItemSelectTable');
+                    if (checkStatus.data.length === 0) {
+                        layer.open({
+                            title: "提示信息",
+                            content: "添加失败，未选择需要添加的考试项！"
+                        });
+                        return false;
+                    }
+                    var examItemIds = [];
+                    if (num === 1) {
+                        if ($('#add_examItemIds').val().length !== 0) {
+                            examItemIds = $('#add_examItemIds').val().split(',');
+                        }
+                    } else if (num === 2) {
+                        if ($('#edit_examItemIds').val().length !== 0) {
+                            examItemIds = $('#edit_examItemIds').val().split(',');
+                        }
+                    }
+                    for (var value of checkStatus.data) {
+                        examItemIds.push(value.id);
+                        EXAM_ITEM_DATA_LIST.push(value);
+                    }
+                    $('#add_examItemIds').val(examItemIds.join(','));
+                    table.reload('examItemTable',{
+                        data: EXAM_ITEM_DATA_LIST
+                    })
+
+                    layer.close(index);
+                }
+                ,btn2: function (index, layero) {//return false 开启该代码可禁止点击该按钮关闭
+                    layer.close(index);
+                }
+            })
+
+        });
+    }
+
     layui.use(['table','form'], function() {
         var table = layui.table;
         var form = layui.form;
+        form.verify({
+            type: [
+                /^[a-fA-F0-9]{1,5}$/
+                ,'考试类型不符合要求'
+            ]
+            ,examItemIds: [
+                /^[\s\S]*.*[^\s][\s\S]*$/
+                ,'没有选择考试项'
+            ]
+        })
+        // 所有考试模板的表格
         var examTemplateTableIns = table.render({
             elem: '#examTemplateTable' //指定原始表格元素选择器（推荐id选择器）
             , toolbar: '<div><a class="layui-btn layui-btn-sm" lay-event="add">添加考试模板</a></div>'
@@ -53,26 +158,114 @@
                 ,countName: 'count' //规定数据总数的字段名称，默认：count
                 ,dataName: 'data' //规定数据列表的字段名称，默认：data
             }
-            ,done: function(res, curr, count){
-                //如果是异步请求数据方式，res即为你接口返回的信息。
-                //如果是直接赋值的方式，res即为：{data: [], count: 99} data为当前页数据、count为数据总长度
-            }
         });
 
         table.on('toolbar(examTemplateTable)', function (obj) {
             switch (obj.event) {
                 case 'add':
-                    layer.open({
+                    EXAM_ITEM_DATA_LIST = [];
+                    var index = layer.open({
                         type: 1,
                         title: '添加考试模板',
-                        area: ['50%', '70%'],
+                        area: ['80%', '80%'],
                         content: $('#addDialog').html(),
                         btn: ['确定', '取消'],
                         success: function (index, layero) {
+                            form.render();
 
+                            // 已经选取的考试操作的表格
+                            table.render({
+                                elem: '#examItemTable'
+                                ,data: []
+                                ,method: 'POST'
+                                ,cols: [[ //表头
+                                    {type: 'numbers', title: '序号', width: 60}
+                                    , {field: 'id', title: 'id', width: 70}
+                                    , {field: 'name', title: '名称', width: 350}
+                                    , {field: 'description', title: '描述', width: 300}
+                                    , {fixed: 'right', width: 80, align: 'center', toolbar: '#examItemRowBar'}
+                                ]]
+                                , rowDrag: {
+                                    done: function(obj) {
+                                        // 完成时（松开时）触发(soulTable插件，移动行
+                                        EXAM_ITEM_DATA_LIST = obj.cache;
+                                        var examItemIds = [];
+                                        for (var row of obj.cache) {
+                                            examItemIds.push(row.id);
+                                        }
+                                        $('#add_examItemIds').val(examItemIds.join(','));
+                                    }
+                                }
+                                , done: function () {
+                                    soulTable.render(this)
+                                }
+                            });
+
+                            //每行的操作相应
+                            table.on('tool(examItemTable)', function (obj) {
+                                var data = obj.data; //获得当前行数据
+                                var tr = obj.tr; //获得当前行 tr 的DOM对象
+                                switch(obj.event) {
+                                    case 'delete':
+                                        // 获取行所在的行index
+                                        var objIndex = $(tr).attr("data-index");
+                                        // 然后把change_operationIds_operationIds输入框中的内容更新
+                                        var operationIds = $('#add_examItemIds').val().split(',');
+                                        operationIds.splice(objIndex, 1);
+                                        if (operationIds.length > 1) {
+                                            $('#add_examItemIds').val(operationIds.join(','));
+                                        } else if (operationIds.length === 1) {
+                                            $('#add_examItemIds').val(operationIds);
+                                        } else {
+                                            $('#add_examItemIds').val('');
+                                        }
+                                        EXAM_ITEM_DATA_LIST.splice(objIndex, 1);
+                                        layui.table.reload('examItemTable', {
+                                            url: null,
+                                            data: EXAM_ITEM_DATA_LIST
+                                        });
+                                        break;
+                                }
+                            });
+
+                            //提交添加考试模板表单
+                            form.on('submit(addexamtemplate-submit)', function(data){
+                                console.log(data.field); //当前容器的全部表单字段，名值对形式：{name: value}
+                                $.ajax({
+                                    "url": "/road_examination_manager/examTemplate/add.do",
+                                    "type": "POST",
+                                    "data": {"jsonData": JSON.stringify(data.field)},
+                                    "dataType": "json",
+                                    "success": function (res) {
+                                        if (res.code === 200) {
+                                            examTemplateTableIns.reload();
+                                            layer.open({
+                                                title: "提示信息",
+                                                content: "考试模板添加成功！"
+                                            });
+                                            layer.closeAll('page');
+                                        } else {
+                                            layer.open({
+                                                title: "提示信息",
+                                                content: res.message
+                                            });
+                                        }
+                                    },
+                                    "error": function (res) {
+                                        layer.open({
+                                            content: res.message,
+                                            yes: function (index, layero) {//layero 当前层DOM对象
+                                                layer.close(index); //如果设定了yes回调，需进行手工关闭
+                                            }
+                                        });
+                                    }
+                                });
+
+                                return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+                            });
                         },
                         yes: function (index, layero) {
-
+                            document.getElementById("add-submit").click();
                         },
                         btn2: function (index, layero) {
                             layer.close(index);
@@ -139,5 +332,70 @@
 </script>
 
 <script type="text/html" id="addDialog">
+    <form class="layui-form" action="" id="form-add-exam">
+        <div class="layui-form-item" style="margin-top: 5px">
+            <div class="layui-inline">
+                <label class="layui-form-label" style="width: 120px">名称</label>
+                <div class="layui-input-inline">
+                    <input type="text" required maxlength="50" id="name" lay-verify="required" name="name" autocomplete="off" placeholder="最多输入50个字符" class="layui-input" style="width: 250px">
+                </div>
+            </div>
+        </div>
 
+        <div class="layui-form-item">
+            <div class="layui-inline">
+                <label class="layui-form-label" style="width: 120px">分值</label>
+                <div class="layui-input-inline">
+                    <input type="number" required name="score" id="score" lay-verify="required" placeholder="" autocomplete="off" class="layui-input" style="width: 250px">
+                </div>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <div class="layui-inline">
+                <label class="layui-form-label" style="width: 120px">考试类型</label>
+                <div class="layui-input-inline">
+                    <input type="text" required id="type" name="type" lay-verify="type" autocomplete="off" placeholder="" class="layui-input" style="width: 250px">
+                </div>
+            </div>
+        </div>
+
+        <div class="layui-form-item layui-form-text">
+            <table>
+                <tr>
+                    <td>
+                        <label class="layui-form-label" style="width: 120px">考试操作项</label>
+                    </td>
+                    <td>
+                        <a class="layui-btn layui-btn-sm" onclick="selectExamItem(1)">添加考试操作项</a>
+                    </td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>
+                        <table id="examItemTable" lay-filter="examItemTable"></table>
+                    </td>
+                </tr>
+            </table>
+            <input type="text" lay-verify="examItemIds" required id="add_examItemIds" name="add_examItemIds" class="layui-hide">
+        </div>
+
+        <div class="layui-form-item layui-hide">
+            <div class="layui-input-block">
+                <!--提交按钮-->
+                <!--<div class="layui-inline">-->
+                <button id="add-submit" type="submit" lay-submit="" class="layui-btn"
+                        lay-filter="addexamtemplate-submit">保存
+                </button>
+            </div>
+        </div>
+    </form>
+</script>
+
+<script type="text/html" id="examItemRowBar">
+    <a class="layui-btn layui-btn-sm layui-btn-sm" lay-event="delete">删除</a>
+</script>
+
+<script type="text/html" id="examItemSelectDialog">
+    <table id="examItemSelectTable" lay-filter="examItemSelectTable"></table>
 </script>

@@ -62,4 +62,43 @@
 		SET is_del = 1
 		WHERE id=#{id}
     </update>
+
+    <select id="findAllAvailableExamItem" resultType="cn.hestyle.road_examination_manager.entity.ExamItem">
+        SELECT
+			`id` as `id`,
+			`name` as `name`,
+			`score` as `score`,
+			`voice_path` as `voicePath`,
+			`operation_ids` as `operationIds`,
+			`description` as `description`,
+			`is_del` as `isDel`
+		FROM
+			`t_exam_item`
+		WHERE
+		    is_del = 0
+		ORDER BY
+			`id` asc
+    </select>
+
+    <select id="getTodayNum" parameterType="String" resultType="Integer">
+        SELECT COUNT(id)
+        FROM t_exam_template
+        WHERE id LIKE CONCAT(#{yyyymmdd}, '%')
+    </select>
+
+    <insert id="addNew" parameterType="cn.hestyle.road_examination_manager.entity.ExamTemplate">
+        INSERT INTO t_exam_template(
+			`id`,
+            `name`,
+            `score`,
+            `type`,
+            `is_del`
+		) VALUES (
+			#{id},
+			#{name},
+			#{score},
+			#{type},
+			#{isDel}
+		)
+    </insert>
 </mapper>
