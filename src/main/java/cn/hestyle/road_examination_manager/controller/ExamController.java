@@ -2,6 +2,7 @@ package cn.hestyle.road_examination_manager.controller;
 
 import cn.hestyle.road_examination_manager.controller.exception.AddManagerDataErrorException;
 import cn.hestyle.road_examination_manager.controller.exception.ManagerNotLoginException;
+import cn.hestyle.road_examination_manager.controller.exception.RequestException;
 import cn.hestyle.road_examination_manager.entity.Candidate;
 import cn.hestyle.road_examination_manager.entity.Exam;
 import cn.hestyle.road_examination_manager.service.ICandidateService;
@@ -215,5 +216,18 @@ public class ExamController extends BaseController {
 
         Exam exam = examService.generateExamInfo(candidateId, examTemplateId, lightExamTemplateId, examTime);
         return new ResponseResult<Exam>(SUCCESS, "考试信息生成成功！", exam);
+    }
+
+    @GetMapping("/findExamByExaminerId.do")
+    public ResponseResult<List<Exam>> handleFindExamByExaminerId(@RequestParam("examinerId") String examinerId,
+                                                                 HttpSession session){
+        if (null == session.getAttribute("username") && null == session.getAttribute("id")) {
+            throw new ManagerNotLoginException("操作失败！请先进行管理员或考官登录！");
+        }
+
+        if(examinerId == null){
+            throw new RequestException("请输入考官信息！");
+        }
+        return new ResponseResult<>(SUCCESS, "查询成功！", examService.findByExaminerId(examinerId));
     }
 }
