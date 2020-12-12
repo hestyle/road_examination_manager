@@ -44,4 +44,6 @@ public interface ExamMapper {
     List<Integer> findAvailableCarIdList();
 
     String findLatestAdmissionNoByCandidateId(String candidateId);
+
+    List<Exam> findByExaminerId(String examinerId);
 }

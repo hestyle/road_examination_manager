@@ -23,6 +23,27 @@
             `admission_no`=#{admissionNo}
     </select>
 
+    <select id="findByExaminerId" parameterType="String" resultType="cn.hestyle.road_examination_manager.entity.Exam">
+        SELECT
+            `admission_no` AS `admissionNo`,
+            `car_id` AS `carId`,
+            `exam_template_id` AS `examTemplateId`,
+            `light_exam_template_id` AS `lightExamTemplateId`,
+            `examiner_id` AS `examinerId`,
+            `candidate_id` AS `candidateId`,
+            `exam_time` AS `examTime`,
+            `state` AS `state`,
+            `completed_time` AS `completedTime`,
+            `is_pass` AS `isPass`,
+            `scored` AS `scored`,
+            `score_loss_desc` AS `scoreLossDesc`,
+            `is_del` AS `isDel`
+        FROM
+            `t_exam`
+        WHERE
+            is_del = 0 AND examiner_id=#{examinerId}
+    </select>
+
     <select id="findByPage" resultType="cn.hestyle.road_examination_manager.entity.Exam">
 		SELECT
 			`admission_no` AS `admissionNo`,

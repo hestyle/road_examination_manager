@@ -1,18 +1,11 @@
 package cn.hestyle.road_examination_manager.service.impl;
 
-import cn.hestyle.road_examination_manager.entity.Candidate;
-import cn.hestyle.road_examination_manager.entity.Exam;
-import cn.hestyle.road_examination_manager.entity.ExamItem;
-import cn.hestyle.road_examination_manager.entity.ExamTemplate;
-import cn.hestyle.road_examination_manager.mapper.CandidateMapper;
-import cn.hestyle.road_examination_manager.mapper.ExamItemMapper;
-import cn.hestyle.road_examination_manager.mapper.ExamMapper;
-import cn.hestyle.road_examination_manager.mapper.ExamTemplateMapper;
+import cn.hestyle.road_examination_manager.entity.*;
+import cn.hestyle.road_examination_manager.mapper.*;
 import cn.hestyle.road_examination_manager.service.IExamService;
 import cn.hestyle.road_examination_manager.service.exception.*;
-import org.apache.ibatis.javassist.NotFoundException;
+import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.annotation.Resource;
 import java.text.DateFormat;
@@ -30,6 +23,8 @@ public class ExamServiceImpl implements IExamService {
     ExamTemplateMapper examTemplateMapper;
     @Resource
     CandidateMapper candidateMapper;
+    @Resource
+    ExaminerMapper examinerMapper;
 
     @Override
     public Exam findByAdmissionNo(String admissionNo) throws AccessDefinedException{
@@ -366,5 +361,29 @@ public class ExamServiceImpl implements IExamService {
         num = num + 1;
         String strNum = String.format("%08d", num);
         return yyyymmdd + strNum;
+    }
+
+    @Override
+    public List<Exam> findByExaminerId(String examinerId) {
+        Examiner examiner = null;
+        List<Exam> examList = null;
+        try{
+            examiner = examinerMapper.findById(examinerId);
+        }catch (Exception e){
+            e.printStackTrace();
+            throw new AccessDefinedException("获取考官信息时访问数据库失败！");
+        }
+        if(examiner == null){
+            throw new ServiceException("考官信息不存在！");
+        }
+
+        try {
+            examList = examMapper.findByExaminerId(examinerId);
+        }catch (Exception e){
+            e.printStackTrace();
+            throw new AccessDefinedException("获取考试信息时访问数据库失败！");
+        }
+
+        return examList;
     }
 }
