@@ -56,6 +56,18 @@
             </div>
         </div>
         <div class="layui-form-item layui-form-text">
+            <label class="layui-form-label">图片地址</label>
+            <div class="layui-input-block">
+                <input id="photoPath" type="text" name="photoPath" placeholder="请上传照片" autocomplete="off" class="layui-input" disabled>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">照片</label>
+            <div class="layui-input-inline">
+                <img id='examinerImage' src="" width="75" height="100">
+            </div>
+        </div>
+        <div class="layui-form-item layui-form-text">
             <label class="layui-form-label">电话</label>
             <div class="layui-input-block">
                 <input id="phoneNumber" type="text" name="phoneNumber" placeholder="请输入电话" autocomplete="off" class="layui-input">
@@ -133,6 +145,19 @@
                 <input type="radio" name="add_gender1" value="女" title="女" checked>
             </div>
         </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">头像路径</label>
+            <div class="layui-input-inline">
+                <input id="add_image_path" type="text" name="imagePath" placeholder="请上传头像" autocomplete="off" class="layui-input" style="width: 140%;" disabled>
+                <button type="button" class="layui-btn" id="add_uploadImageButton"><i class="layui-icon">&#xe67c;</i>上传头像</button>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">查看</label>
+            <div class="layui-input-inline">
+                <img id='add_examinerImage' src="xxxx.jpg" width="75" height="100">
+            </div>
+        </div>
         <div class="layui-form-item layui-form-text">
             <label class="layui-form-label">电话</label>
             <div class="layui-input-block">
@@ -149,7 +174,7 @@
     </form>
 </script>
 <script>
-    layuiModules=['table', 'layer', 'form'];
+    layuiModules=['table', 'layer', 'form', 'upload'];
 
     function mounted() {
         var url ="../../examiner/findByPage.do";
@@ -171,6 +196,7 @@
                             {checkbox: true, LAY_CHECKED: false}
                             , {field: 'id', title: '身份证号', width: 140, sort: true}
                             , {field: 'name', title: '姓名', width: 140, sort: true}
+                            , {field: 'photoPath', title: '图片地址', width: 140, sort: true}
                             , {field: 'age', title: '年龄', width: 80, sort: true}
                             , {field: 'gender', title: '性别', width: 80, sort: true}
                             , {field: 'phoneNumber', title: '电话', width: 140, sort: true}
@@ -234,7 +260,24 @@
                         content: $('#addDialog').html(),
                         btn: ['确定', '取消'],
                         success: function (index, layero) {
+                            operationData = [];
                             form.render();
+                            upload.render({
+                                elem: '#add_uploadImageButton'
+                                ,url: '../../examiner/uploadImage.do'
+                                ,accept: 'images'
+                                ,acceptMime: 'image/jpeg'
+                                ,done: function (res) {
+                                    $('#add_image_path').val(res.data);
+                                    $('#add_examinerImage').attr('src', res.data);
+                                }
+                                ,error: function () {
+                                    layer.open({
+                                        title: '提示信息',
+                                        content: '文件上传失败！'
+                                    });
+                                }
+                            });
                         },
                         yes: function (index, layero) {
                             if (checkAddForm() === false) {
@@ -243,6 +286,7 @@
                             var url ="../../examiner/examiner_add.do";
                             var postData = '{"id":"'+ $('#id1').val() + '",' +
                                 '"password":"' + $('#password1').val() + '",' +
+                                '"photoPath":"' + $('#add_image_path').val() + '",' +
                                 '"name":"' + $('#name1').val() + '","age":'+ $('#age1').val() + ',"gender":"' + $('input:radio[name="add_gender1"]:checked').val() + '",';
                             if ($('#phoneNumber1').val().length !== 0) {
                                 postData += '"phoneNumber":"' + $('#phoneNumber1').val() + '",';
@@ -343,6 +387,7 @@
                     btn: ['关闭'],
                     success: function (index, layero) {
                         form.render();
+                        $('#examinerImage').attr("src",data.photoPath);
                         data.isDel = data.isDel + '';
                         form.val("editDialogForm", data);
                     }
@@ -467,6 +512,13 @@
             layer.open({
                 title: "提示信息",
                 content: "密码字段不能为空！"
+            });
+            return false;
+        }
+        if ($('#add_image_path').val().length === 0) {
+            layer.open({
+                title: "提示信息",
+                content: "考官的照片不能为空，请上传图片文件！"
             });
             return false;
         }
