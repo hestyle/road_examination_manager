@@ -223,7 +223,7 @@ public class ExaminerController extends BaseController{
     }
 
     @PostMapping("/findCandidateById.do")
-    public ResponseResult<Candidate> handleFindCandidateById(@RequestParam("CandidateId")String candidateId, HttpSession session){
+    public ResponseResult<Candidate> handleFindCandidateById(@RequestParam("candidateId")String candidateId, HttpSession session){
         if (null == session.getAttribute("username") && null == session.getAttribute("id")) {
             throw new ManagerNotLoginException("操作失败！请先进行管理员或考官登录！");
         }
