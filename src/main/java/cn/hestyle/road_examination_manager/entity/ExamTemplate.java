@@ -1,5 +1,7 @@
 package cn.hestyle.road_examination_manager.entity;
 
+import java.util.List;
+
 public class ExamTemplate {
     /** 考试模板id */
     String id;
@@ -11,6 +13,8 @@ public class ExamTemplate {
     String type;
     /** 是否删除 1:是 0:否 */
     Integer isDel;
+
+    List<ExamItem> examItemList;
 
     public String getId() {
         return id;
@@ -50,5 +54,13 @@ public class ExamTemplate {
 
     public void setIsDel(Integer isDel) {
         this.isDel = isDel;
+    }
+
+    public void setExamItemList(List<ExamItem> examItemList) {
+        this.examItemList = examItemList;
+    }
+
+    public List<ExamItem> getExamItemList() {
+        return examItemList;
     }
 }

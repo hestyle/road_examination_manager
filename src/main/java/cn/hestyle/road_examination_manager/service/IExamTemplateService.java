@@ -15,4 +15,6 @@ public interface IExamTemplateService {
     List<ExamItem> findAllExamItem();
 
     Boolean add(String name, Integer score, String type, List<ExamItem> examItemList);
+
+    ExamTemplate findByExamTemplateId(String examTemplateId);
 }
