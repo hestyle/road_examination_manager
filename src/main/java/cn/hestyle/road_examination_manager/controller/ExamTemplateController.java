@@ -2,6 +2,7 @@ package cn.hestyle.road_examination_manager.controller;
 
 
 import cn.hestyle.road_examination_manager.controller.exception.ManagerNotLoginException;
+import cn.hestyle.road_examination_manager.entity.Exam;
 import cn.hestyle.road_examination_manager.entity.ExamItem;
 import cn.hestyle.road_examination_manager.entity.ExamTemplate;
 import cn.hestyle.road_examination_manager.service.IExamItemService;
@@ -13,7 +14,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpSession;
+import java.awt.*;
 import java.util.List;
 import java.util.Map;
 
@@ -95,5 +98,19 @@ public class ExamTemplateController extends BaseController {
             return new ResponseResult<>(FAILURE, "添加失败，请稍后再试");
         }
     }
+
+
+    @PostMapping("/findByExamTemplateId.do")
+    public ResponseResult<ExamTemplate> handleFindByExamTemplateId(@RequestParam ("examTemplateId") String examTemplateId,
+                                                   HttpSession session){
+        // 判断是否已经登录过
+        if (null == session.getAttribute("username") && null == session.getAttribute("id")) {
+            throw new ManagerNotLoginException("操作失败！管理员或考官未登录！请先进行登录");
+        }
+
+        return new ResponseResult<ExamTemplate>(SUCCESS, "查询成功", examTemplateService.findByExamTemplateId(examTemplateId));
+    }
+
+
 
 }

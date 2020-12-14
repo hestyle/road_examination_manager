@@ -7,10 +7,7 @@ import cn.hestyle.road_examination_manager.mapper.ExamItemMapper;
 import cn.hestyle.road_examination_manager.mapper.ExamTemplateItemMapper;
 import cn.hestyle.road_examination_manager.mapper.ExamTemplateMapper;
 import cn.hestyle.road_examination_manager.service.IExamTemplateService;
-import cn.hestyle.road_examination_manager.service.exception.AccessDefinedException;
-import cn.hestyle.road_examination_manager.service.exception.DeleteException;
-import cn.hestyle.road_examination_manager.service.exception.PageFindErrorException;
-import cn.hestyle.road_examination_manager.service.exception.ServiceException;
+import cn.hestyle.road_examination_manager.service.exception.*;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -145,5 +142,27 @@ public class ExamTemplateServiceImpl implements IExamTemplateService {
         num = num + 1;
         String strNum = String.format("%04d", num);
         return yyyymmdd + strNum;
+    }
+
+    @Override
+    public ExamTemplate findByExamTemplateId(String examTemplateId) {
+        ExamTemplate examTemplate = findById(examTemplateId);
+        if(examTemplate == null){
+            throw new FindException("符合要求的考试模板不存在");
+        }
+
+        List<ExamItem> examItemList = null;
+        try {
+            examItemList = examTemplateMapper.findExamItemListByExamTemplateId(examTemplateId);
+        }catch (Exception e){
+            e.printStackTrace();
+            throw new AccessDefinedException("根据考生模板id查询考试项信息时访问数据库失败！");
+        }
+        if(examItemList == null){
+            throw new ServiceException("考试模板不含任何考试项！");
+        }
+        examTemplate.setExamItemList(examItemList);
+
+        return examTemplate;
     }
 }
