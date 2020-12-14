@@ -2,8 +2,10 @@ package cn.hestyle.road_examination_manager.controller;
 
 import cn.hestyle.road_examination_manager.controller.exception.ManagerNotLoginException;
 import cn.hestyle.road_examination_manager.controller.exception.RequestException;
+import cn.hestyle.road_examination_manager.entity.Candidate;
 import cn.hestyle.road_examination_manager.entity.Exam;
 import cn.hestyle.road_examination_manager.entity.Examiner;
+import cn.hestyle.road_examination_manager.service.ICandidateService;
 import cn.hestyle.road_examination_manager.service.IExamService;
 import cn.hestyle.road_examination_manager.service.IExaminerService;
 import cn.hestyle.road_examination_manager.util.ResponseResult;
@@ -47,6 +49,8 @@ public class ExaminerController extends BaseController{
     IExaminerService iExaminerService;
     @Autowired
     IExamService iExamService;
+    @Autowired
+    ICandidateService iCandidateService;
 
 
     @PostMapping("/login.do")
@@ -216,5 +220,16 @@ public class ExaminerController extends BaseController{
         }
         String imagePath = "/road_examination_manager/" + UPLOAD_DIR_NAME + "/" + saveFileName;
         return new ResponseResult<String>(SUCCESS, "上传成功", imagePath);
+    }
+
+    @PostMapping("/findCandidateById.do")
+    public ResponseResult<Candidate> handleFindCandidateById(@RequestParam("CandidateId")String candidateId, HttpSession session){
+        if (null == session.getAttribute("username") && null == session.getAttribute("id")) {
+            throw new ManagerNotLoginException("操作失败！请先进行管理员或考官登录！");
+        }
+        if(candidateId == null){
+            throw new RequestException("请输入考生信息");
+        }
+        return new ResponseResult<>(SUCCESS, "查询成功！", iCandidateService.findById(candidateId));
     }
 }
