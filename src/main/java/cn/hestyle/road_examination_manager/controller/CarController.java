@@ -89,7 +89,7 @@ public class CarController extends BaseController{
     }
 
 
-    @GetMapping("/findByCarId.do")
+    @PostMapping("/findByCarId.do")
     public ResponseResult<Car> handleFindByCarId(@RequestParam(name = "carId") Integer id,
                                                  HttpSession session){
         // 判断是否已经登录过
