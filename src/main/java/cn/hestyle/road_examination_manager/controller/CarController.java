@@ -93,8 +93,9 @@ public class CarController extends BaseController{
     public ResponseResult<Car> handleFindByCarId(@RequestParam(name = "carId") Integer id,
                                                  HttpSession session){
         // 判断是否已经登录过
-        if (null == session.getAttribute("username")) {
-            throw new ManagerNotLoginException("操作失败！请先进行管理员登录！");
+        // 判断是否已经登录过
+        if (null == session.getAttribute("username") && null == session.getAttribute("id")) {
+            throw new ManagerNotLoginException("操作失败！管理员或考官未登录！请先进行登录");
         }
 
         Car data= carService.getById(id);
