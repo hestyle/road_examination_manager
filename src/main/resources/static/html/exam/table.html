@@ -7,13 +7,13 @@
     <link rel="stylesheet" href="../../css/style.css">
 </head>
 <body>
-    <div class="div-search">
-        <div class="layui-inline">
-            <input class="layui-input" name="admissionNo" id="admissionNo" autocomplete="off" placeholder="准考证号">
-        </div>
-        <button class="layui-btn" data-type="reload">搜索</button>
+<div class="div-search">
+    <div class="layui-inline">
+        <input class="layui-input" name="admissionNo" id="admissionNo" autocomplete="off" placeholder="准考证号">
     </div>
-    <table id="examTable" lay-filter="examTable"></table>
+    <button class="layui-btn" data-type="reload">搜索</button>
+</div>
+<table id="examTable" lay-filter="examTable"></table>
 </body>
 </html>
 
@@ -255,7 +255,7 @@
                 case 'generate':
                     layer.open({
                         type: 1,
-                        title: '考试考试信息注册',
+                        title: '考生考试信息注册',
                         area: ['50%', '70%'],
                         content: $('#examAddDialog').html(),
                         btn: ['确定', '取消'],
@@ -541,9 +541,9 @@
                 console.log(examData);
 
                 var htmlScored = '<div class="layui-row">'
-                            +'<label class="layui-form-label" style="width: 120px">考试成绩:</label>'
-                            +'<label class="layui-form-label" style="width: 100px; text-align: left">'+examData.scored+'</label>'
-                            +'</div>'
+                    +'<label class="layui-form-label" style="width: 120px">考试成绩:</label>'
+                    +'<label class="layui-form-label" style="width: 100px; text-align: left">'+examData.scored+'</label>'
+                    +'</div>'
                 $('#div-exam-result').append(htmlScored)
 
                 var htmlPass = '<div class="layui-row">'
