@@ -9,4 +9,6 @@ public interface IGearService {
     List<Gear> findByPage(Integer pageIndex, Integer pageSize);
 
     Integer getGearCount();
+
+    Boolean modifyBaseInfo(Gear gear);
 }

@@ -4,21 +4,19 @@
 <mapper namespace="cn.hestyle.road_examination_manager.mapper.GearMapper">
     <!--根据id查找考生-->
     <!--Candidate findById(String id)-->
-    <!--<select id="findById" resultType="cn.hestyle.road_examination_manager.entity.Gear">-->
-        <!--SELECT-->
-		    <!--`id` as `id`,-->
-			<!--`name` as `name`,-->
-			<!--`age` as `age`,-->
-			<!--`gender` as `gender`,-->
-			<!--`photo_path` as `photoPath`,-->
-			<!--`phone_number` as `phoneNumber`,-->
-			<!--`driver_school` as `driverSchool`,-->
-			<!--`is_del` as `isDel`-->
-		<!--FROM-->
-			<!--`t_candidate`-->
-		<!--WHERE-->
-		    <!--`id`=#{id}-->
-    <!--</select>-->
+    <select id="findById" resultType="cn.hestyle.road_examination_manager.entity.Gear">
+        SELECT
+		    `id` as `id`,
+			`name` as `name`,
+			`min_speed` as `minSpeed`,
+			`max_speed` as `maxSpeed`,
+			`description` as `description`,
+			`is_del` as `isDel`
+		FROM
+			`t_gear`
+		WHERE
+		    `id`=#{id}
+    </select>
     <!--分页查询所有管理员-->
     <!--List<Candidate> findByPage(Integer beginIndex, Integer pageSize)-->
     <select id="findByPage" resultType="cn.hestyle.road_examination_manager.entity.Gear">
@@ -46,16 +44,15 @@
 	</select>
     <!--更新candidate账号信息-->
     <!--Integer update(Candidate candidate)-->
-    <!--<update id="update" parameterType="cn.hestyle.road_examination_manager.entity.Gear">-->
-		<!--UPDATE `t_gear` SET-->
-			<!--`id` = #{id},-->
-			<!--`name` = #{name},-->
-		 	<!--`age` = #{age},-->
-			<!--`gender` = #{gender},-->
-			<!--`driver_school` = #{driverSchool},-->
-			<!--`phone_number` = #{phoneNumber},-->
-			<!--`is_del` = #{isDel}-->
-		<!--WHERE-->
-			<!--`id` = #{id}-->
-	<!--</update>-->
+    <update id="update" parameterType="cn.hestyle.road_examination_manager.entity.Gear">
+		UPDATE `t_gear` SET
+			`id` = #{id},
+			`name` = #{name},
+		 	`min_speed` = #{minSpeed},
+		 	`max_speed` = #{maxSpeed},
+		 	`description` = #{description},
+			`is_del` = #{isDel}
+		WHERE
+			`id` = #{id}
+	</update>
 </mapper>

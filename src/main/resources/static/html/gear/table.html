@@ -19,66 +19,52 @@
         <!--<button class="layui-btn layui-btn-sm" lay-event="delete">删除</button>-->
     <!--</div>-->
 <!--</script>-->
-<!--&lt;!&ndash;每条数据的操作栏&ndash;&gt;-->
-<!--<script type="text/html" id="barDemo">-->
-    <!--<a class="layui-btn layui-btn-xs" lay-event="detail">查看</a>-->
-    <!--<a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>-->
-    <!--<a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="deleteById">删除</a>-->
-<!--</script>-->
-<!--&lt;!&ndash;每条数据的编辑操作&ndash;&gt;-->
-<!--<script type="text/html" id="editDialog">-->
-    <!--<form class="layui-form" action="" style="padding: 20px;" lay-filter="editDialogForm">-->
-        <!--<div class="layui-form-item">-->
-            <!--<label class="layui-form-label">id</label>-->
-            <!--<div class="layui-input-inline">-->
-                <!--<input id="id" type="text" name="id" placeholder="请输入id" autocomplete="off" class="layui-input" style="width: 140%;" disabled>-->
-            <!--</div>-->
-        <!--</div>-->
-        <!--<div class="layui-form-item">-->
-            <!--<label class="layui-form-label">名称</label>-->
-            <!--<div class="layui-input-inline">-->
-                <!--<input id="name" type="text" name="name" placeholder="请输入名称" autocomplete="off" class="layui-input" style="width: 140%;">-->
-            <!--</div>-->
-        <!--</div>-->
-        <!--<div class="layui-form-item">-->
-            <!--<label class="layui-form-label">描述</label>-->
-            <!--<div class="layui-input-inline">-->
-                <!--<textarea id="description" name="description" placeholder="请输入描述" class="layui-textarea" style="width: 140%;"></textarea>-->
-            <!--</div>-->
-        <!--</div>-->
-        <!--<div class="layui-form-item">-->
-            <!--<label class="layui-form-label">是否删除</label>-->
-            <!--<div class="layui-input-inline">-->
-                <!--<input type="radio" name="isDel" value="0" title="未删除" checked>-->
-                <!--<input id="is_del_true" type="radio" name="isDel" value="1" title="已删除">-->
-            <!--</div>-->
-        <!--</div>-->
-    <!--</form>-->
-<!--</script>-->
-<!--&lt;!&ndash;单条数据的插入操作&ndash;&gt;-->
-<!--<script type="text/html" id="addDialog">-->
-    <!--<form id="add_form" class="layui-form" action="" style="padding: 20px;" lay-filter="addDialogForm">-->
-        <!--<div class="layui-form-item">-->
-            <!--<label class="layui-form-label">名称</label>-->
-            <!--<div class="layui-input-inline">-->
-                <!--<input id="add_name" type="text" name="name" placeholder="请输入名称" autocomplete="off" class="layui-input" style="width: 140%;">-->
-            <!--</div>-->
-        <!--</div>-->
-        <!--<div class="layui-form-item">-->
-            <!--<label class="layui-form-label">描述</label>-->
-            <!--<div class="layui-input-inline">-->
-                <!--<textarea id="add_description" name="description" placeholder="请输入描述" class="layui-textarea" style="width: 140%;"></textarea>-->
-            <!--</div>-->
-        <!--</div>-->
-        <!--<div class="layui-form-item">-->
-            <!--<label class="layui-form-label">是否删除</label>-->
-            <!--<div class="layui-input-inline">-->
-                <!--<input type="radio" name="add_isDel" value="0" title="未删除" checked>-->
-                <!--<input type="radio" name="add_isDel" value="1" title="已删除">-->
-            <!--</div>-->
-        <!--</div>-->
-    <!--</form>-->
-<!--</script>-->
+<!--每条数据的操作栏-->
+<script type="text/html" id="barDemo">
+    <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+</script>
+<!--每条数据的编辑操作-->
+<script type="text/html" id="editDialog">
+    <form class="layui-form" action="" style="padding: 20px;" lay-filter="editDialogForm">
+        <div class="layui-form-item">
+            <label class="layui-form-label">id</label>
+            <div class="layui-input-inline">
+                <input id="id" type="text" name="id" placeholder="请输入id" autocomplete="off" class="layui-input" style="width: 140%;" disabled>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">名称</label>
+            <div class="layui-input-inline">
+                <input id="name" type="text" name="name" placeholder="请输入名称" autocomplete="off" class="layui-input" style="width: 140%;">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">最小速度</label>
+            <div class="layui-input-inline">
+                <textarea id="minSpeed" name="minSpeed" placeholder="请输入最小速度" autocomplete="off" class="layui-input" style="width: 140%;"></textarea>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">最大速度</label>
+            <div class="layui-input-inline">
+                <textarea id="maxSpeed" name="maxSpeed" placeholder="请输入最大速度" autocomplete="off" class="layui-input" style="width: 140%;"></textarea>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">描述</label>
+            <div class="layui-input-inline">
+                <textarea id="description" name="description" placeholder="请输入描述" class="layui-textarea" style="width: 140%;"></textarea>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">是否删除</label>
+            <div class="layui-input-inline">
+                <input type="radio" name="isDel" value="0" title="未删除" checked>
+                <input id="is_del_true" type="radio" name="isDel" value="1" title="已删除">
+            </div>
+        </div>
+    </form>
+</script>
 <script>
     layuiModules=['table', 'layer', 'form'];
 
@@ -99,10 +85,10 @@
                         , defaultToolbar: ['print', 'exports']
                         , method: 'POST'
                         , cols: [[
-                            {title: '<a class="" style="font-size: 20px; color:black;">挡位项表</a>',align: 'center', colspan: 6} //rowspan即纵向跨越的单元格数
+                            {title: '<a class="" style="font-size: 20px; color:black;">挡位项表</a>',align: 'center', colspan: 7} //rowspan即纵向跨越的单元格数
                         ],[ //表头
-                            {checkbox: true, LAY_CHECKED: false}
-                            , {field: 'id', title: 'id', width: 80, sort: true}
+
+                            {field: 'id', title: 'id', width: 80, sort: true}
                             , {field: 'name', title: '名称', width: 350, sort: true}
                             , {field: 'minSpeed', title: '最小速度', width: 120, sort: true}
                             , {field: 'maxSpeed', title: '最大速度', width: 120, sort: true}
@@ -156,105 +142,105 @@
             }
         });
         //监听事件
-        table.on('toolbar(test)', function (obj) {
-            var checkStatus = table.checkStatus(obj.config.id);
-            switch (obj.event) {
-                case 'add':
-                    layer.open({
-                        type: 1,
-                        title: '添加',
-                        area:['50%','70%'],
-                        content: $('#addDialog').html(),
-                        btn: ['确定', '取消'],
-                        success: function (index, layero) {
-                            form.render();
-                        },
-                        yes: function (index, layero) {
-                            if (checkAddForm() === false) {
-                                return false;
-                            }
-                            var url ="../../examOperation/add.do";
-                            var postData = '{"name":"' + $('#add_name').val() + '","description":"' + $('#add_description').val() + '",' +
-                                '"isDel":' + $('input:radio[name="add_isDel"]:checked').val() + '}';
-                            $.ajax({
-                                "url" : url,
-                                "data" : {"newExamOperationJsonData":postData},
-                                "type" : "POST",
-                                "dataType" : "json",
-                                "success" : function (json) {
-                                    layer.open({
-                                        title: "提示信息",
-                                        content: json.message
-                                    });
-                                    if (json.code === 200) {
-                                        layer.close(index);
-                                    }
-                                },
-                                "error" : function () {
-                                    // 弹出中间提示框
-                                    layer.open({
-                                        title: "提示信息",
-                                        content: "保存失败，出现未知异常！"
-                                    });
-                                }
-                            });
-                        },
-                        btn2: function (index, layero) {
-                            //return false 开启该代码可禁止点击该按钮关闭
-                        }
-                    });
-                    break;
-                case 'delete':
-                    // 拼接选中行的username
-                    var postData = '[';
-                    for (var value of checkStatus.data) {
-                        if (postData.length > 1) {
-                            postData += ',"' + value.id + '"';
-                        } else {
-                            postData += '"' + value.id + '"';
-                        }
-                    }
-                    postData += ']';
-                    // 判断是否选中待删除行
-                    if (postData.length === 2) {
-                        layer.open({
-                            title: "提示信息",
-                            content: "请选中需要删除的数据！"
-                        });
-                        return;
-                    }
-                    layer.confirm('删除选中行？', function (index) {
-                        var url ="../../examOperation/deleteByIdList.do";
-                        $.ajax({
-                            "url" : url,
-                            "data" : {"idListJsonString":postData},
-                            "type" : "POST",
-                            "dataType" : "json",
-                            "success" : function (json) {
-                                layer.open({
-                                    title: "提示信息",
-                                    content: json.message
-                                });
-                                if (json.code === 200) {
-                                    // 更新成功，则关闭重置窗口、刷新表格
-                                    layer.close(index);
-                                    table.reload('examOperationTable');
-                                }
-                            },
-                            "error" : function () {
-                                // 弹出中间提示框
-                                layer.open({
-                                    title: "提示信息",
-                                    content: "保存失败，出现未知异常！"
-                                });
-                            }
-                        });
-
-                        layer.close(index);
-                    });
-                    break;
-            }
-        });
+        // table.on('toolbar(test)', function (obj) {
+        //     var checkStatus = table.checkStatus(obj.config.id);
+        //     switch (obj.event) {
+        //         case 'add':
+        //             layer.open({
+        //                 type: 1,
+        //                 title: '添加',
+        //                 area:['50%','70%'],
+        //                 content: $('#addDialog').html(),
+        //                 btn: ['确定', '取消'],
+        //                 success: function (index, layero) {
+        //                     form.render();
+        //                 },
+        //                 yes: function (index, layero) {
+        //                     if (checkAddForm() === false) {
+        //                         return false;
+        //                     }
+        //                     var url ="../../examOperation/add.do";
+        //                     var postData = '{"name":"' + $('#add_name').val() + '","description":"' + $('#add_description').val() + '",' +
+        //                         '"isDel":' + $('input:radio[name="add_isDel"]:checked').val() + '}';
+        //                     $.ajax({
+        //                         "url" : url,
+        //                         "data" : {"newExamOperationJsonData":postData},
+        //                         "type" : "POST",
+        //                         "dataType" : "json",
+        //                         "success" : function (json) {
+        //                             layer.open({
+        //                                 title: "提示信息",
+        //                                 content: json.message
+        //                             });
+        //                             if (json.code === 200) {
+        //                                 layer.close(index);
+        //                             }
+        //                         },
+        //                         "error" : function () {
+        //                             // 弹出中间提示框
+        //                             layer.open({
+        //                                 title: "提示信息",
+        //                                 content: "保存失败，出现未知异常！"
+        //                             });
+        //                         }
+        //                     });
+        //                 },
+        //                 btn2: function (index, layero) {
+        //                     //return false 开启该代码可禁止点击该按钮关闭
+        //                 }
+        //             });
+        //             break;
+        //         case 'delete':
+        //             // 拼接选中行的username
+        //             var postData = '[';
+        //             for (var value of checkStatus.data) {
+        //                 if (postData.length > 1) {
+        //                     postData += ',"' + value.id + '"';
+        //                 } else {
+        //                     postData += '"' + value.id + '"';
+        //                 }
+        //             }
+        //             postData += ']';
+        //             // 判断是否选中待删除行
+        //             if (postData.length === 2) {
+        //                 layer.open({
+        //                     title: "提示信息",
+        //                     content: "请选中需要删除的数据！"
+        //                 });
+        //                 return;
+        //             }
+        //             layer.confirm('删除选中行？', function (index) {
+        //                 var url ="../../examOperation/deleteByIdList.do";
+        //                 $.ajax({
+        //                     "url" : url,
+        //                     "data" : {"idListJsonString":postData},
+        //                     "type" : "POST",
+        //                     "dataType" : "json",
+        //                     "success" : function (json) {
+        //                         layer.open({
+        //                             title: "提示信息",
+        //                             content: json.message
+        //                         });
+        //                         if (json.code === 200) {
+        //                             // 更新成功，则关闭重置窗口、刷新表格
+        //                             layer.close(index);
+        //                             table.reload('examOperationTable');
+        //                         }
+        //                     },
+        //                     "error" : function () {
+        //                         // 弹出中间提示框
+        //                         layer.open({
+        //                             title: "提示信息",
+        //                             content: "保存失败，出现未知异常！"
+        //                         });
+        //                     }
+        //                 });
+        //
+        //                 layer.close(index);
+        //             });
+        //             break;
+        //     }
+        // });
 
         //监听工具条
         table.on('tool(test)', function (obj) { //注：tool是工具条事件名，test是table原始容器的属性 lay-filter="对应的值"
@@ -262,71 +248,7 @@
             var layEvent = obj.event; //获得 lay-event 对应的值（也可以是表头的 event 参数对应的值）
             var tr = obj.tr; //获得当前行 tr 的DOM对象
 
-            if (layEvent === 'detail') {
-                layer.open({
-                    type: 1,
-                    title: '查看',
-                    area:['50%','70%'],
-                    content: $('#editDialog').html(),
-                    btn: ['关闭'],
-                    success: function (index, layero) {
-                        form.render();
-                        // 对于radio单选框，int型数据转成string才能正确check
-                        data.isDel = data.isDel + '';
-                        form.val("editDialogForm", data);
-                    },
-                    cancel: function (index, layero) {
-
-                    }
-                });
-            } else if (layEvent === 'deleteById') {
-                if (data.isDel === 1) {
-                    layer.open({
-                        title: "提示信息",
-                        content: "该考试操作项已处删除状态，无需再次删除！"
-                    });
-                    return;
-                }
-                layer.open({
-                    type: 1,
-                    title: '删除',
-                    content: '是否删除' + data + '这个考试操作项？',
-                    btn: ['确定', '取消'],
-                    yes: function (index, layero) {
-                        // 更新缓存，同步到服务器
-                        var url ="../../examOperation/deleteById.do";
-                        $.ajax({
-                            "url" : url,
-                            "data" : {"id":data.id},
-                            "type" : "POST",
-                            "dataType" : "json",
-                            "success" : function (json) {
-                                layer.open({
-                                    title: "提示信息",
-                                    content: json.message
-                                });
-                                if (json.code === 200) {
-                                    // 更新成功，则关闭重置窗口
-                                    obj.update({
-                                        isDel: 1
-                                    });
-                                    layer.close(index);
-                                }
-                            },
-                            "error" : function () {
-                                // 弹出中间提示框
-                                layer.open({
-                                    title: "提示信息",
-                                    content: "删除失败，出现未知异常！"
-                                });
-                            }
-                        });
-                    },
-                    btn2: function (index, layero) {
-                        //return false 开启该代码可禁止点击该按钮关闭
-                    }
-                });
-            } else if (layEvent === 'edit') {
+            if (layEvent === 'edit') {
                 layer.open({
                     type: 1,
                     title: '编辑',
@@ -341,12 +263,15 @@
                     },
                     yes: function (index, layero) {
                         // 更新缓存，同步到服务器
-                        var url ="../../examOperation/modify.do";
-                        var postData = '{"id":'+ $('#id').val() + ',"name":"' + $('#name').val() + '","description":"' + $('#description').val() + '",' +
+                        var url ="../../gear/modifyGearInfo.do";
+                        var postData = '{"id":'+ $('#id').val() + ',"name":"' + $('#name').val() +
+                            '","minSpeed":' + $('#minSpeed').val() +
+                            ',"maxSpeed":' + $('#maxSpeed').val() +
+                            ',"description":"' + $('#description').val() + '",' +
                             '"isDel":' + $('input:radio[name="isDel"]:checked').val() + '}';
                         $.ajax({
                             "url" : url,
-                            "data" : {"newExamOperationJsonData":postData},
+                            "data" : {"newGearJsonData":postData},
                             "type" : "POST",
                             "dataType" : "json",
                             "success" : function (json) {
@@ -358,6 +283,8 @@
                                     obj.update({
                                         name: $('#name').val()
                                         ,description: $('#description').val()
+                                        ,minSpeed: $('#minSpeed').val()
+                                        ,maxSpeed: $('#maxSpeed').val()
                                         ,isDel: $('input:radio[name="isDel"]:checked').val()
                                     });
                                     layer.close(index);
@@ -379,24 +306,6 @@
             }
         });
 
-    }
-
-    function checkAddForm() {
-        if ($('#add_name').val().length === 0) {
-            layer.open({
-                title: "提示信息",
-                content: "考试操作项名称不能为空！"
-            });
-            return false;
-        }
-        if ($('#add_description').val().length === 0) {
-            layer.open({
-                title: "提示信息",
-                content: "考试操作项描述不能为空！"
-            });
-            return false;
-        }
-        return true;
     }
 </script>
 </html>

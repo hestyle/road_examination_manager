@@ -1,7 +1,7 @@
 package cn.hestyle.road_examination_manager.entity;
 
 public class Gear {
-    private String id;
+    private Integer id;
 
     private String name;
 
@@ -13,7 +13,7 @@ public class Gear {
 
     private Integer isDel;
 
-    public void setId(String id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -37,7 +37,7 @@ public class Gear {
         this.isDel = isDel;
     }
 
-    public String getId() {
+    public Integer getId() {
         return id;
     }
 
