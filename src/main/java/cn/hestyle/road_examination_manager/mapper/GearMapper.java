@@ -10,4 +10,8 @@ public interface GearMapper {
     List<Gear> findByPage(Integer beginIndex, Integer pageSize);
 
     Integer getGearCount();
+
+    Gear findById(Integer id);
+
+    Integer update(Gear gear);
 }
