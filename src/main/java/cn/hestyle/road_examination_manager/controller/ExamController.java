@@ -31,7 +31,7 @@ public class ExamController extends BaseController {
     @Autowired
     ICandidateService candidateService;
 
-    @GetMapping("/findExamInfoByAdmissionNo.do")
+    @PostMapping("/findExamInfoByAdmissionNo.do")
     public ResponseResult<Exam> handleFindExamInfoByAdmissionNo(@RequestParam(name = "admissionNo") String admissionNo,
                                                           HttpSession session){
         // 判断是否已经登录过
@@ -218,7 +218,7 @@ public class ExamController extends BaseController {
         return new ResponseResult<Exam>(SUCCESS, "考试信息生成成功！", exam);
     }
 
-    @GetMapping("/findExamByExaminerId.do")
+    @PostMapping("/findExamByExaminerId.do")
     public ResponseResult<List<Exam>> handleFindExamByExaminerId(@RequestParam("examinerId") String examinerId,
                                                                  HttpSession session){
         if (null == session.getAttribute("username") && null == session.getAttribute("id")) {
