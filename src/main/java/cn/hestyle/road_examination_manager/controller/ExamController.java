@@ -109,8 +109,8 @@ public class ExamController extends BaseController {
     public ResponseResult<Void> handlemMdifyExamInfo(@RequestParam("newExamInfoJsonData") String newExamInfoJsonData,
                                                      HttpSession session){
         // 判断是否已经登录过
-        if (null == session.getAttribute("username")) {
-            throw new ManagerNotLoginException("操作失败！请先进行管理员登录！");
+        if (null == session.getAttribute("username") && null == session.getAttribute("id")) {
+            throw new ManagerNotLoginException("操作失败！请先进行管理员或考官登录！");
         }
         ObjectMapper objectMapper = new ObjectMapper();
         Exam newExam = null;
@@ -131,8 +131,8 @@ public class ExamController extends BaseController {
     public ResponseResult<Map<String, Object>> handleGetDetailInfoByAdmissionNo(@PathVariable("admissionNo") String admissionNo,
                                                                    HttpSession session){
         // 判断是否已经登录过
-        if (null == session.getAttribute("username")) {
-            throw new ManagerNotLoginException("操作失败！请先进行管理员登录！");
+        if (null == session.getAttribute("username") && null == session.getAttribute("id")) {
+            throw new ManagerNotLoginException("操作失败！请先进行管理员或考官登录！");
         }
 
         Map<String, Object> data= examService.findDetailInfoByAdmissionNo(admissionNo);
@@ -144,8 +144,8 @@ public class ExamController extends BaseController {
     public ResponseResult<Map<String, Object>> handleGetExamItemsInfoByAdmissionNo(@PathVariable("admissionNo") String admissionNo,
                                                                                 HttpSession session){
         // 判断是否已经登录过
-        if (null == session.getAttribute("username")) {
-            throw new ManagerNotLoginException("操作失败！请先进行管理员登录！");
+        if (null == session.getAttribute("username") && null == session.getAttribute("id")) {
+            throw new ManagerNotLoginException("操作失败！请先进行管理员或考官登录！");
         }
 
         Map<String, Object> data= examService.findExamItemsInfoByAdmissionNo(admissionNo);
@@ -157,8 +157,8 @@ public class ExamController extends BaseController {
     public ResponseResult<Map<String, Object>> handleGetExamLightTemplateInfoByAdmissionNo(@PathVariable("admissionNo") String admissionNo,
                                                                                       HttpSession session){
         // 判断是否已经登录过
-        if (null == session.getAttribute("username")) {
-            throw new ManagerNotLoginException("操作失败！请先进行管理员登录！");
+        if (null == session.getAttribute("username") && null == session.getAttribute("id")) {
+            throw new ManagerNotLoginException("操作失败！请先进行管理员或考官登录！");
         }
 
         Map<String, Object> data= examService.findExamLightItemsInfoByAdmissionNo(admissionNo);
@@ -170,8 +170,8 @@ public class ExamController extends BaseController {
     public ResponseResult<Candidate> handleGetCandidateInfoByCandidateId(@PathVariable("candidateId") String id,
                                                                          HttpSession session){
         // 判断是否已经登录过
-        if (null == session.getAttribute("username")) {
-            throw new ManagerNotLoginException("操作失败！请先进行管理员登录！");
+        if (null == session.getAttribute("username") && null == session.getAttribute("id")) {
+            throw new ManagerNotLoginException("操作失败！请先进行管理员或考官登录！");
         }
 
         Candidate candidate = candidateService.findById(id);
