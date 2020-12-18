@@ -501,10 +501,24 @@
             });
             return false;
         }
+        if ($('#id1').val().length !== 18) {
+            layer.open({
+                title: "提示信息",
+                content: "身份证号码必须18位！"
+            });
+            return false;
+        }
         if ($('#name1').val().length === 0) {
             layer.open({
                 title: "提示信息",
                 content: "姓名字段不能为空！"
+            });
+            return false;
+        }
+        if ($('#age1').val() < 18){
+            layer.open({
+                title: "提示信息",
+                content: "未成年人不能注册！"
             });
             return false;
         }
