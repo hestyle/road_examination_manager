@@ -35,8 +35,8 @@ public class ExamController extends BaseController {
     public ResponseResult<Exam> handleFindExamInfoByAdmissionNo(@RequestParam(name = "admissionNo") String admissionNo,
                                                           HttpSession session){
         // 判断是否已经登录过
-        if (null == session.getAttribute("username")) {
-            throw new ManagerNotLoginException("操作失败！请先进行管理员登录！");
+        if (null == session.getAttribute("username") && null == session.getAttribute("id")) {
+            throw new ManagerNotLoginException("操作失败！请先进行管理员或考官登录！");
         }
         Exam exam = examService.findByAdmissionNo(admissionNo);
         if(exam == null){
