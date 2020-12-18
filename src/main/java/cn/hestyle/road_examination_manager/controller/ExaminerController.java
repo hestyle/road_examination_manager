@@ -59,6 +59,7 @@ public class ExaminerController extends BaseController{
         Examiner examiner = iExaminerService.login(id, password);
         // 将用户名发到session中，保存到服务端
         session.setAttribute("id", examiner.getId());
+        session.setMaxInactiveInterval(60 * 60 * 2);
         return new ResponseResult<>(SUCCESS, "登录成功！", examiner);
     }
 
