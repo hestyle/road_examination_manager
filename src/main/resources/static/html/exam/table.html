@@ -503,7 +503,7 @@
             // 获取考试车辆信息
             $.ajax({
                 url: '/road_examination_manager/car/findByCarId.do?carId=' + examData.carId
-                ,type: 'GET'
+                ,type: 'POST'
                 ,"success": function (res) {
                     if(res.code == 200) {
                         var carData = res.data;
