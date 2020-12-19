@@ -253,6 +253,8 @@
                                         });
                                         if (json.code === 200) {
                                             layer.close(index);
+                                            // 成功后，表格重载
+                                            layui.table.reload('managerTable');
                                         }
                                     },
                                     "error" : function () {
