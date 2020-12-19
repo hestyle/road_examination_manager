@@ -25,8 +25,8 @@ public class GearController extends BaseController{
     @PostMapping("/findByPage.do")
     public ResponseResult<List<Gear>> handleFindByPage(@RequestParam("pageIndex") Integer pageIndex, @RequestParam("pageSize") Integer pageSize, HttpSession session) {
         // 判断是否已经登录过
-        if (null == session.getAttribute("username")) {
-            throw new ManagerNotLoginException("操作失败！请先进行管理员登录！");
+        if (null == session.getAttribute("username") && null == session.getAttribute("id")) {
+            throw new ManagerNotLoginException("操作失败！请先进行管理员或考官登录！");
         }
         List<Gear> gearList = iGearService.findByPage(pageIndex, pageSize);
         Integer count = iGearService.getGearCount();
@@ -36,8 +36,8 @@ public class GearController extends BaseController{
     @PostMapping("/modifyGearInfo.do")
     public ResponseResult<Void> handleModifyCandidateBaseInfo(@RequestParam("newGearJsonData") String newBaseInfoJsonData, HttpSession session) {
         // 判断是否已经登录过
-        if (null == session.getAttribute("username")) {
-            throw new ManagerNotLoginException("操作失败！请先进行管理员登录！");
+        if (null == session.getAttribute("username") && null == session.getAttribute("id")) {
+            throw new ManagerNotLoginException("操作失败！请先进行管理员或考官登录！");
         }
         // 将newBaseInfoJsonData转成json，取出新baseInfo的各个属性
         ObjectMapper objectMapper = new ObjectMapper();
