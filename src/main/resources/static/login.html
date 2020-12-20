@@ -39,8 +39,31 @@
     <script>
         layuiModules=['layer','form'];
         function mounted(){
+            // 监听回车键
+            document.onkeydown = function (event) {
+                var e = event || window.event;
+                if (e && e.keyCode === 13) { //回车键的键值为13
+                    $(".btn-login").click(); //调用登录按钮的登录事件
+                }
+            };
             // 登录button添加点击事件
             $('.btn-login').click(function () {
+                // 检测 用户名、密码是否输入
+                if ($('input[name=username]').val().length === 0) {
+                    // 弹出中间提示框
+                    layer.open({
+                        title: "提示信息",
+                        content: "请输入用户名！"
+                    });
+                    return false;
+                } else if ($('input[name=password]').val().length === 0) {
+                    // 弹出中间提示框
+                    layer.open({
+                        title: "提示信息",
+                        content: "请输入密码！"
+                    });
+                    return false;
+                }
                 var url ="./manager/login.do";
                 var data = $("#login-form").serialize();
                 $.ajax({
