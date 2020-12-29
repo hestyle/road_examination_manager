@@ -289,7 +289,10 @@
                     if (res.code === 200) {
                         layer.open({
                             title: "提示信息",
-                            content: "考生考试信息注册成功！"
+                            content: "考生考试信息注册成功！",
+                            yes: function(index, layero){
+                                layer.closeAll();
+                            }
                         });
                         $('.div-search .layui-btn').click();
                     } else {
