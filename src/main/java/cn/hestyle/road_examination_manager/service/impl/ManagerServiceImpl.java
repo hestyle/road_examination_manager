@@ -156,7 +156,7 @@ public class ManagerServiceImpl implements IManagerService {
             managerData.setGender(manager.getGender());
         }
         if (manager.getPhoneNumber() != null) {
-            if (manager.getPhoneNumber().length() < 8 || manager.getName().length() > 11) {
+            if (manager.getPhoneNumber().length() < 8 || manager.getPhoneNumber().length() > 11) {
                 throw new UpdateException("修改失败，phoneNumber字段长度非法，请控制在8-11位！");
             }
             managerData.setPhoneNumber(manager.getPhoneNumber());
